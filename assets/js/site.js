@@ -82,22 +82,73 @@
 
   /* ---------------------------------------------------------------- lupa */
   /* O `popover` trata da camada de topo, do Esc e do fecho ao tocar fora.
-     Aqui só se enche a imagem antes de abrir — assim há um só <dialog> para
-     a galeria toda, em vez de um por fotografia. */
+     Há um só <dialog> para a galeria toda — enche-se antes de abrir.
+
+     Cada trabalho tem até quatro fotografias, e por isso a lupa anda para a
+     frente e para trás: por botão, pelas setas do teclado e por arrastar o
+     dedo. Sem isto, 34 das 52 fotografias do portefólio não apareciam em
+     sítio nenhum. */
   const lupa = $("#lupa");
   if (lupa) {
     const imagem = $("img", lupa);
     const nota = $(".lupa__nota", lupa);
-    $$("[data-lupa]").forEach((botao) => {
+    const setas = $$("[data-passo]", lupa);
+    let fotos = [];
+    let indice = 0;
+    let titulo = "";
+
+    const pintar = () => {
+      const f = fotos[indice];
+      if (!f) return;
+      imagem.src = f.src;
+      imagem.alt = f.alt || "";
+      const conta = fotos.length > 1 ? ` — ${indice + 1} de ${fotos.length}` : "";
+      if (nota) nota.textContent = titulo + conta;
+      // Com uma só fotografia as setas não fazem nada: escondem-se em vez de
+      // ficarem lá a não responder.
+      setas.forEach((s) => { s.hidden = fotos.length < 2; });
+    };
+
+    const andar = (passo) => {
+      if (fotos.length < 2) return;
+      indice = (indice + passo + fotos.length) % fotos.length;
+      pintar();
+    };
+
+    setas.forEach((s) =>
+      s.addEventListener("click", (e) => { e.stopPropagation(); andar(Number(s.dataset.passo)); }));
+
+    $$("[data-galeria]").forEach((botao) => {
       botao.addEventListener("click", () => {
-        const fonte = botao.dataset.lupa;
-        const alternativo = botao.dataset.lupaAlt || "";
-        imagem.src = fonte;
-        imagem.alt = alternativo;
-        if (nota) nota.textContent = botao.dataset.lupaNota || "";
+        try { fotos = JSON.parse(botao.dataset.galeria); }
+        catch { fotos = []; }
+        if (!fotos.length) return;
+        indice = 0;
+        titulo = botao.dataset.titulo || "";
+        pintar();
         lupa.showPopover();
       });
     });
+
+    addEventListener("keydown", (e) => {
+      if (!lupa.matches(":popover-open")) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); andar(1); }
+      if (e.key === "ArrowLeft")  { e.preventDefault(); andar(-1); }
+    });
+
+    // Arrastar o dedo. Só conta se for claramente horizontal, senão rouba o
+    // gesto de fechar arrastando para baixo que as pessoas tentam por hábito.
+    let x0 = null, y0 = null;
+    lupa.addEventListener("touchstart", (e) => {
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    }, { passive: true });
+    lupa.addEventListener("touchend", (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      const dy = e.changedTouches[0].clientY - y0;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) andar(dx < 0 ? 1 : -1);
+      x0 = y0 = null;
+    }, { passive: true });
   }
 
   /* ------------------------------------------------- horário: marcar hoje */

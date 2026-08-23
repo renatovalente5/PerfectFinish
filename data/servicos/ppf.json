@@ -4,41 +4,40 @@
  "nome": "PPF",
  "nome_longo": "PPF — película de proteção de pintura",
  "alt": "Paint Protection Film",
- "icone": "escudo",
  "resumo": "Uma camada transparente por cima da pintura. Nada muda à vista, tudo fica protegido.",
  "titulo_seo": "PPF — Proteção de Pintura em Leiria | Perfect Finish",
  "descricao_seo": "Aplicação de PPF em Leiria: película transparente que protege a pintura de riscos e pedras. Frente completa ou carro inteiro.",
  "intro": "O PPF é um filme transparente aplicado por cima da pintura. Absorve o impacto de pedras, insetos e lavagens menos cuidadosas — e as micro-riscas fecham-se sozinhas com o calor.",
  "porque": [
-  [
-   "Invisível",
-   "Bem aplicado, não se vê. A cor e o brilho do carro são exactamente os mesmos."
-  ],
-  [
-   "Onde o carro sofre",
-   "A frente é o que apanha tudo: capô, para-choques, espelhos, faróis e a orla dos guarda-lamas. É por aí que a maioria começa."
-  ],
-  [
-   "Reversível",
-   "Sai sem levar a pintura atrás, e por baixo fica um painel como no primeiro dia."
-  ]
+  {
+   "titulo": "Invisível",
+   "texto": "Bem aplicado, não se vê. A cor e o brilho do carro são exactamente os mesmos."
+  },
+  {
+   "titulo": "Onde o carro sofre",
+   "texto": "A frente é o que apanha tudo: capô, para-choques, espelhos, faróis e a orla dos guarda-lamas. É por aí que a maioria começa."
+  },
+  {
+   "titulo": "Reversível",
+   "texto": "Sai sem levar a pintura atrás, e por baixo fica um painel como no primeiro dia."
+  }
  ],
  "imagem": "lotus-emeya-ppf-1",
  "obras": [
   "lotus-emeya-ppf"
  ],
  "faq": [
-  [
-   "PPF ou vitrificação cerâmica?",
-   "Fazem coisas diferentes. O cerâmico dá brilho e facilita a lavagem; o PPF é uma barreira física contra impactos. Muita gente faz os dois, PPF à frente e cerâmico no resto."
-  ],
-  [
-   "Dá para aplicar só na frente?",
-   "Sim, e é o pedido mais comum. Também fazemos peças soltas, como a soleira das portas ou a zona atrás das rodas."
-  ],
-  [
-   "Quanto dura?",
-   "Depende do filme e do uso. É uma peça de desgaste: protege enquanto lá está e substitui-se quando deixa de estar bem."
-  ]
+  {
+   "pergunta": "PPF ou vitrificação cerâmica?",
+   "resposta": "Fazem coisas diferentes. O cerâmico dá brilho e facilita a lavagem; o PPF é uma barreira física contra impactos. Muita gente faz os dois, PPF à frente e cerâmico no resto."
+  },
+  {
+   "pergunta": "Dá para aplicar só na frente?",
+   "resposta": "Sim, e é o pedido mais comum. Também fazemos peças soltas, como a soleira das portas ou a zona atrás das rodas."
+  },
+  {
+   "pergunta": "Quanto dura?",
+   "resposta": "Depende do filme e do uso. É uma peça de desgaste: protege enquanto lá está e substitui-se quando deixa de estar bem."
+  }
  ]
 }

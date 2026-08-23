@@ -357,9 +357,13 @@ ${corpo}
 </main>
 ${rodape()}
 ${AVISO_COOKIES}
-<dialog class="lupa" id="lupa" popover>
+<dialog class="lupa" id="lupa" popover aria-label="Fotografias do trabalho">
  <button class="lupa__fecho" type="button" popovertarget="lupa" popovertargetaction="hide" aria-label="Fechar">✕</button>
- <img alt="" width="828" height="828">
+ <div class="lupa__palco">
+  <button class="lupa__seta lupa__seta--tras" type="button" data-passo="-1" aria-label="Fotografia anterior">‹</button>
+  <img alt="" width="828" height="828">
+  <button class="lupa__seta lupa__seta--frente" type="button" data-passo="1" aria-label="Fotografia seguinte">›</button>
+ </div>
  <p class="lupa__nota"></p>
 </dialog>
 <script src="${u("/assets/js/site.js")}" defer></script>
@@ -409,8 +413,15 @@ const CTA = (titulo, texto) => `<section class="seccao">
 </section>`;
 
 function comparador(par) {
-  const img = (nome, alt, classe) =>
-    `<img class="${classe}" src="${foto("obras", nome)}" alt="${esc(alt)}" width="828" height="828" loading="lazy" decoding="async">`;
+  /* Aqui não se usa <picture>: as duas imagens têm de ficar sobrepostas em
+     posição absoluta e o <picture> mete um elemento pelo meio. Usa-se o
+     AVIF directamente, com o WebP como alternativa no `onerror` — o AVIF é
+     Baseline há muito e o par de ficheiros existe sempre. */
+  const img = (nome, alt, classe) => {
+    const base = foto("obras", nome).replace(/\.webp$/, "");
+    return `<img class="${classe}" src="${base}.avif" alt="${esc(alt)}" width="828" height="828"
+ loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${base}.webp'">`;
+  };
   return `<figure class="par">
  <div class="comparador">
   <span class="comparador__etiqueta antes">Antes</span>
@@ -432,15 +443,22 @@ function comparador(par) {
 
 function cartaoObra(t) {
   const primeira = t.fotos[0];
+  /* Todas as fotografias do trabalho vão no botão, e não só a primeira: a
+     lupa passa a ser uma galeria por onde se anda. Antes ficavam 34 das 52
+     fotografias curadas sem aparecer em sítio nenhum do site. */
+  const galeria = JSON.stringify(t.fotos.map((f, i) => ({
+    src: foto("obras", f),
+    alt: `${t.veiculo} — ${t.servico}, fotografia ${i + 1} de ${t.fotos.length}`,
+  })));
   return `<figure class="obra revelar">
  <button class="obra__foto" type="button"
-   data-lupa="${foto("obras", primeira)}"
-   data-lupa-alt="${esc(t.veiculo)} — ${esc(t.servico)} no Perfect Finish Studio, em Leiria"
-   data-lupa-nota="${esc(t.veiculo)} · ${esc(t.servico)}"
-   aria-label="Ver ${esc(t.veiculo)} em grande">
+   data-galeria="${esc(galeria)}"
+   data-titulo="${esc(t.veiculo)} · ${esc(t.servico)}"
+   aria-label="Ver ${esc(t.veiculo)}${t.fotos.length > 1 ? ` — ${t.fotos.length} fotografias` : ""}">
   ${figura("obras", primeira, `${t.veiculo} — ${t.servico} feito no Perfect Finish Studio, em Leiria`, {
-    medidas: "(min-width: 64rem) 24rem, (min-width: 40rem) 45vw, 92vw",
+    medidas: "(min-width: 64rem) 21rem, (min-width: 40rem) 32vw, 46vw",
   })}
+  ${t.fotos.length > 1 ? `<span class="obra__conta" aria-hidden="true">${t.fotos.length}</span>` : ""}
  </button>
  <figcaption>
   <span class="servico">${esc(t.servico)}</span>
@@ -504,6 +522,7 @@ function inicio() {
   <div class="cabeca-seccao">
    <p class="sobrescrito">Como trabalhamos</p>
    <h2>Método, não pressa</h2>
+   <p>${esc(D.textos.sobre)}</p>
   </div>
   <div class="processo">
    ${[
@@ -592,7 +611,7 @@ function paginaServico(s) {
  <div class="caixa">
   <p class="sobrescrito">Porquê</p>
   <ul class="garantias" style="margin-top:var(--e-6)">
-   ${s.porque.map(([t, p]) => `<li><h3>${esc(t)}</h3><p>${esc(p)}</p></li>`).join("")}
+   ${s.porque.map((x) => `<li><h3>${esc(x.titulo)}</h3><p>${esc(x.texto)}</p></li>`).join("")}
   </ul>
   ${s.lista ? `<div style="margin-top:var(--e-8)"><p class="sobrescrito">Inclui</p><ul style="columns:2;column-gap:var(--e-7);list-style:none;font-size:var(--t--1);line-height:2">${s.lista.map((x) => `<li>— ${esc(x)}</li>`).join("")}</ul></div>` : ""}
   ${s.quando_nao ? `<div class="aviso" style="margin-top:var(--e-7);max-width:60ch">${esc(s.quando_nao)}</div>` : ""}
@@ -616,7 +635,7 @@ ${obras.length ? `<section class="seccao">
  <div class="caixa">
   <div class="cabeca-seccao"><p class="sobrescrito">Perguntas</p><h2>O que nos perguntam</h2></div>
   <div class="faq">
-   ${s.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><div>${esc(a)}</div></details>`).join("")}
+   ${s.faq.map((x) => `<details><summary>${esc(x.pergunta)}</summary><div>${esc(x.resposta)}</div></details>`).join("")}
   </div>
  </div>
 </section>

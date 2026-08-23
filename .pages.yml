@@ -326,6 +326,67 @@ content:
         type: image
         options: { media: obras }
         description: 'Aparece ao passar o rato na lista de serviços, no computador.'
+
+      - name: porque
+        label: Porquê — os três argumentos
+        type: object
+        list:
+          collapsible: true
+          min: 1
+          max: 4
+        description: >-
+          Os blocos numerados na faixa clara da página. Três é o número certo:
+          com dois parece pouco, com cinco ninguém lê.
+        fields:
+          - { name: titulo, label: Título, type: string, required: true }
+          - { name: texto, label: Texto, type: text, required: true }
+
+      - name: lista
+        label: O que inclui
+        type: string
+        list: true
+        description: >-
+          Um item por linha, curto. Aparece em duas colunas. Só usar quando o
+          serviço junta várias coisas — no Car Detailing, por exemplo. Deixe
+          vazio nos outros.
+
+      - name: quando_nao
+        label: Quando não é a solução
+        type: text
+        description: >-
+          Aparece numa caixa de aviso. Dizer à cabeça o que NÃO se faz é o que
+          evita discussões depois, e é o que passa confiança a quem lê.
+
+      - name: legal
+        label: Aviso legal do serviço
+        type: text
+        description: >-
+          Caixa de aviso com o que a lei obriga a dizer sobre este serviço —
+          nas películas, os limites de transmissão luminosa. O que puser entre
+          dois asteriscos **assim** aparece a negrito.
+
+      - name: faq
+        label: Perguntas frequentes
+        type: object
+        list:
+          collapsible: true
+          max: 8
+        description: >-
+          Aparecem no fim da página, numa lista que abre e fecha. São as
+          perguntas que lhe fazem ao telefone — escrevê-las aqui poupa-lhe as
+          chamadas e ajuda a aparecer no Google.
+        fields:
+          - { name: pergunta, label: Pergunta, type: string, required: true }
+          - { name: resposta, label: Resposta, type: text, required: true }
+
+      - name: obras
+        label: Trabalhos a mostrar nesta página
+        type: string
+        list: true
+        description: >-
+          AVANÇADO. As referências dos trabalhos (o campo «Referência» de cada
+          um), uma por linha. Normalmente não é preciso mexer: basta escolher
+          o serviço no campo «Aparece na página de» de cada trabalho.
       - name: titulo_seo
         label: Título no Google
         type: string

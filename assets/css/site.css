@@ -637,6 +637,23 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .obra__foto:hover img, .obra__foto:focus-visible img { scale: 1.045; }
 
+/* Quantas fotografias tem o trabalho. Sem isto ninguém adivinha que a peça
+   abre uma galeria e não uma imagem só. */
+.obra__conta {
+  position: absolute; z-index: 2;
+  inset-block-start: .5rem; inset-inline-end: .5rem;
+  min-inline-size: 1.55rem; block-size: 1.55rem;
+  padding-inline: .35rem; border-radius: 1rem;
+  display: grid; place-items: center;
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: .625rem; font-weight: 600; letter-spacing: .04em;
+  color: var(--ouro-alto);
+  background: color-mix(in oklab, var(--tinta) 72%, transparent);
+  border: 1px solid var(--filete);
+  backdrop-filter: blur(4px);
+}
+.obra__conta::after { content: " ⛶"; font-size: .8em; opacity: .75; }
+
 .obra figcaption {
   position: absolute; inset-inline: 0; bottom: 0; z-index: 1;
   padding: clamp(.6rem, 2.2vw, 1rem); pointer-events: none;
@@ -661,10 +678,35 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: grid; place-items: center;
 }
 .lupa::backdrop { background: color-mix(in oklab, #000 88%, transparent); }
+/* Palco da lupa: a imagem ao centro e uma seta de cada lado. Em ecrã largo
+   as setas ficam fora da imagem; no telemóvel sobrepõem-se às margens, que é
+   onde o dedo chega. */
+.lupa__palco {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(.25rem, 2vw, 1.5rem);
+}
 .lupa img {
   inline-size: min(92vw, 48rem); block-size: auto;
-  max-block-size: 82svh; object-fit: contain;
+  max-block-size: 78svh; object-fit: contain;
   border-radius: 3px;
+}
+.lupa__seta {
+  flex: none;
+  inline-size: 3rem; block-size: 3rem; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 1.9rem; line-height: 1; padding-bottom: .18em;
+  color: var(--osso);
+  background: color-mix(in oklab, var(--tinta) 72%, transparent);
+  border: 1px solid var(--filete);
+  backdrop-filter: blur(6px);
+  transition: border-color .2s var(--curva), color .2s var(--curva);
+}
+.lupa__seta:hover { border-color: var(--ouro); color: var(--ouro-alto); }
+@media (max-width: 34rem) {
+  .lupa__palco { position: relative; }
+  .lupa__seta { position: absolute; z-index: 2; }
+  .lupa__seta--tras { inset-inline-start: .35rem; }
+  .lupa__seta--frente { inset-inline-end: .35rem; }
 }
 .lupa__fecho {
   position: fixed; top: var(--e-4); right: var(--e-4);

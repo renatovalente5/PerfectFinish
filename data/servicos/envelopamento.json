@@ -4,24 +4,23 @@
  "nome": "Envelopamento",
  "nome_longo": "Envelopamento e chrome delete",
  "alt": "Car wrapping",
- "icone": "vinil",
  "resumo": "Mudar a cor do carro sem tocar na pintura. Acetinado, mate, camaleão ou cromados a preto.",
  "titulo_seo": "Envelopamento e Car Wrapping em Leiria | Perfect Finish",
  "descricao_seo": "Envelopamento total ou parcial em Leiria: mudança de cor em película, acabamentos acetinados e mate, chrome delete. A pintura original fica intacta.",
  "intro": "Uma mudança de cor completa, feita em película. A pintura de fábrica fica por baixo, intacta — e o carro volta ao original no dia em que quiser.",
  "porque": [
-  [
-   "A pintura fica protegida",
-   "O vinil é também uma camada de proteção. Ao retirar, o painel aparece como estava."
-  ],
-  [
-   "Acabamentos que não existem de fábrica",
-   "Acetinado, mate, texturado, e os camaleão que mudam de tom conforme a luz bate."
-  ],
-  [
-   "Desmontagem onde é preciso",
-   "Puxadores, frisos e óticas saem quando o remate o exige. É o que separa um envelopamento de uma colagem."
-  ]
+  {
+   "titulo": "A pintura fica protegida",
+   "texto": "O vinil é também uma camada de proteção. Ao retirar, o painel aparece como estava."
+  },
+  {
+   "titulo": "Acabamentos que não existem de fábrica",
+   "texto": "Acetinado, mate, texturado, e os camaleão que mudam de tom conforme a luz bate."
+  },
+  {
+   "titulo": "Desmontagem onde é preciso",
+   "texto": "Puxadores, frisos e óticas saem quando o remate o exige. É o que separa um envelopamento de uma colagem."
+  }
  ],
  "imagem": "audi-q7-camaleao-1",
  "obras": [
@@ -34,17 +33,17 @@
   "bmw-serie-5-touring"
  ],
  "faq": [
-  [
-   "Estraga a pintura?",
-   "Não, se a pintura estiver sã e o filme for retirado como deve ser. Numa pintura já a descolar ou repintada sem preparação, avisamos antes."
-  ],
-  [
-   "Posso lavar o carro à pressão?",
-   "Pode, com bom senso: sem lança de alta pressão colada aos bordos e sem escovas de rolo."
-  ],
-  [
-   "Só a parte de fora dos vidros?",
-   "Chrome delete é passar a preto os frisos cromados das janelas e grelhas. Faz-se sozinho ou junto com o envelopamento."
-  ]
+  {
+   "pergunta": "Estraga a pintura?",
+   "resposta": "Não, se a pintura estiver sã e o filme for retirado como deve ser. Numa pintura já a descolar ou repintada sem preparação, avisamos antes."
+  },
+  {
+   "pergunta": "Posso lavar o carro à pressão?",
+   "resposta": "Pode, com bom senso: sem lança de alta pressão colada aos bordos e sem escovas de rolo."
+  },
+  {
+   "pergunta": "Só a parte de fora dos vidros?",
+   "resposta": "Chrome delete é passar a preto os frisos cromados das janelas e grelhas. Faz-se sozinho ou junto com o envelopamento."
+  }
  ]
 }
