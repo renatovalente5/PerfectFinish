@@ -456,36 +456,61 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: flex; align-items: center;
   overflow: clip;
 }
-.heroi::before {
-  content: ""; position: absolute; z-index: 0;
-  inset-block-start: -40%; inset-inline-start: 34%; translate: -50% 0;
-  inline-size: min(70rem, 120%); aspect-ratio: 1;
-  background: radial-gradient(closest-side,
-    color-mix(in oklab, var(--ouro) 12%, transparent), transparent 72%);
-  pointer-events: none;
+/* A IMAGEM DE FUNDO.
+   É o mosaico composto em `scripts/capa.py`, com cada peça perto do tamanho
+   nativo — de 414 px para 2560 esticados seriam seis vezes e via-se.
+   O escurecimento vem GRAVADO na imagem, só atrás do texto e com um lado
+   esbatido. É por isso que as fotografias se veem: o véu não está por cima
+   de tudo, está por baixo do texto. */
+.heroi__fundo { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.heroi__fundo img {
+  inline-size: 100%; block-size: 100%; object-fit: cover;
+  /* Encostada à esquerda: com `object-position` ao centro, o `cover` recorta
+     parte do painel escuro e o texto começa a cair sobre as fotografias. */
+  object-position: 0% 50%;
+}
+
+/* NO TELEMÓVEL A IMAGEM É UMA FAIXA EM BAIXO, não um fundo.
+   Num ecrã estreito o texto ocupa a largura toda, portanto não há lado
+   nenhum onde as fotografias possam ficar à vista: ou se tapa a imagem com um
+   véu (e volta a queixa de que não se vê nada), ou se separa. Separa-se.
+   Em cima o texto sobre preto chapado; em baixo uma faixa de fotografias
+   inteiras, sem véu, com uma passagem esbatida entre as duas. */
+@media (max-width: 63.9375rem) {
+  /* A MESMA expressão nos dois sítios: a altura da faixa e o espaço que lhe é
+     reservado. Estava `block-size: 47%` na faixa e `padding-block-end: 49%` no
+     interior — e um `padding` em percentagem resolve contra a LARGURA, não a
+     altura. Reservava 191 px onde a faixa media 404, e a régua de provas
+     acabava por cima da fotografia. */
+  .heroi { --faixa: min(44svh, 24rem); padding-block-end: 0; }
+  .heroi__fundo { inset: auto 0 0 0; block-size: var(--faixa); }
+  .heroi__fundo::before {
+    content: ""; position: absolute; inset-inline: 0; top: 0; z-index: 1;
+    block-size: 30%;
+    background: linear-gradient(to bottom, var(--tinta), transparent);
+  }
+  .heroi__interior { padding-block-end: calc(var(--faixa) + var(--e-5)); }
+}
+/* Fecho para o preto no rodapé, para a secção seguinte entrar sem aresta. */
+@media (min-width: 64rem) {
+  .heroi::after {
+    content: ""; position: absolute; z-index: 1; inset-inline: 0; bottom: 0;
+    block-size: 26%; pointer-events: none;
+    background: linear-gradient(to top, var(--tinta), transparent);
+  }
 }
 
 .heroi__interior {
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
   display: grid; gap: var(--e-6) clamp(1.5rem, 4vw, 3.5rem);
   align-items: start;
 }
-@media (min-width: 64rem) {
-  .heroi { --capa-col: min(23rem, 40%); }
-  .heroi__interior {
-    grid-template-columns: minmax(0, 1fr) var(--capa-col);
-    grid-template-areas: "texto capa" "provas capa";
-    align-content: center;
-  }
-  .heroi__texto  { grid-area: texto; }
-  .capa-pilha    { grid-area: capa; }
-  .provas        { grid-area: provas; }
+/* O texto ocupa a coluna do painel escuro gravado na imagem — 46% da largura
+   na versão larga. Passar disso e o texto começa a cair sobre fotografia. */
+@media (min-width: 48rem) {
+  .heroi__texto, .provas { max-inline-size: min(36rem, 42%); }
 }
-/* Ecrã largo mas baixo (1366×768 é o caso). Sem isto o painel da capa mede
-   555 px, o total dá 803 e corta — medido, não estimado. */
-@media (min-width: 64rem) and (max-height: 52rem) {
-  .heroi { --capa-col: min(18rem, 34%); }
-}
+@media (min-width: 64rem) { .heroi { min-block-size: min(88svh, 46rem); } }
 
 .heroi h1 { margin-block: var(--e-5) var(--e-3); }
 .heroi h1 span + span { margin-top: -.06em; }
@@ -500,32 +525,6 @@ body[data-menu="aberto"] { overflow: hidden; }
 .heroi__lead { color: var(--osso-meio); font-size: var(--t-1); max-width: 42ch; }
 .heroi .accoes { margin-top: var(--e-6); }
 
-/* A pilha: uma peça grande e duas pequenas ao lado. */
-.capa-pilha {
-  display: grid; gap: 6px;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-}
-@media (min-width: 64rem) {
-  .capa-pilha { grid-template-columns: minmax(0, 1fr); }
-  .capa-peca--grande { grid-column: 1; }
-  .capa-pilha { grid-template-areas: "grande" "peq"; }
-  .capa-peca--grande { grid-area: grande; }
-  .capa-pilha > .capa-peca:not(.capa-peca--grande):nth-of-type(2) { grid-area: peq; justify-self: start; inline-size: calc(50% - 3px); }
-  .capa-pilha > .capa-peca:nth-of-type(3) { grid-area: peq; justify-self: end; inline-size: calc(50% - 3px); }
-}
-.capa-peca {
-  aspect-ratio: 1; overflow: clip; border-radius: 3px;
-  border: 1px solid var(--filete); background: var(--carta);
-  box-shadow: 0 1.5rem 3.5rem rgb(0 0 0 / .5);
-}
-.capa-peca img { inline-size: 100%; block-size: 100%; object-fit: cover; }
-/* No telemóvel a peça grande ocupa duas linhas à esquerda e as pequenas
-   empilham à direita — duas fotografias inteiras no primeiro ecrã. */
-@media (max-width: 63.9375rem) {
-  .capa-pilha { grid-template-rows: repeat(2, auto); }
-  .capa-peca--grande { grid-row: span 2; }
-}
-
 .provas {
   display: flex; flex-wrap: wrap; gap: var(--e-5) clamp(1.5rem, 5vw, 3.5rem);
   margin-top: var(--e-7); padding-top: var(--e-5);
@@ -538,7 +537,10 @@ body[data-menu="aberto"] { overflow: hidden; }
   font-size: var(--t-2); font-weight: 700; color: var(--ouro-alto);
   line-height: 1; letter-spacing: -.02em;
 }
-.provas span { font-size: var(--t--1); color: var(--osso-fraco); letter-spacing: .02em; }
+/* `--osso-meio` e não `--osso-fraco`: medido por cima do fundo da capa, o
+   fraco dava 4,04:1 no pior ponto — abaixo do mínimo de 4,5:1 para texto
+   pequeno. Sobre o preto chapado passava; sobre a fotografia não. */
+.provas span { font-size: var(--t--1); color: var(--osso-meio); letter-spacing: .02em; }
 
 /* Telemóvel: o espaçamento tem de encolher, senão o painel fica abaixo da
    dobra e o primeiro ecrã não mostra fotografia nenhuma. */
@@ -1473,3 +1475,83 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   .menu__lista li:last-child a { color: var(--ouro-alto); border-top: 1px solid var(--filete); }
   .menu__lista li:last-child .numero { color: var(--ouro); }
 }
+
+
+/* --------------------------------------------- 22 serviços: só imagens */
+/* Uma imagem e o nome. Nada de introdução, argumentos, avisos nem perguntas —
+   o cliente pediu «só imagens, nada de especificações».
+   O texto não foi apagado: continua em data/servicos/*.json e continua
+   editável no backoffice, para o caso de voltar a ser preciso.
+   Carregar abre a galeria daquele serviço, sem sair da página. */
+.cartoes-servico {
+  display: grid; gap: clamp(.6rem, 1.8vw, 1.25rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+@media (min-width: 44rem) { .cartoes-servico { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 68rem) { .cartoes-servico { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+.cartao-servico { display: flex; }
+.cartao-servico button {
+  position: relative; display: block; inline-size: 100%; padding: 0;
+  aspect-ratio: 1; overflow: clip; border-radius: 3px;
+  border: 1px solid var(--filete-fraco); background: var(--carta);
+  cursor: zoom-in;
+  transition: border-color .28s var(--curva), translate .28s var(--curva);
+}
+.cartao-servico button:hover,
+.cartao-servico button:focus-visible { border-color: var(--ouro); translate: 0 -3px; }
+.cartao-servico picture, .cartao-servico img {
+  inline-size: 100%; block-size: 100%; object-fit: cover; display: block;
+  transition: scale .5s var(--curva);
+}
+.cartao-servico button:hover img { scale: 1.05; }
+/* Véu no rodapé para o nome assentar. Só no rodapé: por cima de tudo
+   escondia a fotografia, que é o que se quer mostrar. */
+.cartao-servico button::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top,
+    color-mix(in oklab, var(--tinta) 92%, transparent) 0%,
+    color-mix(in oklab, var(--tinta) 40%, transparent) 38%,
+    transparent 64%);
+}
+.cartao-servico__nome {
+  position: absolute; z-index: 1; inset-inline: 0; bottom: 0;
+  padding: clamp(.6rem, 2.2vw, 1rem);
+  font-family: var(--letra-titulo); font-weight: 600;
+  font-size: clamp(.8rem, 2.1vw, 1rem); line-height: 1.1;
+  letter-spacing: -.01em; text-transform: uppercase;
+  color: var(--osso); text-align: start;
+  hyphens: auto;
+}
+.cartao-servico__conta {
+  position: absolute; z-index: 1;
+  inset-block-start: .5rem; inset-inline-end: .5rem;
+  min-inline-size: 1.55rem; block-size: 1.55rem; padding-inline: .35rem;
+  border-radius: 1rem; display: grid; place-items: center;
+  font-family: var(--letra-titulo); font-size: .625rem; font-weight: 600;
+  color: var(--ouro-alto);
+  background: color-mix(in oklab, var(--tinta) 72%, transparent);
+  border: 1px solid var(--filete); backdrop-filter: blur(4px);
+}
+.cartao-servico__conta::after { content: " ⛶"; font-size: .8em; opacity: .75; }
+
+/* O cartão sem fotografia (o tira mossas). Mesma caixa, mesmo peso visual,
+   para a grelha não ficar com um buraco. */
+.cartao-servico--sem-foto a {
+  position: relative; display: grid; align-content: end; gap: .25rem;
+  inline-size: 100%; aspect-ratio: 1;
+  padding: clamp(.6rem, 2.2vw, 1rem);
+  border-radius: 3px; text-decoration: none;
+  border: 1px solid var(--filete-fraco);
+  background: linear-gradient(158deg, var(--elevado), var(--carta) 68%);
+  transition: border-color .28s var(--curva), translate .28s var(--curva);
+}
+.cartao-servico--sem-foto a:hover { border-color: var(--ouro); translate: 0 -3px; }
+/* O escudo como marca de água, para o cartão não ficar vazio. */
+.cartao-servico--sem-foto img {
+  position: absolute; inset-block-start: 12%; inset-inline: 22%;
+  inline-size: 56%; block-size: auto; opacity: .3;
+}
+.cartao-servico--sem-foto .cartao-servico__nome { position: static; padding: 0; }
+.cartao-servico__ig { font-size: var(--t--2); color: var(--ouro); }

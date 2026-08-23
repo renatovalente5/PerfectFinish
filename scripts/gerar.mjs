@@ -533,10 +533,10 @@ const FOTOS_CAPA = CAPA.length === 3
   ? CAPA
   : TRABALHOS.filter((t) => t.destaque).slice(0, 3).map((t) => t.fotos[0]);
 
-/** Texto alternativo de uma fotografia da capa, tirado do trabalho a que ela
- *  pertence. Estava escrito à mão e ficava a mentir assim que o cliente
- *  trocasse uma fotografia no backoffice. */
-function alturaCapa(nome) {
+/** Texto alternativo de uma fotografia, tirado do trabalho a que ela pertence.
+ *  Derivado e não escrito à mão: assim não fica a mentir quando o cliente
+ *  trocar uma fotografia no backoffice. */
+function alturaFoto(nome) {
   const dono = TRABALHOS.find((t) => t.fotos?.includes(nome));
   return dono
     ? `${dono.veiculo} — ${dono.servico} no Perfect Finish Studio, em Leiria`
@@ -548,44 +548,62 @@ const ig = (texto, classe = "botao botao--linha") =>
   `<a class="${classe}" href="${esc(IG)}" target="_blank" rel="noopener">${svg("instagram")}${texto}</a>`;
 
 /**
- * Um serviço, sempre aberto e com a fotografia à vista.
+ * Um serviço: uma imagem e o nome. Mais nada.
  *
- * Foi <details> numa primeira ideia e está aqui a razão de não ser: uma âncora
- * NÃO abre um <details>. O algoritmo de revelação do HTML percorre os
- * ASCENDENTES do alvo, e um <details> não é ascendente de si mesmo — logo
- * `/#s-ppf` faria scroll e deixaria a gaveta fechada, e toda a ideia de
- * substituir as páginas por âncoras caía. Além disso o Safari e o Firefox não
- * expandem <details> no Cmd+F, o que tornaria o texto dos serviços
- * inencontrável na própria página.
+ * Houve aqui blocos com introdução, três argumentos, avisos e perguntas
+ * frequentes. O cliente foi claro — «não quero que me detalhes os serviços,
+ * quero só imagens, nada de especificações» — e é a decisão dele.
  *
- * <article> porque é uma unidade completa e autónoma — cabeçalho, fotografia,
- * corpo, perguntas e acção. O `id` fica no <article> e não no <h3>, para o
- * salto começar no topo do bloco e não a meio.
+ * O texto não foi apagado dos dados: continua em `data/servicos/*.json` e
+ * continua editável no backoffice. Se um dia voltar a ser preciso, está lá.
+ * O aviso legal das películas (limites de transmissão luminosa) NÃO se perde
+ * por isto — vive em /informacao-legal/, que é onde a lei o quer.
+ *
+ * Carregar na imagem abre a galeria daquele serviço, com as fotografias dos
+ * trabalhos correspondentes: fica-se na mesma página e vêem-se mais imagens,
+ * que é exactamente o que foi pedido.
  */
-function blocoServico(sv) {
-  const semFoto = !sv.imagem;
-  return `<article class="bloco-servico${semFoto ? " bloco-servico--sem-foto" : ""}" id="s-${esc(sv.slug)}">
- ${semFoto ? "" : `<figure class="bloco-servico__foto">${figura("obras", sv.imagem,
-     `${sv.nome} em Leiria — Perfect Finish Studio`,
-     { medidas: "(min-width: 64rem) 22rem, 92vw" })}</figure>`}
- <div class="bloco-servico__corpo">
-  ${sv.alt ? `<p class="sobrescrito">${esc(sv.alt)}</p>` : ""}
-  <h3>${esc(sv.nome_longo)}</h3>
-  <p class="bloco-servico__resumo">${esc(sv.resumo)}</p>
-  <p>${esc(sv.intro)}</p>
-  ${sv.porque?.length ? `<ul class="porques">${sv.porque.map((x) =>
-    `<li><b>${esc(x.titulo)}</b> ${esc(x.texto)}</li>`).join("")}</ul>` : ""}
-  ${sv.lista?.length ? `<p class="bloco-servico__inclui"><b>Inclui:</b> ${sv.lista.map(esc).join(" · ")}</p>` : ""}
-  ${sv.quando_nao ? `<p class="aviso">${esc(sv.quando_nao)}</p>` : ""}
-  ${sv.legal ? `<p class="aviso">${forte(sv.legal)}</p>` : ""}
-  ${sv.faq?.length ? `<div class="faq">${sv.faq.map((x) =>
-    `<details><summary>${esc(x.pergunta)}</summary><div>${esc(x.resposta)}</div></details>`).join("")}</div>` : ""}
-  <div class="bloco-servico__accoes">
-   <a class="botao botao--linha" href="${zap(`Olá! Queria saber sobre ${sv.nome}.`)}" target="_blank" rel="noopener">Falar sobre ${esc(sv.nome.toLowerCase())} <span class="seta">→</span></a>
-   ${semFoto ? `<a class="ligacao-ig" href="${esc(IG)}" target="_blank" rel="noopener">Exemplos de mossas resolvidas, no Instagram →</a>` : ""}
-  </div>
- </div>
-</article>`;
+function cartaoServico(sv) {
+  const fotos = TRABALHOS.filter((t) => t.pagina === sv.slug)
+    .flatMap((t) => t.fotos).slice(0, 12);
+  const capa = sv.imagem || fotos[0];
+
+  /* O TIRA MOSSAS NÃO TEM FOTOGRAFIA UTILIZÁVEL em todo o acervo — e é o
+     serviço que dá nome à casa. As três que existem estão contra a luz e a
+     mossa não se lê a 414 px.
+     Não se põe ali a fotografia de outro serviço: seria dizer que aquilo é
+     tira mossas quando não é. Fica um cartão com o nome e o escudo, que
+     manda para o Instagram. Assim a âncora continua a existir, a grelha não
+     fica com um buraco, e ninguém é enganado.
+     Quando houver fotografia — um plano aproximado com a tábua de leitura,
+     antes e depois, no mesmo enquadramento — basta preencher o campo
+     «Fotografia do serviço» no backoffice e este cartão passa a ser igual
+     aos outros. */
+  if (!capa) {
+    return `<li class="cartao-servico cartao-servico--sem-foto">
+  <a id="s-${esc(sv.slug)}" href="${esc(IG)}" target="_blank" rel="noopener"
+     aria-label="${esc(sv.nome)} — ver exemplos no Instagram">
+   <img src="${u("/assets/img/marca/simbolo.svg")}" alt="" width="288" height="299">
+   <span class="cartao-servico__nome">${esc(sv.nome)}</span>
+   <span class="cartao-servico__ig">Exemplos no Instagram →</span>
+  </a>
+ </li>`;
+  }
+
+  const galeria = JSON.stringify(fotos.map((f) => ({
+    src: foto("obras", f), alt: alturaFoto(f),
+  })));
+
+  return `<li class="cartao-servico">
+  <button type="button" id="s-${esc(sv.slug)}"
+    data-galeria="${esc(galeria)}" data-titulo="${esc(sv.nome)}"
+    aria-label="Ver ${esc(sv.nome)}${fotos.length ? ` — ${fotos.length} fotografias` : ""}">
+   ${figura("obras", capa, `${sv.nome} — Perfect Finish Studio, em Leiria`, {
+     medidas: "(min-width: 68rem) 22rem, (min-width: 44rem) 45vw, 92vw" })}
+   <span class="cartao-servico__nome">${esc(sv.nome)}</span>
+   ${fotos.length > 1 ? `<span class="cartao-servico__conta" aria-hidden="true">${fotos.length}</span>` : ""}
+  </button>
+ </li>`;
 }
 
 function inicio() {
@@ -593,6 +611,14 @@ function inicio() {
 
   const corpo = `
 <section class="heroi">
+ <div class="heroi__fundo" aria-hidden="true">
+  <picture>
+   <source media="(min-width: 48rem)" type="image/avif" srcset="${u("/assets/img/capa/capa-larga.avif")}">
+   <source media="(min-width: 48rem)" type="image/webp" srcset="${u("/assets/img/capa/capa-larga.webp")}">
+   <source type="image/avif" srcset="${u("/assets/img/capa/capa-alta.avif")}">
+   <img src="${u("/assets/img/capa/capa-alta.webp")}" alt="" width="900" height="900" fetchpriority="high">
+  </picture>
+ </div>
  <div class="caixa heroi__interior">
   <div class="heroi__texto">
    <p class="sobrescrito">${esc(D.marca.reclamo)} · Leiria</p>
@@ -603,14 +629,6 @@ function inicio() {
     <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Pedir orçamento</a>
     <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
    </div>
-  </div>
-
-  <div class="capa-pilha">
-   ${FOTOS_CAPA.map((f, i) => `<div class="capa-peca${i === 0 ? " capa-peca--grande" : ""}">${
-     figura("obras", f, alturaCapa(f), {
-       carga: i === 0 ? "alta" : "cedo",
-       medidas: i === 0 ? "(min-width: 64rem) 23rem, 60vw" : "(min-width: 64rem) 11rem, 30vw",
-     })}</div>`).join("")}
   </div>
 
   <ul class="provas">
@@ -628,12 +646,14 @@ function inicio() {
    <p>${esc(D.textos.sobre)}</p>
   </div>
 
+  <ul class="cartoes-servico">${SERVICOS.map(cartaoServico).join("")}</ul>
+
   <div class="lista-servicos__caixa">
    <h3>Todos os serviços</h3>
    ${listaCompleta()}
   </div>
 
-  <div class="blocos-servico">${SERVICOS.map(blocoServico).join("")}</div>
+  <p class="fecho-seccao">Mais exemplos de cada serviço no Instagram → <a href="${esc(IG)}" target="_blank" rel="noopener">@perfectfinish.pt</a></p>
  </div>
 </section>
 

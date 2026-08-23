@@ -304,3 +304,56 @@ cabeça contra quem tenha página dedicada. O `<title>` de `/` passou a
 «Tira Mossas, Películas e PPF em Leiria» e o de `/trabalhos/` cobre
 «Envelopamento» — é uma divisão deliberada entre as duas únicas páginas
 indexáveis que restam.
+
+
+---
+
+## Quarta volta — serviços só com imagens, e a capa em mosaico (23-08-2026)
+
+**Os serviços deixaram de ter texto.** O cliente foi claro: «não quero que me
+detalhes os serviços, quero só imagens, nada de especificações». Saíram as
+introduções, os três argumentos, os avisos e as 15 perguntas frequentes.
+Ficaram cinco cartões com fotografia e o nome, mais a lista dos 13 nomes.
+
+O texto **não foi apagado dos dados**: continua em `data/servicos/*.json` e
+continua editável no backoffice. O aviso legal das películas (limites de
+transmissão luminosa) não se perde por isto — vive em `/informacao-legal/`,
+que é onde a lei o quer.
+
+Carregar num cartão abre a galeria daquele serviço, com as fotografias dos
+trabalhos correspondentes. Fica-se na mesma página e vêem-se mais imagens.
+
+**O tira mossas não tem fotografia utilizável em todo o acervo** — e é o
+serviço que dá nome à casa. As três que existem estão contra a luz e a mossa
+não se lê a 414 px. Não se põe ali a fotografia de outro serviço: o cartão
+leva o escudo em marca de água e manda para o Instagram. Quando houver
+fotografia, basta preencher o campo no backoffice.
+
+**A capa voltou ao mosaico**, a pedido. Mas com duas correcções que só
+aparecem a medir:
+
+1. **O texto caía sobre as fotografias.** O painel escuro gravado acabava aos
+   46% da largura, e o `object-fit: cover` com `object-position` ao centro
+   recortava parte dele. Painel alargado para 58% e imagem encostada à
+   esquerda. Confirmado a **desenhar a imagem num canvas com a mesma
+   geometria do `cover` e a ler a luminância por baixo de cada bloco de
+   texto**: o `<h1>` dá 6,67:1 no pior ponto e o corpo 7,06:1. A régua de
+   provas dava 4,04:1 — abaixo do mínimo — e passou de `--osso-fraco` para
+   `--osso-meio`.
+2. **No telemóvel a imagem é uma FAIXA por baixo do texto, não um fundo.** Num
+   ecrã estreito o texto ocupa a largura toda e não há lado nenhum onde as
+   fotografias possam ficar à vista: ou se tapa a imagem com um véu (e volta a
+   queixa de que não se vê nada), ou se separa. Separou-se.
+   A versão de telemóvel passou a ser gerada **sem painel** — o esbatimento é
+   feito por CSS, e o painel gravado só escurecia a faixa, que é a parte que se
+   quer ver.
+
+**Armadilha do CSS que só a medição apanhou:** o espaço reservado para a faixa
+estava em `padding-block-end: 49%`, e **um `padding` em percentagem resolve
+contra a LARGURA, não a altura**. Reservava 191 px onde a faixa media 404, e a
+régua de provas acabava por cima da fotografia. Agora a altura da faixa e o
+espaço reservado usam a mesma variável, `--faixa: min(44svh, 24rem)`.
+
+**Navbar:** a Loja passou para depois dos Contactos, em pastilha de contorno
+dourado, com um filete a separá-la dos três links. Na página da Loja a
+pastilha fica dourada cheia.
