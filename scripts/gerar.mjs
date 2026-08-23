@@ -231,22 +231,21 @@ function rodape() {
      ${contacto("relogio", D.horario.map((h) => `${esc(h.dias)}: ${esc(h.horas)}`).join("<br>"))}
     </ul>
    </div>
+
+   <div>
+    <h4>Legal</h4>
+    <ul class="rodape__legais">
+     <li><a href="${u("/politica-de-privacidade/")}">Política de Privacidade</a></li>
+     <li><a href="${u("/politica-de-cookies/")}">Cookies</a></li>
+     <li><a href="${u("/informacao-legal/")}">Informação legal</a></li>
+     <li><a class="rodape__gestao" href="https://app.pagescms.org/renatovalente5/PerfectFinish" target="_blank" rel="noopener">Gestão</a></li>
+    </ul>
+   </div>
   </div>
 
   <div class="rodape__fundo">
-   <p class="rodape__legal">
-    <strong>${esc(D.marca.nome_completo)}</strong><br>
-    ${D.empresa.titular ? `${esc(D.empresa.titular)}, ${esc(D.empresa.forma)}<br>` : ""}
-    NIF ${esc(D.empresa.nif)} · ${esc(D.morada.rua)}, ${esc(D.morada.codigo_postal)} ${esc(D.morada.localidade)}
-   </p>
-   <ul class="rodape__ligacoes">
-    <li><a class="livro" href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer"><img src="${u("/assets/img/ui/livro-reclamacoes.svg")}" alt="Livro de Reclamações Eletrónico" width="132" height="42" loading="lazy"></a></li>
-    <li><a href="${u("/politica-de-privacidade/")}">Política de Privacidade</a></li>
-    <li><a href="${u("/politica-de-cookies/")}">Cookies</a></li>
-    <li><a href="${u("/informacao-legal/")}">Informação legal</a></li>
-    <li><a class="rodape__gestao" href="https://app.pagescms.org/renatovalente5/PerfectFinish" target="_blank" rel="noopener">Gestão</a></li>
-   </ul>
-   <p class="rodape__legal">© ${new Date().getFullYear()} ${esc(D.marca.nome)}. Informação prestada nos termos do artigo 10.º do Decreto-Lei n.º 7/2004.</p>
+   <a class="livro" href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer"><img src="${u("/assets/img/ui/livro-reclamacoes.svg")}" alt="Livro de Reclamações Eletrónico" width="132" height="42" loading="lazy"></a>
+   <p class="rodape__copyright">© ${new Date().getFullYear()} ${esc(D.marca.nome)}</p>
   </div>
  </div>
 </footer>`;
@@ -628,7 +627,7 @@ function inicio() {
  </div>
  <div class="caixa heroi__interior">
   <div class="heroi__texto">
-   <p class="sobrescrito">${esc(D.marca.reclamo)} · Leiria</p>
+   <p class="sobrescrito">${esc(D.marca.reclamo)}</p>
    <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
    <p class="heroi__sub">${esc(D.textos.heroi_sub)}</p>
    <div class="accoes">
@@ -707,7 +706,7 @@ ${blocoAvaliacoes({ claro: true })}
 
   return pagina({
     url: "/",
-    titulo: "Tira Mossas, Películas e PPF em Leiria | Perfect Finish",
+    titulo: "Studio de Customização Premium em Leiria | Perfect Finish",
     descricao: "Estúdio de customização em Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail. 4,9 ★ em 94 avaliações no Google.",
     corpo,
   });

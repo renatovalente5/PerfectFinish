@@ -605,7 +605,7 @@ content:
           - { name: nome, label: Nome curto, type: string }
           - { name: nome_completo, label: Nome completo, type: string }
           - { name: assinatura, label: Assinatura, type: string }
-          - { name: reclamo, label: Frase da marca, type: string }
+          - { name: reclamo, label: "Sobrescrito da capa", type: string, description: "A linha pequena e dourada acima do título, na página inicial." }
           - name: descricao
             label: Descrição do estúdio
             type: text

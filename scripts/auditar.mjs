@@ -59,6 +59,19 @@ const existe = new Set(ficheiros.map((f) => "/" + relative(SAIDA, f).split("/").
 const CNAME = existsSync(join(RAIZ, "CNAME"));
 const BASE = CNAME ? "" : "/PerfectFinish";
 
+const definicoes = JSON.parse(readFileSync(join(RAIZ, "data/definicoes.json"), "utf8"));
+
+/* Texto visível de uma página, sem marcação e com as entidades desfeitas.
+   Preciso para procurar valores dos dados dentro do HTML gerado: o gerador
+   escapa `&`, `<`, `>` e as aspas, e uma procura literal falharia por causa
+   disso — daria um erro de auditoria onde não há erro nenhum. */
+const textoDe = (html) => html
+  .replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ")
+  .replace(/<[^>]+>/g, " ")
+  .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+  .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ")
+  .replace(/\s+/g, " ");
+
 console.log(`A auditar ${paginas.length} páginas e ${ficheiros.length} ficheiros…\n`);
 
 /* ------------------------------------------------------------ por página */
@@ -153,7 +166,36 @@ for (const caminho of paginas) {
       falha(`${nome}: sem ligação para ${obrigatoria}`);
     }
   }
-  if (!html.includes("NIF")) falha(`${nome}: sem NIF no rodapé`);
+  /* A identificação do artigo 10.º do DL 7/2004 (nome, NIF, morada) deixou de
+     estar no rodapé de cada página e passou a viver em /informacao-legal/.
+     A lei exige que seja de acesso «fácil e direto», não que esteja repetida
+     em todos os rodapés — mas exige que ESTEJA. Portanto verifica-se o par:
+     esta página liga para lá, e o destino traz mesmo o NIF e a morada. */
+  if (!html.includes(`${BASE}/informacao-legal/`)) {
+    falha(`${nome}: sem ligação para a informação legal (artigo 10.º do DL 7/2004)`);
+  }
+
+  /* --- o destino da identificação legal ---------------------------------- */
+  if (nome === "/informacao-legal/index.html") {
+    const texto = textoDe(html);
+    /* Procura-se a FORMA e não o valor. Comparar o texto da página com
+       `definicoes.morada.rua` não vale nada: a página é gerada a partir desse
+       mesmo campo, portanto os dois lados mudam juntos e o teste nunca falha.
+       (Sabotei o campo para confirmar — e passou.) O que se perde de verdade é
+       o bloco de identificação sair do molde numa remodelação futura, e agora
+       que o rodapé já não o repete ninguém daria por isso. Isso vê-se assim. */
+    const marcas = [
+      ["o NIF", /\bNIF\b/, /\b\d{3}\s?\d{3}\s?\d{3}\b/],
+      ["o código postal", null, /\b\d{4}-\d{3}\b/],
+      ["a denominação", /Perfect Finish/, null],
+    ];
+    for (const [rotulo, rotuloRe, formaRe] of marcas) {
+      if (rotuloRe && !rotuloRe.test(texto)) falha(`${nome}: sem ${rotulo}`);
+      if (formaRe && !formaRe.test(texto)) falha(`${nome}: sem ${rotulo} (nada com essa forma na página)`);
+    }
+    const nifDados = String(definicoes.empresa?.nif ?? "").replace(/\D/g, "");
+    if (nifDados.length !== 9) falha(`data/definicoes.json: NIF inválido («${definicoes.empresa?.nif ?? ""}»)`);
+  }
 
   /* --- plataforma ODR: revogada, não pode aparecer ---------------------- */
   if (/ec\.europa\.eu\/consumers\/odr|webgate\.ec\.europa\.eu\/odr/.test(html)) {
@@ -225,7 +267,6 @@ for (const obrigatorio of ["/.nojekyll", "/robots.txt", "/sitemap.xml", "/site.w
 }
 
 /* -------------------------------------------------------------- dados */
-const definicoes = JSON.parse(readFileSync(join(RAIZ, "data/definicoes.json"), "utf8"));
 if (!definicoes.contactos.email) {
   aviso("data/definicoes.json: sem e-mail. É obrigatório pelo artigo 10.º do DL 7/2004 — preencher assim que existir.");
 }

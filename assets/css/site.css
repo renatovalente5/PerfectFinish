@@ -96,8 +96,14 @@
 html {
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;
-  /* Compensa o cabeçalho fixo quando se salta para uma âncora. */
-  scroll-padding-top: calc(var(--cabecalho) + var(--e-5));
+  /* Compensa o cabeçalho fixo quando se salta para uma âncora.
+     ARMADILHA: aqui não se pode usar `var(--cabecalho)`. Essa variável é
+     redefinida em `.cabecalho[data-encolhido="sim"]`, e uma propriedade
+     personalizada só vale para o elemento e os seus descendentes — o `html`
+     nunca vê o novo valor. Ficava com a altura do cabeçalho GRANDE (136 px)
+     enquanto o cabeçalho real, já encolhido no fim do salto, tem 74 px.
+     Resultado: parava 86 px acima da secção. Medido, não suposto. */
+  scroll-padding-top: calc(var(--cabecalho-baixo) + var(--e-4));
 }
 
 body {
@@ -1099,7 +1105,15 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: grid; gap: var(--e-7);
   padding-bottom: var(--e-7);
 }
-@media (min-width: 48rem) { .rodape__topo { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--e-8); } }
+/* Quatro colunas só a partir de 64rem: a 768 px cada uma ficava com 170 px e
+   «Política de Privacidade» quebrava em três linhas. */
+@media (min-width: 48rem) { .rodape__topo { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-8) var(--e-7); } }
+@media (min-width: 64rem) {
+  .rodape__topo {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, .9fr) minmax(0, 1.15fr) minmax(0, .9fr);
+    gap: var(--e-7);
+  }
+}
 
 .rodape__marca img { block-size: 6rem; inline-size: auto; margin-bottom: var(--e-5); }
 .rodape__marca p { color: var(--osso-fraco); max-width: 34ch; }
@@ -1127,21 +1141,24 @@ body[data-menu="aberto"] { overflow: hidden; }
 .redes a:hover { border-color: var(--ouro); color: var(--ouro-alto); translate: 0 -2px; }
 .redes svg { inline-size: 1.05rem; block-size: 1.05rem; }
 
+/* Só o Livro de Reclamações e o ©. A identificação legal (nome, NIF, morada)
+   passou para /informacao-legal/, ligada em todas as páginas — é o que o
+   artigo 10.º do DL 7/2004 exige («fácil e direta»), sem repetir o bloco no
+   fundo de cada página. O distintivo do Livro fica, e fica na página inicial,
+   porque isso é uma exigência à parte (DL 156/2005, art. 5.º-B/2). */
 .rodape__fundo {
   border-top: 1px solid var(--filete-fraco); padding-top: var(--e-5);
-  display: grid; gap: var(--e-4);
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: var(--e-4) var(--e-5);
 }
-.rodape__legal { color: var(--osso-fraco); font-size: var(--t--2); line-height: 1.7; }
-.rodape__legal strong { color: var(--osso-meio); font-weight: 500; }
+.rodape__copyright { color: var(--osso-fraco); font-size: var(--t--2); }
 
-/* `.rodape ul` acima declara `display: grid`, e como tem a mesma
-   especificidade mais um elemento ganhava a esta regra — as ligações legais
-   saíam empilhadas, uma por linha. Daí o selector repetir o `ul`. */
-.rodape ul.rodape__ligacoes {
-  display: flex; flex-wrap: wrap; gap: var(--e-3) var(--e-5);
-  align-items: center; list-style: none;
-}
-.rodape__ligacoes a { font-size: var(--t--2); }
+
+/* Coluna legal. Um degrau abaixo dos restantes textos do rodapé: são
+   ligações de serviço, não de navegação, e não devem competir com os
+   serviços nem com os contactos. */
+.rodape__legais a { font-size: var(--t--2); }
+
 /* A ligação para o backoffice fica aqui, discreta, a seguir ao Livro de
    Reclamações — como foi pedido. Discreta, mas encontrável: abaixo de .7 de
    opacidade deixa de se ver de todo num ecrã com brilho baixo. */
