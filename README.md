@@ -87,7 +87,40 @@ raiz — o gerador detecta e passa a gerar para a raiz do domínio.
 **Sem `npm install`.** O gerador é Node puro e o GitHub Actions não instala
 nada. É de propósito: é o que faz isto continuar a publicar daqui a dois anos.
 
+**O `.pages.yml` falha em silêncio.** O Pages CMS valida o ficheiro com Zod
+**apenas no editor de configuração**; o caminho de execução (`config-store.ts`)
+não chama essa validação. Um tipo de campo inventado ou um campo esquecido
+carrega meio a funcionar, sem erro nenhum — e o cliente não tem como perceber.
+Por isso `scripts/auditar.mjs` verifica duas coisas e trava a publicação:
+todos os `type:` existem mesmo, e todo o campo presente em `data/` é editável
+no backoffice.
+
+Para uma validação completa contra o schema verdadeiro (feita a 23-08-2026
+contra a versão 2.1.8, resultado **válido**):
+
+```bash
+git clone --depth 1 https://github.com/hunvreus/pagescms.git /tmp/pagescms
+mkdir /tmp/valida && cd /tmp/valida && npm init -y && npm install zod@3.25.76 js-yaml
+cp /tmp/pagescms/lib/config-schema.ts .
+sed -i '' 's|from "@/fields/registry"|from "./registry.ts"|' config-schema.ts
+ls /tmp/pagescms/fields/core | node -e 'let t=[];process.stdin.on("data",d=>t.push(d)).on("end",()=>require("fs").writeFileSync("registry.ts",`export const fieldTypes = new Set(${JSON.stringify(t.join("").trim().split("\n"))});`))'
+# depois: um script que faça ConfigSchema.safeParse(yaml.load(...))
+```
+
 ---
+
+## Primeiro acesso ao backoffice
+
+O <https://app.pagescms.org> pede uma autorização do GitHub (OAuth) na
+primeira entrada. **Só o dono da conta a pode dar** — não é algo que se faça
+por ele. Passos:
+
+1. Entrar em <https://app.pagescms.org> e escolher «Sign in with GitHub».
+2. Autorizar o acesso ao repositório `PerfectFinish` (só a esse).
+3. Abrir <https://app.pagescms.org/renatovalente5/PerfectFinish>.
+
+Depois disso o cliente pode ser convidado como colaborador e passa a entrar
+com o email dele.
 
 ## Por preencher (depende do cliente)
 

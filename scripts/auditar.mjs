@@ -208,6 +208,55 @@ if (!definicoes.empresa.titular) {
   aviso("data/definicoes.json: sem o nome civil do titular. Também é exigido pelo artigo 10.º do DL 7/2004.");
 }
 
+/* ------------------------------------------------------------- backoffice */
+/* O `.pages.yml` é validado por Zod no editor do Pages CMS, mas o caminho de
+   execução NÃO chama essa validação: um ficheiro com um tipo inventado ou um
+   campo a menos carrega em silêncio, meio a funcionar. Como isso não dá erro
+   nenhum ao cliente, verifica-se aqui.
+
+   Não se faz o parse do YAML (não há dependências): fazem-se duas
+   verificações de texto que apanham os erros que realmente acontecem. */
+const backoffice = readFileSync(join(RAIZ, ".pages.yml"), "utf8");
+
+// 1. Todos os tipos de campo têm de existir mesmo no Pages CMS 2.x.
+const TIPOS = new Set(["boolean", "code", "date", "file", "image", "number",
+  "reference", "rich-text", "select", "string", "text", "uuid",
+  "object", "block", "collection", "group"]);
+for (const [, tipo] of backoffice.matchAll(/^\s*-?\s*(?:\{\s*)?.*?\btype:\s*([a-z-]+)/gm)) {
+  if (!TIPOS.has(tipo)) falha(`.pages.yml: tipo de campo inexistente → «${tipo}»`);
+}
+
+// 2. Todo o campo que existe nos dados tem de ser editável pelo cliente.
+//    Se não for, ele vê o conteúdo no site e não tem como o mudar.
+const nomesNoBackoffice = new Set(
+  [...backoffice.matchAll(/\bname:\s*([A-Za-z0-9_-]+)/g)].map((m) => m[1])
+);
+const paraVerificar = [
+  ["data/definicoes.json", null],
+  ["data/pares.json", null],
+  ["data/servicos", "*"],
+  ["data/trabalhos", "*"],
+  ["data/loja", "*"],
+];
+for (const [caminho, colecao] of paraVerificar) {
+  const ficheiros = colecao
+    ? readdirSync(join(RAIZ, caminho)).filter((f) => f.endsWith(".json")).map((f) => join(caminho, f))
+    : [caminho];
+  const chaves = new Set();
+  const recolhe = (v) => {
+    if (Array.isArray(v)) v.forEach(recolhe);
+    else if (v && typeof v === "object") {
+      for (const [k, x] of Object.entries(v)) { chaves.add(k); recolhe(x); }
+    }
+  };
+  for (const f of ficheiros) recolhe(JSON.parse(readFileSync(join(RAIZ, f), "utf8")));
+  for (const chave of chaves) {
+    if (!nomesNoBackoffice.has(chave)) {
+      falha(`.pages.yml: o campo «${chave}» existe em ${caminho} mas o cliente não o pode editar`);
+    }
+  }
+}
+
 /* ------------------------------------------------------------- relatório */
 for (const a of avisos) console.log(`  aviso   ${a}`);
 if (avisos.length) console.log("");
