@@ -1,0 +1,521 @@
+# ============================================================================
+# Backoffice do Perfect Finish Studio — configuração do Pages CMS
+# (pagescms.org, versão 2.x — repositório hunvreus/pagescms)
+#
+# O cliente entra em app.pagescms.org, faz o que precisa e grava. Cada gravação
+# escreve no repositório e o site volta a ser publicado sozinho em 1 a 3
+# minutos. Não precisa de saber o que é um repositório.
+#
+# TRÊS COISAS QUE NÃO SE MEXEM SEM PENSAR:
+#
+#  1. `settings.content.merge: true`. O valor por omissão é `false`, e com
+#     `false` cada gravação reescreve o ficheiro só a partir dos campos aqui
+#     declarados — tudo o que não estiver mapeado é APAGADO em silêncio.
+#  2. Nas listas de opções a chave é `name`, não `value`. Com `value` o
+#     backoffice mostra a etiqueta certa e grava o valor errado.
+#  3. Os campos numéricos precisam de `step` explícito. Sem ele o passo é 1 e
+#     o formulário recusa 79,90.
+#
+# O carregamento de fotografias falha acima de ~3,3 MB por ficheiro (limite do
+# alojamento do Pages CMS) e ficheiros HEIC do iPhone não são aceites — está
+# escrito nas ajudas dos campos onde isso interessa.
+# ============================================================================
+
+settings:
+  hide: true            # tira o separador de definições da vista do cliente
+  content:
+    merge: true         # ver nota 1 acima
+  commit:
+    identity: user
+    templates:
+      create: 'Adiciona {filename} (backoffice)'
+      update: 'Atualiza {filename} (backoffice)'
+      delete: 'Remove {filename} (backoffice)'
+
+media:
+  - name: obras
+    label: Fotografias de trabalhos
+    input: assets/img/obras
+    output: assets/img/obras
+    extensions: [jpg, jpeg, png, webp]
+    categories: [image]
+  - name: loja
+    label: Fotografias de produtos
+    input: assets/img/loja
+    output: assets/img/loja
+    extensions: [jpg, jpeg, png, webp]
+    categories: [image]
+
+content:
+  # ══════════════════════════════════════════════════════ 1. TRABALHOS
+  # Primeiro na lista porque é o que se mexe todas as semanas.
+  - name: trabalhos
+    label: Trabalhos
+    type: collection
+    path: data/trabalhos
+    filename: '{fields.slug}.json'
+    format: json
+    view:
+      fields: [veiculo, servico, destaque, publicado, ordem]
+      primary: veiculo
+      sort: [ordem, veiculo]
+    fields:
+      - name: veiculo
+        label: Veículo
+        type: string
+        required: true
+        description: 'Marca e modelo, como quer que apareça. Exemplo: Porsche 911 Targa 4 GTS.'
+
+      - name: servico
+        label: Serviço
+        type: string
+        required: true
+        description: >-
+          A etiqueta dourada que aparece por cima do nome do carro.
+          Exemplos: Envelopamento, Película solar, Correção de pintura,
+          Pintura de travão.
+
+      - name: pagina
+        label: Aparece na página de
+        type: select
+        description: >-
+          Além da página Trabalhos, este trabalho também aparece na página do
+          serviço que escolher aqui.
+        options:
+          values:
+            - { name: tira-mossas, label: Tira Mossas }
+            - { name: peliculas-solares, label: Películas Solares }
+            - { name: ppf, label: PPF }
+            - { name: envelopamento, label: Envelopamento }
+            - { name: car-detailing, label: Car Detailing }
+
+      - name: fotos
+        label: Fotografias
+        type: image
+        options:
+          media: obras
+          multiple:
+            max: 8
+        description: >-
+          A PRIMEIRA é a que aparece no cartão da galeria — escolha a melhor,
+          com o carro inteiro e sem pessoas. Arraste para reordenar.
+          Cada ficheiro tem de ter MENOS DE 3 MB, senão o carregamento falha
+          com «Failed to upload file». Fotografias de iPhone em HEIC não são
+          aceites: no telemóvel, em Definições › Câmara › Formatos, escolha
+          «Mais compatível», ou envie-as primeiro por WhatsApp para si próprio
+          (o WhatsApp converte-as para JPG).
+          IMPORTANTE: tape as matrículas antes de carregar, ou avise-nos para
+          o fazermos. É uma exigência legal de proteção de dados.
+
+      - name: legenda
+        label: Legenda
+        type: text
+        description: >-
+          Duas ou três frases sobre o que foi feito. Aparece na página do
+          serviço. Escreva com calma — é o que distingue uma galeria de um
+          álbum de fotografias.
+
+      - name: destaque
+        label: Mostrar na página inicial
+        type: boolean
+        default: false
+        description: 'Seis a oito trabalhos em destaque é o número que fica bem.'
+
+      - name: publicado
+        label: Publicado
+        type: boolean
+        default: true
+        description: >-
+          Desligue para tirar do site sem apagar. Volta a aparecer quando
+          ligar outra vez.
+
+      - name: ordem
+        label: Ordem
+        type: number
+        default: 50
+        options: { step: 1, min: 1 }
+        description: 'Número mais baixo aparece primeiro. Deixe 50 se for indiferente.'
+
+      - name: slug
+        label: Referência (nome do ficheiro)
+        type: string
+        required: true
+        pattern:
+          regex: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          message: 'Só letras minúsculas sem acentos, números e hífens.'
+        description: >-
+          Só letras minúsculas, números e hífens. Exemplo: porsche-911-targa.
+          Serve para identificar o trabalho — depois de criado, não mude.
+
+  # ══════════════════════════════════════════════════════ 2. ANTES E DEPOIS
+  - name: pares
+    label: Antes e depois
+    type: file
+    path: data/pares.json
+    format: json
+    operations: { delete: false }
+    fields:
+      - name: pares
+        label: Comparadores
+        type: object
+        list:
+          collapsible: true
+          min: 1
+          max: 8
+        description: >-
+          Cada item é um comparador que o visitante arrasta para ver a
+          diferença. Aparecem na página inicial, na de Trabalhos e na página
+          do serviço correspondente.
+          O par só resulta bem se as duas fotografias forem do MESMO ângulo e
+          com a MESMA distância — se uma estiver mais perto, o carro parece
+          saltar quando se arrasta.
+        fields:
+          - { name: veiculo, label: Veículo, type: string, required: true }
+          - { name: servico, label: Serviço, type: string, required: true }
+          - name: antes
+            label: Fotografia ANTES
+            type: image
+            options: { media: obras }
+            required: true
+          - name: depois
+            label: Fotografia DEPOIS
+            type: image
+            options: { media: obras }
+            required: true
+          - name: legenda
+            label: Legenda
+            type: text
+            description: 'Uma frase sobre o que mudou.'
+          - name: alt_antes
+            label: Descrição da fotografia «antes»
+            type: string
+            description: >-
+              Para quem não vê a imagem (leitores de ecrã) e para o Google.
+              Descreva o que lá está. Exemplo: «Mercedes CLA branco de fábrica,
+              antes do envelopamento».
+          - name: alt_depois
+            label: Descrição da fotografia «depois»
+            type: string
+          - name: slug
+            label: Referência
+            type: string
+            pattern:
+              regex: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+              message: 'Só letras minúsculas sem acentos, números e hífens.'
+          - name: ordem
+            label: Ordem
+            type: number
+            default: 50
+            options: { step: 1, min: 1 }
+
+  # ══════════════════════════════════════════════════════ 3. LOJA
+  - name: loja
+    label: Loja
+    type: collection
+    path: data/loja
+    filename: '{fields.slug}.json'
+    format: json
+    view:
+      fields: [nome, familia, preco, publicado, ordem]
+      primary: nome
+      sort: [ordem, nome]
+    fields:
+      - { name: nome, label: Nome do produto, type: string, required: true }
+      - name: familia
+        label: Categoria
+        type: select
+        description: 'Aparece em dourado, por cima do nome.'
+        options:
+          values:
+            - { name: Lavagem, label: Lavagem }
+            - { name: Preparação, label: Preparação }
+            - { name: Proteção, label: Proteção }
+            - { name: Manutenção, label: Manutenção }
+            - { name: Rodas, label: Rodas }
+            - { name: Interior, label: Interior }
+            - { name: Acessórios, label: Acessórios }
+      - name: descricao
+        label: Descrição
+        type: text
+        description: 'Uma ou duas frases: o que faz e quando se usa.'
+      - name: formato
+        label: Formato
+        type: string
+        description: 'Exemplo: 1 L, 500 ml, 200 g. Aparece por baixo do preço.'
+      - name: preco
+        label: Preço em euros
+        type: number
+        options: { step: 0.01, min: 0 }
+        description: >-
+          Só o número, com vírgula ou ponto para os cêntimos. Exemplo: 14.90.
+          Por lei, tem de ser o preço FINAL com IVA incluído.
+          DEIXE VAZIO para o site mostrar «Sob consulta» — é o que está agora
+          em todos os produtos.
+      - name: forma
+        label: Forma da embalagem (imagem desenhada)
+        type: select
+        default: garrafa
+        description: >-
+          Enquanto não houver fotografia real, o site desenha a embalagem.
+          Escolha a forma mais parecida. Se carregar uma fotografia no campo
+          abaixo, esta opção deixa de ter efeito.
+        options:
+          values:
+            - { name: garrafa, label: Garrafa }
+            - { name: spray, label: Pulverizador }
+            - { name: boiao, label: Boião }
+            - { name: pano, label: Pano ou luva }
+      - name: foto
+        label: Fotografia do produto
+        type: image
+        options: { media: loja }
+        description: >-
+          Opcional. Se puser uma fotografia, substitui a embalagem desenhada.
+          Melhor resultado: produto ao centro, fundo escuro, formato quadrado.
+      - { name: publicado, label: Publicado, type: boolean, default: true }
+      - name: ordem
+        label: Ordem
+        type: number
+        default: 50
+        options: { step: 1, min: 1 }
+      - name: slug
+        label: Referência (nome do ficheiro)
+        type: string
+        required: true
+        pattern:
+          regex: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          message: 'Só letras minúsculas sem acentos, números e hífens.'
+
+  # ══════════════════════════════════════════════════════ 4. SERVIÇOS
+  # Mexe-se pouco, e mexer aqui mexe no SEO. Fica depois da loja de propósito.
+  - name: servicos
+    label: Serviços
+    type: collection
+    path: data/servicos
+    filename: '{fields.slug}.json'
+    format: json
+    view:
+      fields: [nome, ordem]
+      primary: nome
+      sort: [ordem]
+    fields:
+      - { name: nome, label: Nome curto, type: string, required: true }
+      - name: nome_longo
+        label: Nome completo
+        type: string
+        required: true
+        description: 'O título da página. Exemplo: Películas solares e vidros escurecidos.'
+      - name: alt
+        label: Outro nome por que é conhecido
+        type: string
+        description: >-
+          Aparece por cima do título, em maiúsculas douradas, e ajuda quem
+          procura por outro nome. Exemplo: Martelinho de ouro.
+      - name: resumo
+        label: Resumo
+        type: string
+        required: true
+        description: 'Uma frase. Aparece na lista de serviços da página inicial.'
+      - name: intro
+        label: Texto de abertura
+        type: text
+        required: true
+        description: 'Duas ou três frases, no início da página do serviço.'
+      - name: imagem
+        label: Fotografia do serviço
+        type: image
+        options: { media: obras }
+        description: 'Aparece ao passar o rato na lista de serviços, no computador.'
+      - name: titulo_seo
+        label: Título no Google
+        type: string
+        description: >-
+          O que aparece como título azul no Google. Até 60 caracteres, e deve
+          incluir o serviço e «Leiria».
+      - name: descricao_seo
+        label: Descrição no Google
+        type: text
+        description: 'O texto cinzento por baixo do título no Google. Até 155 caracteres.'
+      - name: ordem
+        label: Ordem
+        type: number
+        default: 50
+        options: { step: 1, min: 1 }
+      - name: slug
+        label: Endereço da página
+        type: string
+        required: true
+        pattern:
+          regex: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          message: 'Só letras minúsculas sem acentos, números e hífens.'
+        description: >-
+          É o fim do endereço da página. DEPOIS DE PUBLICADO NÃO MUDE — quem
+          tiver o link guardado deixa de o conseguir abrir e o Google perde a
+          página.
+
+  # ══════════════════════════════════════════════════════ 5. DEFINIÇÕES
+  - name: definicoes
+    label: Dados do estúdio
+    type: file
+    path: data/definicoes.json
+    format: json
+    operations: { delete: false }
+    fields:
+      - name: contactos
+        label: Contactos
+        type: object
+        description: 'Mudar aqui muda no cabeçalho, no rodapé e em todas as páginas.'
+        fields:
+          - name: telefone
+            label: Telefone (só dígitos)
+            type: string
+            required: true
+            pattern:
+              regex: '^[0-9]{9}$'
+              message: 'Nove dígitos, sem espaços nem indicativo.'
+            description: 'Exemplo: 968828510. É o que fica no botão de ligar.'
+          - name: telefone_texto
+            label: Telefone (como aparece escrito)
+            type: string
+            required: true
+            description: 'Exemplo: 968 828 510'
+          - name: whatsapp
+            label: WhatsApp (351 + número)
+            type: string
+            required: true
+            description: 'Exemplo: 351968828510'
+          - name: email
+            label: E-mail
+            type: string
+            description: >-
+              OBRIGATÓRIO POR LEI (artigo 10.º do Decreto-Lei n.º 7/2004). O
+              WhatsApp não substitui um endereço de e-mail. Enquanto estiver
+              vazio, o site não mostra a linha do e-mail, mas a obrigação
+              mantém-se. Preencha assim que tiver um.
+          - { name: instagram, label: Instagram (endereço completo), type: string }
+          - { name: facebook, label: Facebook (endereço completo), type: string }
+
+      - name: morada
+        label: Morada
+        type: object
+        fields:
+          - { name: rua, label: Rua e número, type: string }
+          - { name: codigo_postal, label: Código postal, type: string }
+          - { name: localidade, label: Localidade, type: string }
+          - { name: distrito, label: Distrito, type: string }
+          - { name: pais, label: País, type: string }
+          - name: mapa
+            label: Link do Google Maps
+            type: string
+            description: 'O link curto do perfil, do botão «Partilhar» no Google Maps.'
+          - name: latitude
+            label: Latitude
+            type: number
+            options: { step: 0.0000001 }
+            description: 'Copiado do Google Maps. Serve para o Google saber onde fica o estúdio.'
+          - name: longitude
+            label: Longitude
+            type: number
+            options: { step: 0.0000001 }
+
+      - name: horario
+        label: Horário
+        type: object
+        list:
+          collapsible: true
+        description: 'O site marca sozinho a linha do dia de hoje.'
+        fields:
+          - { name: dias, label: Dias, type: string, description: 'Exemplo: Segunda a sexta' }
+          - { name: horas, label: Horas, type: string, description: 'Exemplo: 09:00 – 18:30, ou Encerrado' }
+          - name: indices
+            label: Números dos dias
+            type: string
+            description: >-
+              Para o site saber que dias são estes. Domingo=0, segunda=1,
+              terça=2, quarta=3, quinta=4, sexta=5, sábado=6.
+              Separados por vírgula. Exemplo: 1,2,3,4,5
+
+      - name: google
+        label: Google e avaliações
+        type: object
+        fields:
+          - name: nota
+            label: Classificação
+            type: number
+            options: { step: 0.1, min: 0 }
+            description: >-
+              A média que aparece no perfil do Google. Exemplo: 4.9.
+              Actualize de vez em quando, ou ligue as avaliações em directo
+              (ver o campo do endereço, mais abaixo).
+          - name: total
+            label: Número de avaliações
+            type: number
+            options: { step: 1, min: 0 }
+          - name: perfil
+            label: Link do perfil no Google
+            type: string
+            description: 'Para onde vai o botão «Ler no Google».'
+          - name: incorporar
+            label: Link do mapa para incorporar
+            type: string
+            description: 'O endereço do mapa. Só é carregado se o visitante autorizar.'
+          - name: endpoint
+            label: Endereço das avaliações em directo
+            type: string
+            description: >-
+              AVANÇADO — deixe vazio se não souber o que é. Quando o
+              Cloudflare Worker estiver publicado (ver a pasta `worker/` do
+              repositório), ponha aqui o endereço e a classificação passa a
+              ser buscada ao Google em cada visita, em vez de ser a que está
+              escrita acima.
+
+      - name: empresa
+        label: Dados legais
+        type: object
+        description: >-
+          Aparecem no rodapé e na página de informação legal, por imposição do
+          artigo 10.º do Decreto-Lei n.º 7/2004.
+        fields:
+          - name: titular
+            label: Nome civil completo do titular
+            type: string
+            description: >-
+              OBRIGATÓRIO POR LEI. O nome comercial não chega — tem de constar
+              o nome da pessoa responsável pela actividade. Enquanto estiver
+              vazio, o site mostra um aviso na página de informação legal.
+          - { name: forma, label: Forma jurídica, type: string }
+          - { name: nif, label: NIF, type: string }
+          - name: registo
+            label: Número de registo comercial
+            type: string
+            description: >-
+              Só se existir firma registada no RNPC. Um empresário em nome
+              individual sem firma registada não tem este número — deixe vazio.
+
+      - name: marca
+        label: Nome e descrição
+        type: object
+        fields:
+          - { name: nome, label: Nome curto, type: string }
+          - { name: nome_completo, label: Nome completo, type: string }
+          - { name: assinatura, label: Assinatura, type: string }
+          - { name: reclamo, label: Frase da marca, type: string }
+          - name: descricao
+            label: Descrição do estúdio
+            type: text
+            description: 'Uma frase. Aparece no rodapé e nas partilhas em redes sociais.'
+
+      - name: textos
+        label: Textos da página inicial
+        type: object
+        fields:
+          - name: heroi_linha1
+            label: Título — primeira linha
+            type: string
+            description: 'Uma palavra fica melhor. Exemplo: Proteção'
+          - name: heroi_linha2
+            label: Título — segunda linha
+            type: string
+            description: 'Exemplo: absoluta'
+          - { name: heroi_texto, label: Texto por baixo do título, type: text }
+          - { name: sobre, label: Sobre o estúdio, type: text }

@@ -1,0 +1,52 @@
+{
+  "marca": {
+    "nome": "Perfect Finish Studio",
+    "nome_completo": "Perfect Finish — Tira Mossas, Películas, Car Detail e Lavagem",
+    "assinatura": "by Galhardo",
+    "reclamo": "Estúdio de customização premium",
+    "descricao": "Estúdio de customização automóvel em Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail."
+  },
+  "contactos": {
+    "telefone": "968828510",
+    "telefone_texto": "968 828 510",
+    "whatsapp": "351968828510",
+    "email": "",
+    "instagram": "https://www.instagram.com/perfectfinish.pt",
+    "facebook": "https://web.facebook.com/p/Perfect-Finish-100092713274954"
+  },
+  "morada": {
+    "rua": "Rua do Tomar 95, Cardosos",
+    "codigo_postal": "2420-125",
+    "localidade": "Leiria",
+    "distrito": "Leiria",
+    "pais": "Portugal",
+    "mapa": "https://maps.app.goo.gl/EFuMtn7EsXTcR58v8",
+    "latitude": 39.7165807,
+    "longitude": -8.7040658
+  },
+  "horario": [
+    { "dias": "Segunda a sexta", "horas": "09:00 – 18:30", "indices": "1,2,3,4,5" },
+    { "dias": "Sábado", "horas": "09:00 – 13:00", "indices": "6" },
+    { "dias": "Domingo", "horas": "Encerrado", "indices": "0" }
+  ],
+  "google": {
+    "perfil": "https://www.google.com/maps?cid=16767504117327010045",
+    "avaliacoes_url": "https://search.google.com/local/reviews?placeid=",
+    "nota": 4.9,
+    "total": 94,
+    "endpoint": "",
+    "incorporar": "https://www.google.com/maps?q=39.7165807,-8.7040658&z=16&output=embed"
+  },
+  "empresa": {
+    "titular": "",
+    "forma": "Empresário em Nome Individual",
+    "nif": "316 614 610",
+    "registo": ""
+  },
+  "textos": {
+    "heroi_linha1": "Proteção",
+    "heroi_linha2": "absoluta",
+    "heroi_texto": "Tira mossas sem tocar na pintura, películas, PPF, envelopamento e car detail. Em Leiria, para quem trata o carro como se trata um relógio.",
+    "sobre": "Somos um estúdio jovem e dedicado inteiramente à estética automóvel. Trabalhamos carro a carro, com o tempo que cada acabamento exige — do utilitário do dia-a-dia ao desportivo que só sai ao domingo."
+  }
+}

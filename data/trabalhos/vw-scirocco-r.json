@@ -1,0 +1,16 @@
+{
+ "slug": "vw-scirocco-r",
+ "veiculo": "VW Scirocco R",
+ "servico": "Envelopamento",
+ "pagina": "envelopamento",
+ "ordem": 13,
+ "legenda": "Metalizado que passa do bordô ao violeta conforme a luz. Desmontagem completa antes da aplicação.",
+ "fotos": [
+  "vw-scirocco-r-1",
+  "vw-scirocco-r-2",
+  "vw-scirocco-r-3",
+  "vw-scirocco-r-4"
+ ],
+ "destaque": false,
+ "publicado": true
+}

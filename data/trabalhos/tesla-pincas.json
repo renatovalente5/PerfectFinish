@@ -1,0 +1,14 @@
+{
+ "slug": "tesla-pincas",
+ "veiculo": "Tesla — pinças de travão",
+ "servico": "Pintura de travão",
+ "pagina": "car-detailing",
+ "ordem": 17,
+ "legenda": "Pinças em vermelho de alta temperatura, com o lettering destacado à mão.",
+ "fotos": [
+  "tesla-pincas-1",
+  "tesla-pincas-2"
+ ],
+ "destaque": true,
+ "publicado": true
+}

@@ -1,0 +1,59 @@
+{
+ "slug": "car-detailing",
+ "ordem": 5,
+ "nome": "Car Detailing",
+ "nome_longo": "Car detail, polimento e correção de pintura",
+ "alt": "Detalhe automóvel",
+ "icone": "polidora",
+ "resumo": "Correção de pintura, polimento de faróis, jantes, pinças e higienização de interiores.",
+ "titulo_seo": "Car Detailing e Polimento em Leiria | Perfect Finish Studio",
+ "descricao_seo": "Correção de pintura, polimento, polimento de faróis, pintura de pinças de travão, reparação de jantes e higienização de interiores em Leiria.",
+ "intro": "Detalhe é tempo. A pintura descontamina-se, corrige-se por fases sob luz de inspeção e só depois se protege. O resultado mede-se pela ausência de defeitos, não pelo brilho da fotografia.",
+ "porque": [
+  [
+   "Correção por fases",
+   "Primeiro tira-se o defeito, depois refina-se. Saltar a segunda fase deixa hologramas que aparecem ao sol."
+  ],
+  [
+   "Luz de inspeção",
+   "O que não se vê na garagem vê-se sob luz rasante. É assim que se trabalha aqui."
+  ],
+  [
+   "O carro inteiro",
+   "Faróis, jantes, pinças de travão, plásticos e interior. Não vale a pena corrigir a pintura e deixar o resto por fazer."
+  ]
+ ],
+ "lista": [
+  "Polimento e correção de pintura",
+  "Polimento de faróis",
+  "Pintura de pinças de travão",
+  "Reparação e pintura de jantes",
+  "Higienização de interiores",
+  "Decoração de interiores",
+  "Sensores de estacionamento"
+ ],
+ "imagem": "audi-q4-etron-1",
+ "obras": [
+  "ferrari-roma",
+  "rolls-royce-wraith",
+  "porsche-911-992",
+  "porsche-911-targa-gts",
+  "audi-q4-etron",
+  "tesla-pincas",
+  "smart-fortwo"
+ ],
+ "faq": [
+  [
+   "Qual a diferença entre polimento e correção?",
+   "Polimento é o gesto; correção é o objectivo. Uma correção a sério faz-se por fases e mede-se com luz de inspeção — não é passar a máquina uma vez."
+  ],
+  [
+   "Vale a pena num carro usado?",
+   "Muitas vezes é o que mais muda o carro por menos dinheiro. Uma pintura corrigida parece nova; uma pintura com riscos circulares parece velha mesmo num carro recente."
+  ],
+  [
+   "Fazem só lavagem?",
+   "Fazemos, mas não é o nosso trabalho principal. O que fazemos melhor é o que exige tempo e mão."
+  ]
+ ]
+}

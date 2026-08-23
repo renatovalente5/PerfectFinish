@@ -1,0 +1,11 @@
+name = "perfectfinish-avaliacoes"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Os segredos NÃO vão aqui — põem-se com:
+#   wrangler secret put GOOGLE_API_KEY
+#   wrangler secret put PLACE_ID
+# Assim não entram no repositório, que é público.
+
+[observability]
+enabled = true

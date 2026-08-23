@@ -1,0 +1,1017 @@
+/* =========================================================================
+   PERFECT FINISH STUDIO
+   Folha única. É embutida no <head> pelo gerador — a ~20 kB compensa mais
+   embutir do que pagar uma ida ao servidor antes de pintar seja o que for.
+
+   Sumário
+     01 ... fichas (cor, tipo, espaço)
+     02 ... base e reposição
+     03 ... utilitários de composição
+     04 ... ouro (gradientes, filetes, grão)
+     05 ... cabeçalho e menu
+     06 ... herói
+     07 ... índice de serviços
+     08 ... comparador antes/depois
+     09 ... trabalhos
+     10 ... avaliações
+     11 ... faixa clara
+     12 ... loja
+     13 ... contactos e mapa
+     14 ... rodapé
+     15 ... aviso de cookies
+     16 ... páginas de texto
+     17 ... movimento
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- 01 fichas */
+:root {
+  /* OURO — medido nos píxeis interiores do logótipo do cliente. As bordas
+     suavizadas do PDF enganam a leitura e puxam tudo para cima; o #D4B756 que
+     salta à vista é só o brilho máximo e ocupa 6,6% da área dourada. O corpo
+     do logótipo é o --ouro. */
+  --ouro-sombra: #7A571D;
+  --ouro-fundo:  #8B6926;
+  --ouro:        #AC8A39;   /* 5,47:1 sobre --tinta → AA */
+  --ouro-alto:   #CBAD4F;   /* 8,17:1 → AAA */
+  --ouro-brilho: #D4B756;   /* 9,08:1 → AAA. Só reflexos. */
+
+  /* SUPERFÍCIES — pretos quentes. Nunca #000: numa superfície grande dá
+     arrasto em ecrãs OLED e halo em quem tem astigmatismo. O --carta é o
+     próprio preto do logótipo. */
+  --tinta:    #1A1717;
+  --carta:    #231F20;
+  --elevado:  #2B2626;
+  --filete:   color-mix(in oklab, var(--ouro) 22%, transparent);
+  --filete-fraco: color-mix(in oklab, var(--ouro) 11%, transparent);
+
+  /* NEUTROS QUENTES — nunca #FFF sobre escuro, arde. */
+  --osso:      #EDE8DF;   /* 14,60:1 → corpo de texto */
+  --osso-meio: #B5AEA3;   /* 8,10:1 */
+  --osso-fraco:#8A837A;   /* 4,76:1 → apoios */
+
+  /* A ÚNICA FAIXA CLARA DO SITE */
+  --claro:       #F2EFE9;
+  --claro-tinta: #241F1F;  /* 14,18:1 */
+  --claro-meio:  #5C5550;
+
+  /* TIPO */
+  --letra-titulo: "Archivo Expanded", "Archivo", system-ui, sans-serif;
+  --letra-texto:  "Inter Tight", system-ui, -apple-system, sans-serif;
+
+  --t--2: .6875rem;
+  --t--1: .8125rem;
+  --t-0:  1.0625rem;
+  --t-1:  clamp(1.15rem, .95rem + .8vw, 1.4rem);
+  --t-2:  clamp(1.45rem, 1.1rem + 1.6vw, 2rem);
+  --t-3:  clamp(1.8rem, 1.25rem + 2.6vw, 2.9rem);
+  --t-4:  clamp(2.3rem, 1.4rem + 4.4vw, 4.2rem);
+  --t-5:  clamp(2.7rem, 1.1rem + 8vw, 6.2rem);
+
+  /* ESPAÇO */
+  --e-1: .25rem; --e-2: .5rem;  --e-3: .75rem; --e-4: 1rem;
+  --e-5: 1.5rem; --e-6: 2rem;   --e-7: 3rem;   --e-8: 4rem;
+  --e-9: 6rem;   --e-10: 8rem;
+
+  --goteira: clamp(1.15rem, 4vw, 3rem);
+  --caixa:   min(100% - 2 * var(--goteira), 76rem);
+  --seccao:  clamp(3.5rem, 9vw, 8rem);
+
+  --curva: cubic-bezier(.22, .61, .36, 1);
+
+  /* Altura do cabeçalho. O JS troca --cabecalho entre estes dois valores;
+     tudo o que precisa de saber a altura lê a variável e acompanha sozinho. */
+  --cabecalho-alto:  clamp(5.5rem, 11vw, 8.5rem);
+  --cabecalho-baixo: clamp(3.6rem, 7vw, 4.6rem);
+  --cabecalho: var(--cabecalho-alto);
+}
+
+/* ------------------------------------------------------- 02 base e reposição */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+/* O atributo `hidden` perde para qualquer `display` declarado no CSS, e é
+   assim que um filtro deixa de esconder o que devia sem dar erro nenhum. */
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+  /* Compensa o cabeçalho fixo quando se salta para uma âncora. */
+  scroll-padding-top: calc(var(--cabecalho) + var(--e-5));
+}
+
+body {
+  background: var(--tinta);
+  color: var(--osso);
+  font-family: var(--letra-texto);
+  font-size: var(--t-0);
+  font-weight: 350;
+  line-height: 1.65;
+  letter-spacing: .005em;
+  -webkit-font-smoothing: antialiased;
+  /* `clip` e não `hidden`: com `overflow-x: hidden` o body passa a ser um
+     contentor de scroll (a propriedade computa para `hidden auto`), e a partir
+     daí o `position: sticky` dos cartões do processo deixa de colar e o
+     scroll do documento fica com dois donos. O `clip` corta na mesma o que
+     sai para fora e não cria contentor nenhum. */
+  overflow-x: clip;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+img { height: auto; }
+
+a { color: inherit; text-decoration-color: var(--filete); text-underline-offset: .22em; }
+a:hover { text-decoration-color: var(--ouro); }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid var(--ouro-alto);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection { background: var(--ouro); color: var(--tinta); }
+
+h1, h2, h3, h4 {
+  font-family: var(--letra-titulo);
+  font-stretch: 125%;
+  text-transform: uppercase;
+  text-wrap: balance;
+  font-weight: 700;
+}
+h1 { font-size: var(--t-5); line-height: .94; letter-spacing: -.005em; }
+h2 { font-size: var(--t-4); line-height: 1;   letter-spacing: -.002em; }
+h3 { font-size: var(--t-2); line-height: 1.14; letter-spacing: .012em; font-weight: 600; }
+h4 { font-size: var(--t-1); line-height: 1.2;  letter-spacing: .02em;  font-weight: 600; }
+p  { text-wrap: pretty; }
+
+/* O <h1> do herói é o maior tipo da página. Nas páginas interiores o título
+   principal também tem de ser um <h1> (um por página, por SEO e por leitores
+   de ecrã), mas à escala de um <h2> — senão «Política de Privacidade» sai do
+   tamanho de «PROTEÇÃO ABSOLUTA». */
+h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002em; }
+
+/* Salto para o conteúdo, para quem navega por teclado. */
+.saltar {
+  position: absolute; left: 50%; translate: -50% -120%;
+  z-index: 200; padding: var(--e-3) var(--e-5);
+  background: var(--ouro); color: var(--tinta);
+  font-weight: 600; border-radius: 0 0 .5rem .5rem;
+  transition: translate .18s var(--curva);
+}
+.saltar:focus { translate: -50% 0; }
+
+/* -------------------------------------------------- 03 utilitários de composição */
+.caixa { width: var(--caixa); margin-inline: auto; }
+.seccao { padding-block: var(--seccao); }
+.medida { max-width: 58ch; }
+
+/* Sobrescrito de secção: as maiúsculas espaçadas a dourado que anunciam cada
+   bloco. É o elemento que mais faz o site parecer uma marca e não um modelo. */
+.sobrescrito {
+  display: flex; align-items: center; gap: var(--e-3);
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--2); font-weight: 600;
+  letter-spacing: .4em; text-transform: uppercase;
+  color: var(--ouro);
+  margin-bottom: var(--e-5);
+}
+.sobrescrito::before {
+  content: ""; inline-size: clamp(1.5rem, 4vw, 3rem); block-size: 1px;
+  background: linear-gradient(90deg, transparent, var(--ouro));
+  flex: none;
+}
+
+.cabeca-seccao { margin-bottom: var(--e-8); }
+.cabeca-seccao p { color: var(--osso-meio); max-width: 52ch; margin-top: var(--e-4); }
+
+/* Botões ------------------------------------------------------------------ */
+.botao {
+  display: inline-flex; align-items: center; gap: .6em;
+  padding: .95em 1.7em;
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--1); font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  text-decoration: none; border-radius: 2px;
+  transition: background-color .22s var(--curva), color .22s var(--curva),
+              border-color .22s var(--curva), translate .22s var(--curva);
+}
+.botao--cheio {
+  background: linear-gradient(150deg, var(--ouro-alto), var(--ouro) 55%, var(--ouro-fundo));
+  color: #1A1410;
+}
+.botao--cheio:hover { background: var(--ouro-brilho); translate: 0 -2px; }
+.botao--linha { border: 1px solid var(--filete); color: var(--osso); }
+.botao--linha:hover { border-color: var(--ouro); color: var(--ouro-alto); translate: 0 -2px; }
+.botao--claro { border: 1px solid rgb(0 0 0 / .22); color: var(--claro-tinta); }
+.botao--claro:hover { border-color: var(--ouro-sombra); color: var(--ouro-sombra); }
+.botao .seta { transition: translate .22s var(--curva); }
+.botao:hover .seta { translate: .25em 0; }
+
+.accoes { display: flex; flex-wrap: wrap; gap: var(--e-4); }
+
+/* ------------------------------------------------------------------ 04 ouro */
+
+/* Texto dourado com o gradiente do logótipo.
+   IMPORTANTE: cada linha visual tem de ser o seu próprio elemento. Um
+   gradiente sobre um bloco de duas linhas dá a primeira clara e a segunda
+   escura; e o remendo habitual (repetir o gradiente com background-size)
+   corta os acentos — o til do Ã de PROTEÇÃO sai da caixa da linha e cai na
+   parte escura do padrão de cima. Numa página em português isso é fatal.
+   Por isso: <span> por linha, cada um com a sua rampa. */
+.ouro { color: var(--ouro-alto); }
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .ouro > span, .ouro-linha {
+    display: block; width: fit-content;
+    background-image: linear-gradient(174deg,
+      var(--ouro-fundo) 0%, var(--ouro) 22%, var(--ouro-brilho) 46%,
+      var(--ouro-alto) 62%, var(--ouro-fundo) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    /* Sem isto, os descendentes de linhas grandes ficam cortados no Safari. */
+    padding-bottom: .06em;
+  }
+}
+
+/* Filete dourado que separa blocos. Esbate nas pontas para não parecer uma
+   régua colada. */
+.filete {
+  block-size: 1px; border: 0; margin: 0;
+  background: linear-gradient(90deg, transparent, var(--filete) 18%, var(--filete) 82%, transparent);
+}
+
+/* Grão. Dessaturado de propósito: o feTurbulence gera os canais R, G e B
+   independentes, o que dá pontinhos coloridos — e verdes sobre uma parede de
+   oficina já esverdeada é o pior sítio possível. O feColorMatrix tira-lhes a
+   cor e deixa só a textura. */
+.grao {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  opacity: .1; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-motion: reduce) { .grao { display: none; } }
+
+/* ------------------------------------------------- 05 cabeçalho e menu */
+
+/* As camadas fixas (cabeçalho, menu, grão, barra de leitura, aviso) tomam a
+   largura do bloco recipiente inicial. Quando isso é maior do que a área
+   visível — acontece em emuladores de telemóvel e nalguns navegadores de
+   aplicação com barras próprias — a barra de navegação fica mais larga do que
+   o ecrã e o botão do menu sai para fora, invisível. Prender ao `vw` custa
+   zero: em condições normais `100vw` já é o que estas camadas tomariam. */
+.cabecalho, .menu, .grao, .progresso { max-inline-size: 100vw; }
+
+.cabecalho {
+  position: fixed; inset-inline: 0; top: 0; z-index: 100;
+  block-size: var(--cabecalho);
+  display: flex; align-items: center;
+  background: color-mix(in oklab, var(--tinta) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom: 1px solid transparent;
+  transition: block-size .38s var(--curva), background-color .38s var(--curva),
+              border-color .38s var(--curva);
+}
+.cabecalho[data-encolhido="sim"] {
+  --cabecalho: var(--cabecalho-baixo);
+  background: color-mix(in oklab, var(--tinta) 94%, transparent);
+  border-bottom-color: var(--filete-fraco);
+}
+
+.cabecalho__interior {
+  width: var(--caixa); margin-inline: auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e-5);
+}
+
+/* O LOGÓTIPO. Grande no topo, encolhe ao descer, volta a crescer ao subir —
+   é a única coisa do cabeçalho que se mexe, e é de propósito.
+
+   O conjunto completo do cliente tem o escudo POR CIMA das letras, o que numa
+   barra de navegação obriga a escolher: ou o escudo fica bem e as letras ficam
+   ilegíveis, ou as letras ficam bem e o conjunto come metade da altura da
+   página. Por isso o cabeçalho monta o conjunto na horizontal — o mesmo
+   desenho, as mesmas curvas, só noutro arranjo. Assim o logótipo pode ser
+   mesmo grande e a assinatura lê-se. */
+.marca {
+  display: flex; align-items: center; gap: clamp(.6rem, 1.4vw, 1.1rem);
+  flex: none; text-decoration: none;
+}
+.marca img { inline-size: auto; transition: block-size .38s var(--curva); }
+.marca__escudo { block-size: var(--marca-escudo, clamp(3rem, 6vw, 4.6rem)); }
+.marca__nome   { block-size: var(--marca-nome, clamp(.95rem, 1.9vw, 1.5rem)); }
+
+.cabecalho[data-encolhido="sim"] .marca {
+  --marca-escudo: clamp(2.1rem, 3.6vw, 2.7rem);
+  --marca-nome:   clamp(.68rem, 1.15vw, .88rem);
+}
+
+/* Em ecrãs estreitos fica só o escudo: a assinatura a esta largura seria uma
+   linha de traços cinzentos. */
+@media (max-width: 30rem) { .marca__nome { display: none; } }
+
+.navegacao { display: flex; align-items: center; gap: clamp(1rem, 2.6vw, 2.4rem); }
+.navegacao a {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--1); font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  text-decoration: none; color: var(--osso-meio);
+  padding-block: .4rem; position: relative;
+  transition: color .2s var(--curva);
+}
+.navegacao a::after {
+  content: ""; position: absolute; inset-inline: 0; bottom: 0;
+  block-size: 1px; background: var(--ouro);
+  scale: 0 1; transform-origin: left; transition: scale .28s var(--curva);
+}
+.navegacao a:hover, .navegacao a[aria-current="page"] { color: var(--osso); }
+.navegacao a:hover::after, .navegacao a[aria-current="page"]::after { scale: 1 1; }
+
+.cabecalho .botao--cheio { padding: .7em 1.3em; }
+
+/* Botão do menu — só no telemóvel */
+.menu-botao {
+  display: none; flex: none;
+  inline-size: 2.75rem; block-size: 2.75rem;
+  align-items: center; justify-content: center;
+}
+.menu-botao span {
+  display: block; inline-size: 1.4rem; block-size: 1px;
+  background: var(--osso); position: relative;
+  transition: background-color .2s var(--curva);
+}
+.menu-botao span::before, .menu-botao span::after {
+  content: ""; position: absolute; inset-inline: 0; block-size: 1px;
+  background: var(--osso); transition: translate .28s var(--curva), rotate .28s var(--curva);
+}
+.menu-botao span::before { translate: 0 -6px; }
+.menu-botao span::after  { translate: 0 6px; }
+.menu-botao[aria-expanded="true"] span { background: transparent; }
+.menu-botao[aria-expanded="true"] span::before { translate: 0 0; rotate: 45deg; }
+.menu-botao[aria-expanded="true"] span::after  { translate: 0 0; rotate: -45deg; }
+
+@media (max-width: 60rem) {
+  .menu-botao { display: flex; }
+  .cabecalho .navegacao, .cabecalho__interior > .botao { display: none; }
+
+  /* MENU DE ECRÃ INTEIRO. Ocupa tudo, como foi pedido. */
+  .menu {
+    position: fixed; inset: 0; z-index: 99;
+    display: grid; grid-template-rows: var(--cabecalho) 1fr auto;
+    background: var(--tinta);
+    /* Fecha por omissão. `visibility` para não apanhar toques nem o tabulador
+       enquanto está fechado. */
+    opacity: 0; visibility: hidden;
+    transition: opacity .32s var(--curva), visibility .32s;
+  }
+  .menu[data-aberto="sim"] { opacity: 1; visibility: visible; }
+
+  /* O item da grelha é o <nav>, não a <ul>. Sem isto a lista fica encostada
+     ao topo da faixa e o `justify-content: center` da <ul> não tem altura
+     nenhuma para centrar. */
+  .menu > nav { display: grid; min-block-size: 0; }
+
+  .menu__lista {
+    display: flex; flex-direction: column; justify-content: center;
+    gap: clamp(.5rem, 2.2vh, 1.1rem);
+    padding: var(--e-6) var(--goteira);
+    list-style: none;
+    overflow-y: auto;   /* ecrãs baixos (telemóvel deitado) não cortam itens */
+  }
+  .menu__lista a {
+    display: flex; align-items: baseline; gap: var(--e-4);
+    font-family: var(--letra-titulo); font-stretch: 125%;
+    font-size: clamp(1.75rem, 8vw, 2.75rem); font-weight: 700;
+    line-height: 1.05; letter-spacing: .01em; text-transform: uppercase;
+    text-decoration: none; color: var(--osso);
+    padding-block: .28em;
+    border-bottom: 1px solid var(--filete-fraco);
+  }
+  .menu__lista a[aria-current="page"] { color: var(--ouro-alto); }
+  .menu__lista .numero {
+    font-size: var(--t--2); font-weight: 600; letter-spacing: .2em;
+    color: var(--ouro-sombra); flex: none;
+  }
+  .menu__pe {
+    padding: var(--e-6) var(--goteira) calc(var(--e-7) + env(safe-area-inset-bottom));
+    display: grid; gap: var(--e-4);
+    border-top: 1px solid var(--filete-fraco);
+  }
+  .menu__pe .botao { justify-content: center; }
+  .menu__contacto { color: var(--osso-meio); font-size: var(--t--1); }
+  .menu__contacto strong { color: var(--osso); font-weight: 600; }
+}
+@media (min-width: 60.0625rem) { .menu { display: none; } }
+
+/* Enquanto o menu está aberto o fundo não rola. */
+body[data-menu="aberto"] { overflow: hidden; }
+
+/* Barra de leitura — sem JS, a linha dourada que atravessa o topo. */
+.progresso {
+  position: fixed; inset-inline: 0; top: 0; z-index: 101;
+  block-size: 2px; background: var(--ouro);
+  transform-origin: 0 50%; scale: 0 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .progresso {
+      animation: ler linear both;
+      animation-timeline: scroll(root block);
+    }
+    @keyframes ler { to { scale: 1 1; } }
+  }
+}
+
+/* --------------------------------------------------------------- 06 herói */
+.heroi {
+  position: relative;
+  min-block-size: min(100svh, 54rem);
+  padding-block: calc(var(--cabecalho-alto) + var(--e-8)) var(--e-9);
+  display: flex; align-items: center;
+  overflow: clip;
+}
+/* Luz quente que cai do topo, como o reflexo das luminárias hexagonais da
+   oficina. Substitui a fotografia que as imagens a 414 px não aguentam. */
+.heroi::before {
+  content: ""; position: absolute; z-index: 0;
+  inset-block-start: -30%; inset-inline-start: 50%; translate: -50% 0;
+  inline-size: min(120rem, 190%); aspect-ratio: 1;
+  background: radial-gradient(circle at 50% 42%,
+    color-mix(in oklab, var(--ouro) 17%, transparent) 0%,
+    color-mix(in oklab, var(--ouro) 6%, transparent) 26%,
+    transparent 58%);
+  pointer-events: none;
+}
+.heroi__interior { position: relative; z-index: 1; }
+
+.heroi h1 { margin-block: var(--e-5) var(--e-6); }
+.heroi h1 span + span { margin-top: -.06em; }
+
+.heroi__texto { color: var(--osso-meio); font-size: var(--t-1); max-width: 44ch; }
+.heroi .accoes { margin-top: var(--e-7); }
+
+/* A régua de provas, por baixo do herói. */
+.provas {
+  display: flex; flex-wrap: wrap; gap: var(--e-5) clamp(1.5rem, 5vw, 4rem);
+  margin-top: var(--e-9); padding-top: var(--e-6);
+  border-top: 1px solid var(--filete-fraco);
+  list-style: none;
+}
+.provas li { display: grid; gap: .15rem; }
+.provas b {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t-2); font-weight: 700; color: var(--ouro-alto);
+  line-height: 1;
+}
+.provas span { font-size: var(--t--1); color: var(--osso-fraco); letter-spacing: .04em; }
+
+/* -------------------------------------------------- 07 índice de serviços */
+.indice { list-style: none; counter-reset: servico; }
+.indice li { counter-increment: servico; border-top: 1px solid var(--filete-fraco); }
+.indice li:last-child { border-bottom: 1px solid var(--filete-fraco); }
+
+.indice a {
+  display: grid; align-items: center; gap: var(--e-3) var(--e-5);
+  grid-template-columns: auto 1fr auto;
+  padding-block: clamp(1.3rem, 3vw, 2.1rem);
+  text-decoration: none;
+  transition: background-color .3s var(--curva);
+}
+.indice a:hover { background: color-mix(in oklab, var(--ouro) 5%, transparent); }
+
+.indice .numero {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .1em;
+  color: var(--ouro-sombra);
+  align-self: start; padding-top: .45em;
+}
+.indice .numero::before { content: "0" counter(servico); }
+
+.indice h3 { transition: translate .3s var(--curva); }
+.indice a:hover h3 { translate: .6rem 0; color: var(--ouro-alto); }
+.indice p { color: var(--osso-fraco); font-size: var(--t--1); margin-top: .3rem; max-width: 52ch; }
+
+.indice .seta {
+  color: var(--ouro); font-size: var(--t-1);
+  opacity: 0; translate: -.6rem 0;
+  transition: opacity .3s var(--curva), translate .3s var(--curva);
+}
+.indice a:hover .seta, .indice a:focus-visible .seta { opacity: 1; translate: 0 0; }
+
+.indice figure {
+  grid-column: 2 / -1; margin: 0;
+  display: none;
+}
+@media (min-width: 48rem) {
+  .indice a { grid-template-columns: auto 1fr 7.5rem auto; }
+  .indice figure {
+    grid-column: 3; display: block;
+    aspect-ratio: 4 / 3; overflow: clip; border-radius: 2px;
+    opacity: 0; scale: .94;
+    transition: opacity .34s var(--curva), scale .34s var(--curva);
+  }
+  .indice figure img { inline-size: 100%; block-size: 100%; object-fit: cover; }
+  .indice a:hover figure, .indice a:focus-visible figure { opacity: .85; scale: 1; }
+}
+
+/* -------------------------------------------- 08 comparador antes/depois */
+/* Construído à volta de um <input type="range">: herda o teclado (setas,
+   Home, End), o toque, a caneta e a semântica para leitores de ecrã, de
+   graça. Um <div> com listeners de rato não herda nada disso. */
+.comparador {
+  position: relative; aspect-ratio: 1; overflow: clip;
+  border-radius: 3px; border: 1px solid var(--filete-fraco);
+  background: var(--carta);
+  --p: 50%;
+}
+.comparador img {
+  position: absolute; inset: 0;
+  inline-size: 100%; block-size: 100%; object-fit: cover;
+}
+.comparador img.depois { clip-path: inset(0 0 0 var(--p)); }
+
+.comparador__linha {
+  position: absolute; inset-block: 0; left: var(--p);
+  translate: -50% 0; inline-size: 2px; pointer-events: none;
+  background: linear-gradient(180deg, transparent, var(--ouro-brilho) 22%,
+                              var(--ouro-brilho) 78%, transparent);
+}
+.comparador__pega {
+  position: absolute; top: 50%; left: var(--p);
+  translate: -50% -50%; pointer-events: none;
+  inline-size: 2.75rem; block-size: 2.75rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: color-mix(in oklab, var(--tinta) 74%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--ouro);
+  color: var(--ouro-alto); font-size: .8rem; letter-spacing: -.1em;
+}
+.comparador input {
+  position: absolute; inset: 0; margin: 0;
+  inline-size: 100%; block-size: 100%;
+  opacity: 0; cursor: ew-resize;
+}
+.comparador:has(input:focus-visible) .comparador__pega {
+  box-shadow: 0 0 0 3px var(--ouro-alto);
+}
+
+.comparador__etiqueta {
+  position: absolute; top: var(--e-4); z-index: 2;
+  padding: .3em .7em; pointer-events: none;
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--2); font-weight: 600; letter-spacing: .2em;
+  text-transform: uppercase;
+  background: color-mix(in oklab, var(--tinta) 78%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--filete-fraco); border-radius: 2px;
+  color: var(--osso-meio);
+}
+.comparador__etiqueta.antes  { inset-inline-start: var(--e-4); }
+.comparador__etiqueta.depois { inset-inline-end: var(--e-4); color: var(--ouro-alto); }
+
+.par { display: grid; gap: var(--e-5); }
+.par figcaption { display: grid; gap: .2rem; }
+.par .veiculo {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.par .servico {
+  font-size: var(--t--2); letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ouro); font-weight: 600;
+}
+.par .legenda { color: var(--osso-fraco); font-size: var(--t--1); max-width: 46ch; }
+
+/* Carrossel horizontal dos pares */
+.pares {
+  display: flex; gap: var(--e-5);
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-block-end: var(--e-2);
+  /* Sangra até às margens do ecrã e volta a alinhar com a caixa. */
+  margin-inline: calc(50% - 50vw); padding-inline: max(var(--goteira), calc(50vw - var(--caixa) / 2));
+}
+.pares::-webkit-scrollbar { display: none; }
+.pares > .par { flex: 0 0 min(82vw, 27rem); scroll-snap-align: center; }
+
+/* ---------------------------------------------------------- 09 trabalhos */
+.grelha {
+  display: grid; gap: clamp(.75rem, 2vw, 1.4rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+}
+.obra { position: relative; margin: 0; }
+.obra__foto {
+  position: relative; display: block;
+  aspect-ratio: 1; overflow: clip; border-radius: 2px;
+  border: 1px solid var(--filete-fraco);
+  background: var(--carta);
+  cursor: zoom-in;
+  inline-size: 100%; padding: 0;
+}
+.obra__foto img {
+  inline-size: 100%; block-size: 100%; object-fit: cover;
+  transition: scale .5s var(--curva);
+}
+/* Véu escuro no rodapé de cada peça. Não é enfeite: uniformiza fundos muito
+   diferentes (parede branca, parede escura, exterior ao sol) e dá base ao
+   texto. É o que faz a grelha ler-se como um conjunto. */
+.obra__foto::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top,
+    color-mix(in oklab, var(--tinta) 88%, transparent) 0%,
+    color-mix(in oklab, var(--tinta) 30%, transparent) 34%,
+    transparent 62%);
+}
+.obra__foto:hover img, .obra__foto:focus-visible img { scale: 1.045; }
+
+.obra figcaption {
+  position: absolute; inset-inline: 0; bottom: 0; z-index: 1;
+  padding: var(--e-4); pointer-events: none;
+  display: grid; gap: .1rem;
+}
+.obra .veiculo {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; line-height: 1.2;
+}
+.obra .servico {
+  font-size: .625rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ouro); font-weight: 600;
+}
+
+/* Lupa. O `popover` dá camada de topo, fecho com Esc, fecho ao tocar fora e
+   gestão do foco sem uma linha de JS. */
+.lupa {
+  inline-size: 100%; max-inline-size: 100%;
+  block-size: 100%; max-block-size: 100%;
+  border: 0; padding: 0; background: transparent;
+  display: grid; place-items: center;
+}
+.lupa::backdrop { background: color-mix(in oklab, #000 88%, transparent); }
+.lupa img {
+  inline-size: min(92vw, 48rem); block-size: auto;
+  max-block-size: 82svh; object-fit: contain;
+  border-radius: 3px;
+}
+.lupa__fecho {
+  position: fixed; top: var(--e-4); right: var(--e-4);
+  inline-size: 2.75rem; block-size: 2.75rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: color-mix(in oklab, var(--tinta) 80%, transparent);
+  border: 1px solid var(--filete); color: var(--osso);
+}
+.lupa__nota {
+  margin-top: var(--e-4); text-align: center;
+  font-size: var(--t--1); color: var(--osso-meio);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lupa { transition: opacity .28s var(--curva), display .28s allow-discrete,
+                      overlay .28s allow-discrete; opacity: 0; }
+  .lupa:popover-open { opacity: 1; }
+  @starting-style { .lupa:popover-open { opacity: 0; } }
+}
+
+/* -------------------------------------------------------- 10 avaliações */
+.avaliacoes {
+  display: grid; gap: var(--e-7);
+  align-items: center;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 52rem) { .avaliacoes { grid-template-columns: auto 1fr; gap: var(--e-9); } }
+
+.nota {
+  display: grid; gap: var(--e-2); justify-items: start;
+  padding-inline-end: var(--e-7);
+}
+.nota__valor {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: clamp(3.5rem, 12vw, 6rem); font-weight: 700; line-height: .85;
+  color: var(--ouro-alto);
+}
+.nota__estrelas { color: var(--ouro); letter-spacing: .18em; font-size: var(--t-1); }
+.nota__conta { color: var(--osso-fraco); font-size: var(--t--1); }
+
+.testemunhos { display: grid; gap: var(--e-5); }
+.testemunho {
+  padding: var(--e-5); border-radius: 3px;
+  border: 1px solid var(--filete-fraco); background: var(--carta);
+}
+.testemunho blockquote { font-size: var(--t-1); line-height: 1.5; }
+.testemunho blockquote::before { content: "«"; color: var(--ouro); margin-inline-end: .1em; }
+.testemunho blockquote::after  { content: "»"; color: var(--ouro); margin-inline-start: .1em; }
+.testemunho figcaption {
+  margin-top: var(--e-3); font-size: var(--t--1); color: var(--osso-fraco);
+  letter-spacing: .04em;
+}
+.avaliacoes__nota-legal {
+  font-size: var(--t--2); color: var(--osso-fraco); margin-top: var(--e-4);
+  max-width: 60ch;
+}
+
+/* ------------------------------------------------------- 11 faixa clara */
+.claro {
+  background: var(--claro); color: var(--claro-tinta);
+}
+/* Regra dura: ouro não é tinta sobre claro. #AC8A39 sobre #F2EFE9 dá 2,84:1.
+   Aqui o dourado só aparece em filetes e em números decorativos grandes. */
+.claro h2, .claro h3 { color: var(--claro-tinta); }
+.claro p { color: var(--claro-meio); }
+.claro .sobrescrito { color: var(--ouro-sombra); }          /* 5,70:1 → AA */
+.claro .sobrescrito::before { background: linear-gradient(90deg, transparent, var(--ouro-sombra)); }
+.claro .filete { background: linear-gradient(90deg, transparent, rgb(0 0 0 / .14) 18%, rgb(0 0 0 / .14) 82%, transparent); }
+
+.garantias { list-style: none; display: grid; gap: var(--e-5); counter-reset: g; }
+@media (min-width: 42rem) { .garantias { grid-template-columns: repeat(2, 1fr); gap: var(--e-6) var(--e-7); } }
+@media (min-width: 64rem) { .garantias { grid-template-columns: repeat(4, 1fr); } }
+.garantias li { counter-increment: g; display: grid; gap: var(--e-2); }
+.garantias li::before {
+  content: "0" counter(g);
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .14em;
+  color: var(--ouro-sombra);
+}
+.garantias h3 { font-size: var(--t-1); }
+.garantias p { font-size: var(--t--1); line-height: 1.55; }
+
+/* Processo em cartões que se empilham — comunica método, e é o que justifica
+   um preço premium. CSS puro, zero JS. */
+.processo { display: grid; gap: var(--e-5); }
+.etapa {
+  position: sticky; top: calc(var(--cabecalho-baixo) + 1.5rem + var(--i, 0) * .9rem);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: 4px; border: 1px solid var(--filete-fraco);
+  background: linear-gradient(158deg, var(--elevado), var(--carta) 62%);
+  display: grid; gap: var(--e-3);
+}
+.etapa__numero {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .18em;
+  color: var(--ouro);
+}
+.etapa p { color: var(--osso-meio); max-width: 54ch; }
+
+/* Dentro da faixa clara os cartões passam a claros também. Estavam escuros,
+   e como `.claro h3` pinta os títulos de escuro o título ficava preto sobre
+   preto — invisível. Além disso um cartão preto no meio da única faixa clara
+   do site desfazia a pausa que essa faixa existe para dar. */
+.claro .etapa {
+  background: #FBFAF7;
+  border-color: rgb(0 0 0 / .10);
+  box-shadow: 0 .5rem 1.5rem rgb(0 0 0 / .05);
+}
+.claro .etapa__numero { color: var(--ouro-sombra); }   /* 5,70:1 sobre claro */
+.claro .etapa h3 { color: var(--claro-tinta); }
+.claro .etapa p  { color: var(--claro-meio); }
+
+/* -------------------------------------------------------------- 12 loja */
+.produtos {
+  display: grid; gap: clamp(1rem, 2.4vw, 1.75rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.produto {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--filete-fraco); border-radius: 3px;
+  background: var(--carta); overflow: clip;
+  transition: border-color .28s var(--curva), translate .28s var(--curva);
+}
+.produto:hover { border-color: var(--filete); translate: 0 -3px; }
+.produto__imagem { aspect-ratio: 1; background: var(--tinta); }
+.produto__imagem img { inline-size: 100%; block-size: 100%; object-fit: cover; }
+.produto__corpo { padding: var(--e-5); display: grid; gap: var(--e-2); flex: 1; align-content: start; }
+.produto__familia {
+  font-size: .625rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ouro); font-weight: 600;
+}
+.produto h3 { font-size: var(--t-1); }
+.produto p { font-size: var(--t--1); color: var(--osso-fraco); line-height: 1.5; }
+.produto__preco {
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t-1); font-weight: 700; color: var(--ouro-alto);
+  margin-top: auto; padding-top: var(--e-3);
+}
+.produto__preco small { display: block; font-size: var(--t--2); font-weight: 400;
+  letter-spacing: .04em; color: var(--osso-fraco); text-transform: none; }
+.produto .botao { margin: 0 var(--e-5) var(--e-5); justify-content: center; }
+
+.aviso {
+  padding: var(--e-5); border-radius: 3px;
+  border: 1px solid var(--filete-fraco);
+  background: color-mix(in oklab, var(--ouro) 4%, var(--carta));
+  font-size: var(--t--1); color: var(--osso-meio);
+}
+.aviso strong { color: var(--osso); }
+.claro .aviso {
+  background: rgb(0 0 0 / .035); border-color: rgb(0 0 0 / .1); color: var(--claro-meio);
+}
+.claro .aviso strong { color: var(--claro-tinta); }
+
+/* --------------------------------------------------- 13 contactos e mapa */
+.contactos { display: grid; gap: var(--e-8); }
+@media (min-width: 56rem) { .contactos { grid-template-columns: 1fr 1.15fr; gap: var(--e-9); } }
+
+.dados { display: grid; gap: var(--e-6); align-content: start; }
+.dado { display: grid; grid-template-columns: auto 1fr; gap: var(--e-4); align-items: start; }
+.dado svg { inline-size: 1.15rem; block-size: 1.15rem; color: var(--ouro); margin-top: .25rem; flex: none; }
+.dado dt {
+  font-size: var(--t--2); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--osso-fraco); font-weight: 600; margin-bottom: .2rem;
+}
+.dado dd { margin: 0; }
+.dado a { text-decoration: none; }
+.dado a:hover { color: var(--ouro-alto); }
+.custo-chamada { display: block; font-size: var(--t--2); color: var(--osso-fraco); margin-top: .1rem; }
+
+.horario { list-style: none; display: grid; gap: .35rem; font-size: var(--t--1); }
+.horario li { display: flex; justify-content: space-between; gap: var(--e-4); max-width: 22rem; }
+.horario li[data-hoje="sim"] { color: var(--ouro-alto); }
+.horario li[data-hoje="sim"] span:first-child::after { content: " · hoje"; color: var(--ouro); font-size: .8em; }
+.horario .dia { color: var(--osso-fraco); }
+.horario li[data-hoje="sim"] .dia { color: var(--ouro-alto); }
+
+/* Mapa: cartão estático até haver autorização. Carregar o iframe da Google
+   sem consentimento manda o IP do visitante para os Estados Unidos antes de
+   ele clicar em coisa nenhuma. */
+.mapa {
+  position: relative; aspect-ratio: 4 / 3; min-block-size: 20rem;
+  border: 1px solid var(--filete-fraco); border-radius: 3px;
+  overflow: clip; background: var(--carta);
+  display: grid; place-items: center;
+}
+.mapa iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
+.mapa__convite {
+  display: grid; gap: var(--e-4); justify-items: center; text-align: center;
+  padding: var(--e-6); max-width: 32rem;
+}
+.mapa__convite p { font-size: var(--t--1); color: var(--osso-meio); }
+.mapa__fundo {
+  position: absolute; inset: 0; z-index: -1; opacity: .35;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 39px, var(--filete-fraco) 39px 40px),
+    repeating-linear-gradient(0deg, transparent 0 39px, var(--filete-fraco) 39px 40px),
+    radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--ouro) 10%, transparent), transparent 62%);
+}
+
+/* ------------------------------------------------------------ 14 rodapé */
+.rodape {
+  border-top: 1px solid var(--filete-fraco);
+  background: var(--carta);
+  padding-block: var(--e-8) var(--e-6);
+  font-size: var(--t--1);
+}
+.rodape__topo {
+  display: grid; gap: var(--e-7);
+  padding-bottom: var(--e-7);
+}
+@media (min-width: 48rem) { .rodape__topo { grid-template-columns: 1.4fr 1fr 1fr; gap: var(--e-8); } }
+
+.rodape__marca img { block-size: 6rem; inline-size: auto; margin-bottom: var(--e-5); }
+.rodape__marca p { color: var(--osso-fraco); max-width: 34ch; }
+
+.rodape h4 {
+  font-size: var(--t--2); letter-spacing: .24em; color: var(--osso-fraco);
+  margin-bottom: var(--e-4); font-weight: 600;
+}
+.rodape ul { list-style: none; display: grid; gap: var(--e-3); }
+.rodape a { text-decoration: none; color: var(--osso-meio); transition: color .2s var(--curva); }
+.rodape a:hover { color: var(--ouro-alto); }
+
+/* Contactos do rodapé, com ícone em cada linha. */
+.rodape__contactos li { display: grid; grid-template-columns: auto 1fr; gap: var(--e-3); align-items: start; }
+.rodape__contactos svg { inline-size: 1rem; block-size: 1rem; color: var(--ouro); margin-top: .3rem; }
+
+.redes { display: flex; gap: var(--e-3); margin-top: var(--e-5); }
+.redes a {
+  inline-size: 2.5rem; block-size: 2.5rem; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid var(--filete-fraco); color: var(--osso-meio);
+  transition: border-color .22s var(--curva), color .22s var(--curva), translate .22s var(--curva);
+}
+.redes a:hover { border-color: var(--ouro); color: var(--ouro-alto); translate: 0 -2px; }
+.redes svg { inline-size: 1.05rem; block-size: 1.05rem; }
+
+.rodape__fundo {
+  border-top: 1px solid var(--filete-fraco); padding-top: var(--e-5);
+  display: grid; gap: var(--e-4);
+}
+.rodape__legal { color: var(--osso-fraco); font-size: var(--t--2); line-height: 1.7; }
+.rodape__legal strong { color: var(--osso-meio); font-weight: 500; }
+
+/* `.rodape ul` acima declara `display: grid`, e como tem a mesma
+   especificidade mais um elemento ganhava a esta regra — as ligações legais
+   saíam empilhadas, uma por linha. Daí o selector repetir o `ul`. */
+.rodape ul.rodape__ligacoes {
+  display: flex; flex-wrap: wrap; gap: var(--e-3) var(--e-5);
+  align-items: center; list-style: none;
+}
+.rodape__ligacoes a { font-size: var(--t--2); }
+/* A ligação para o backoffice fica aqui, discreta, a seguir ao Livro de
+   Reclamações — como foi pedido. Discreta, mas encontrável: abaixo de .7 de
+   opacidade deixa de se ver de todo num ecrã com brilho baixo. */
+.rodape__gestao { color: var(--osso-fraco) !important; opacity: .7; }
+.rodape__gestao:hover { opacity: 1; }
+/* O distintivo do Livro de Reclamações precisa de fundo próprio: é arte a
+   cores sobre branco e encostado ao rodapé escuro ficava a flutuar. */
+.livro { display: inline-flex; }
+.livro img { display: block; border-radius: 3px; }
+
+.livro img { block-size: 2.6rem; inline-size: auto; }
+
+/* -------------------------------------------------- 15 aviso de cookies */
+/* O site não põe cookies. Este aviso existe para uma coisa concreta: é o que
+   autoriza (ou não) carregar o mapa da Google, que é um pedido a um servidor
+   nos Estados Unidos. Por isso é honesto e tem duas saídas reais. */
+.cookies {
+  position: fixed; z-index: 120;
+  inset-inline: var(--goteira); bottom: var(--goteira);
+  margin-inline: auto; max-inline-size: 34rem;
+  padding: var(--e-5);
+  background: color-mix(in oklab, var(--elevado) 96%, transparent);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--filete); border-radius: 4px;
+  box-shadow: 0 1.5rem 3rem rgb(0 0 0 / .5);
+  display: grid; gap: var(--e-4);
+  font-size: var(--t--1);
+}
+.cookies p { color: var(--osso-meio); }
+.cookies strong { color: var(--osso); font-weight: 600; }
+.cookies__accoes { display: flex; flex-wrap: wrap; gap: var(--e-3); }
+.cookies .botao { padding: .7em 1.2em; font-size: var(--t--2); }
+.cookies a { color: var(--ouro-alto); }
+@media (prefers-reduced-motion: no-preference) {
+  .cookies { animation: subir .4s var(--curva) both; }
+  @keyframes subir { from { opacity: 0; translate: 0 1.5rem; } }
+}
+
+/* ------------------------------------------------- 16 páginas de texto */
+.texto { max-width: 68ch; }
+.texto h2 { font-size: var(--t-2); margin-top: var(--e-8); margin-bottom: var(--e-4); }
+.texto h3 { font-size: var(--t-1); margin-top: var(--e-6); margin-bottom: var(--e-3); }
+.texto p, .texto li { color: var(--osso-meio); }
+.texto p + p { margin-top: var(--e-4); }
+.texto ul, .texto ol { margin: var(--e-4) 0; padding-inline-start: var(--e-5); display: grid; gap: var(--e-2); }
+.texto a { color: var(--ouro-alto); }
+.texto dl { margin: var(--e-4) 0; display: grid; gap: var(--e-4); }
+.texto dt { font-weight: 600; color: var(--osso); }
+.texto dd { margin: 0; color: var(--osso-meio); }
+
+/* Migalhas */
+.migalhas { font-size: var(--t--2); color: var(--osso-fraco); letter-spacing: .06em; }
+.migalhas ol { list-style: none; display: flex; flex-wrap: wrap; gap: .5em; padding: 0; }
+.migalhas li:not(:last-child)::after { content: "/"; margin-inline-start: .5em; color: var(--filete); }
+.migalhas a { text-decoration: none; }
+.migalhas a:hover { color: var(--ouro); }
+
+/* Perguntas frequentes, sem JS */
+.faq { display: grid; gap: var(--e-3); }
+.faq details {
+  border-bottom: 1px solid var(--filete-fraco);
+}
+.faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--e-4);
+  padding-block: var(--e-4); cursor: pointer; list-style: none;
+  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
+  letter-spacing: .015em;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+"; color: var(--ouro); font-size: var(--t-2); font-weight: 400;
+  line-height: 1; flex: none; transition: rotate .3s var(--curva);
+}
+.faq details[open] summary::after { rotate: 45deg; }
+.faq details > div { padding-bottom: var(--e-5); color: var(--osso-meio); max-width: 62ch; }
+@media (prefers-reduced-motion: no-preference) {
+  .faq details::details-content {
+    block-size: 0; overflow: clip;
+    transition: block-size .32s var(--curva), content-visibility .32s allow-discrete;
+  }
+  .faq details[open]::details-content { block-size: auto; }
+}
+
+/* --------------------------------------------------------- 17 movimento */
+/* Tudo o que se mexe está DENTRO desta consulta. Assim o estado reduzido não
+   precisa de ser desfeito — é o estado por omissão do CSS.
+   (Cuidado com o remendo comum `animation-duration:.01ms`: em animações
+   infinitas não as pára, acelera-as até piscarem.) */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
+  @supports (animation-timeline: view()) {
+    .revelar {
+      animation: revelar linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 34%;
+    }
+    @keyframes revelar {
+      from { opacity: 0; translate: 0 1.75rem; }
+      to   { opacity: 1; translate: 0 0; }
+    }
+  }
+}
+
+/* Impressão: o essencial, a preto no branco. */
+@media print {
+  .cabecalho, .menu, .cookies, .grao, .progresso, .lupa { display: none !important; }
+  body { background: #fff; color: #000; }
+}

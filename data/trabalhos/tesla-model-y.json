@@ -1,0 +1,15 @@
+{
+ "slug": "tesla-model-y",
+ "veiculo": "Tesla Model Y",
+ "servico": "Envelopamento",
+ "pagina": "envelopamento",
+ "ordem": 8,
+ "legenda": "Branco satinado sobre o escuro de fábrica, sem tocar na pintura original.",
+ "fotos": [
+  "tesla-model-y-1",
+  "tesla-model-y-2",
+  "tesla-model-y-3"
+ ],
+ "destaque": false,
+ "publicado": true
+}

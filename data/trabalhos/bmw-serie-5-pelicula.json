@@ -1,0 +1,15 @@
+{
+ "slug": "bmw-serie-5-pelicula",
+ "veiculo": "BMW Série 5",
+ "servico": "Película solar",
+ "pagina": "peliculas-solares",
+ "ordem": 11,
+ "legenda": "Vidros traseiros escurecidos, frente dentro do limite legal. Menos calor, mais privacidade.",
+ "fotos": [
+  "bmw-serie-5-pelicula-1",
+  "bmw-serie-5-pelicula-2",
+  "bmw-serie-5-pelicula-3"
+ ],
+ "destaque": false,
+ "publicado": true
+}

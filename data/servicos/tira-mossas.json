@@ -1,0 +1,43 @@
+{
+ "slug": "tira-mossas",
+ "ordem": 1,
+ "nome": "Tira Mossas",
+ "nome_longo": "Tira mossas sem pintura",
+ "alt": "Martelinho de ouro",
+ "icone": "martelo",
+ "resumo": "Amolgadelas removidas por dentro do painel. A pintura de origem nunca é tocada.",
+ "titulo_seo": "Tira Mossas em Leiria — sem pintura | Perfect Finish Studio",
+ "descricao_seo": "Remoção de amolgadelas sem pintura em Leiria (martelinho de ouro). A pintura original fica intacta. Orçamento por WhatsApp.",
+ "intro": "Uma amolgadela não obriga a repintar. Trabalhando o painel pelo lado de dentro, com hastes e leitura de reflexos, a chapa volta à forma e o verniz de fábrica fica onde sempre esteve.",
+ "porque": [
+  [
+   "A pintura original mantém-se",
+   "Repintar um painel faz-se notar no histórico do carro e no valor de revenda. Sem pintura, não há diferença de tom, não há sobrespray e não há nada a declarar."
+  ],
+  [
+   "Mais rápido",
+   "A maioria das amolgadelas resolve-se no mesmo dia. Não há lixagem, primário, estufa nem tempo de cura."
+  ],
+  [
+   "Serve para granizo",
+   "Painéis com muitos pontos de granizo são o caso onde esta técnica ganha por larga margem."
+  ]
+ ],
+ "quando_nao": "Quando a pintura está partida, fissurada ou o vinco é muito vivo junto a uma aresta, a técnica deixa de ser a indicada — e dizemos isso à cabeça, antes de começar.",
+ "imagem": "",
+ "obras": [],
+ "faq": [
+  [
+   "Consegue tirar qualquer amolgadela?",
+   "Não. Depende do tamanho, da profundidade, de onde fica no painel e do estado da pintura. Uma amolgadela com a pintura partida não é caso para tira mossas. Veja connosco, com o carro à frente."
+  ],
+  [
+   "A pintura fica marcada?",
+   "Não. O painel é trabalhado pelo lado de dentro; não há lixagem, tinta nem verniz envolvidos."
+  ],
+  [
+   "Quanto tempo demora?",
+   "A maioria fica pronta no próprio dia. Vários painéis, ou granizo, podem levar mais."
+  ]
+ ]
+}

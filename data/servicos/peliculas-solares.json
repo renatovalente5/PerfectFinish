@@ -1,0 +1,47 @@
+{
+ "slug": "peliculas-solares",
+ "ordem": 2,
+ "nome": "Películas Solares",
+ "nome_longo": "Películas solares e vidros escurecidos",
+ "alt": "Vidros fumados",
+ "icone": "vidro",
+ "resumo": "Menos calor, menos luz directa, mais privacidade — cortadas à medida de cada vidro.",
+ "titulo_seo": "Películas Solares e Vidros Fumados | Leiria",
+ "descricao_seo": "Aplicação de película solar automóvel em Leiria. Cortada à medida, sem bolhas nem falhas de bordo. Dentro dos limites legais de transmissão de luz.",
+ "intro": "A película faz três coisas ao mesmo tempo: baixa a temperatura dentro do carro, corta o encandeamento e devolve privacidade a quem vai atrás. Cortamos e aplicamos vidro a vidro, com remates que acompanham a curvatura.",
+ "porque": [
+  [
+   "Corte à medida",
+   "Cada vidro é medido e cortado para aquele carro. Não há sobras dobradas nem bordos a descolar passado um verão."
+  ],
+  [
+   "Sem bolhas",
+   "A aplicação é feita em ambiente fechado e o vidro é preparado antes. As poucas microbolhas de água que restem desaparecem nos primeiros dias."
+  ],
+  [
+   "Dentro da lei",
+   "Aconselhamos a percentagem certa para cada vidro, para o carro passar na inspeção."
+  ]
+ ],
+ "legal": "A lei portuguesa fixa mínimos de transmissão luminosa: **75% no para-brisas** e **70% nos vidros laterais da frente**. Nesses vidros não aplicamos películas que baixem daí. Nos vidros atrás do condutor não há limite legal de transmissão.",
+ "imagem": "bmw-serie-5-pelicula-1",
+ "obras": [
+  "bmw-serie-5-pelicula",
+  "maserati-ghibli",
+  "ford-mustang-dark-horse"
+ ],
+ "faq": [
+  [
+   "Posso escurecer os vidros da frente?",
+   "Só até ao limite legal: 70% de transmissão luminosa nos laterais dianteiros e 75% no para-brisas. Abaixo disso o carro chumba na inspeção. Atrás do condutor pode escurecer o quanto quiser."
+  ],
+  [
+   "Quanto tempo até poder abrir os vidros?",
+   "Dois a três dias, para a película assentar. Dizemos-lhe no dia da entrega."
+  ],
+  [
+   "A película tira calor a sério?",
+   "Sim, sobretudo as que filtram infravermelhos. A diferença sente-se mais no carro parado ao sol."
+  ]
+ ]
+}

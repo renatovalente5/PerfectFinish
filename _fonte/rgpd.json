@@ -1,0 +1,509 @@
+[
+ {
+  "ficheiro": "583340928_17970514136971860_4195785233347304385_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "586648234_17973073550971860_2160209288106207454_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "586895169_17971158155971860_7944933632645727716_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.662,
+    "y": 0.548,
+    "w": 0.072,
+    "h": 0.082,
+    "legivel": false,
+    "nota": "Matricula traseira do Smart vermelho: chapa branca com banda azul UE a esquerda (matricula real, nao e a chapa PERFECT FINISH). Ampliada 10x continua a ser so manchas escuras - caracteres nao legiveis. Recomenda-se desfocar por precaucao."
+   }
+  ]
+ },
+ {
+  "ficheiro": "586907712_17970514118971860_259316392826645513_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "587269271_17971158119971860_4703237053757845154_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "587273598_17971588709971860_266063848841048190_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.15,
+    "y": 0.68,
+    "w": 0.128,
+    "h": 0.128,
+    "legivel": false,
+    "nota": "Traseira do Porsche 911 preto: zona da chapa de matricula por baixo da barra de luzes, vista num angulo muito obliquo. Depois de rodar 45 graus e esticar veem-se letras espacadas (tipo PORSCHE) e um bloco de caracteres grandes escuros que corresponde a chapa; nao consegui ler nenhum caractere com confianca. Caixa cobre toda a zona de lettering/chapa."
+   },
+   {
+    "tipo": "matricula",
+    "x": 0.64,
+    "y": 0.373,
+    "w": 0.042,
+    "h": 0.032,
+    "legivel": false,
+    "nota": "Carrinha azul-petroleo estacionada na rua, vista pela porta aberta do estudio; traseira virada para a camara, matricula na posicao esperada mas com apenas ~10x4 px no original - completamente ilegivel."
+   }
+  ]
+ },
+ {
+  "ficheiro": "587278049_17971588673971860_2167324914548833311_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.148,
+    "y": 0.39,
+    "w": 0.124,
+    "h": 0.066,
+    "legivel": false,
+    "nota": "Chapa de matrícula (branca com moldura preta) pousada em cima do carro de ferramentas / bancada ao fundo, à esquerda. Foi provavelmente retirada do Porsche (a traseira do carro não tem chapa montada). Os caracteres estão completamente ilegíveis nesta resolução, mas convém desfocar por precaução."
+   }
+  ]
+ },
+ {
+  "ficheiro": "587283876_17973073541971860_7688685338855490835_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "587295689_17971158185971860_7292877206034409138_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.185,
+    "y": 0.73,
+    "w": 0.1,
+    "h": 0.1,
+    "legivel": false,
+    "nota": "Matrícula dianteira do Smart Fortwo vermelho, no pára-choques inferior esquerdo. Vista num ângulo muito oblíquo e desfocada: vê-se a chapa branca com algumas manchas escuras, mas nenhum caracter é legível. Não é possível confirmar se é uma matrícula real ou a chapa da marca."
+   }
+  ]
+ },
+ {
+  "ficheiro": "587302582_17971588718971860_1348839172867470963_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.266,
+    "y": 0.393,
+    "w": 0.054,
+    "h": 0.054,
+    "legivel": false,
+    "nota": "Matrícula dianteira do carro escuro (tipo Tesla) estacionado ao fundo, no canto dianteiro direito: vê-se claramente a banda azul da UE e o início da parte branca. Demasiado pequena (poucos pixéis no original) para ler qualquer caracter."
+   }
+  ]
+ },
+ {
+  "ficheiro": "587790229_17973073643971860_2856242406605659251_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "587790571_17973073655971860_575372438502725441_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "588974130_17971911569971860_1420629852083680589_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "589904847_17971911533971860_2374812177700564028_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "589920348_17974495058971860_7679408370636709912_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "589930959_17971911587971860_8848463916236148705_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0,
+    "y": 0.46,
+    "w": 0.14,
+    "h": 0.11,
+    "legivel": false,
+    "nota": "Viaturas estacionadas no exterior, vistas atraves da porta de vidro a esquerda. Totalmente estouradas pela luz e desfocadas; nao se distingue nenhuma matricula, nem sequer a chapa. Reportado apenas para decisao."
+   }
+  ]
+ },
+ {
+  "ficheiro": "590533684_17973073595971860_2368069209270217046_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "594841248_832763789824056_7311726719929641166_n.jpg",
+  "regioes": []
+ },
+ {
+  "ficheiro": "604292192_17974495076971860_8174140377091490582_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "607655070_17974494953971860_4721798831111901214_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.775,
+    "y": 0.765,
+    "w": 0.225,
+    "h": 0.15,
+    "legivel": true,
+    "nota": "Matrícula portuguesa dianteira do Mercedes Classe A, perfeitamente legível: 38 TG 33 (com banda azul PT à esquerda)."
+   }
+  ]
+ },
+ {
+  "ficheiro": "607712003_17974495067971860_1071396077095583624_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "607941339_17974495049971860_4894071381475526372_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.155,
+    "y": 0.74,
+    "w": 0.175,
+    "h": 0.115,
+    "legivel": true,
+    "nota": "Matrícula portuguesa dianteira do mesmo Mercedes Classe A, legível: 38 TG 33 (o primeiro dígito fica parcialmente tapado pelo suporte, mas lê-se)."
+   }
+  ]
+ },
+ {
+  "ficheiro": "609699517_17976061070971860_6657341093566563077_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "611720322_17976061019971860_5362908072849408738_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "613167516_17976061061971860_4842725631753741760_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "616178981_860813410352427_5229796626534050346_n.jpg",
+  "regioes": []
+ },
+ {
+  "ficheiro": "626041351_17979021758971860_1290451280718760672_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.075,
+    "y": 0.84,
+    "w": 0.115,
+    "h": 0.095,
+    "legivel": false,
+    "nota": "Chapa traseira do Maserati Ghibli, canto inferior esquerdo: existe uma matrícula real montada, mas está muito oblíqua, escura e pequena; só se adivinham 2-3 glifos (algo como \"...EV\"), não é legível. Recomenda-se desfocar mesmo assim por precaução."
+   }
+  ]
+ },
+ {
+  "ficheiro": "626379189_17979021755971860_1708892127252152347_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "646042205_17982712529971860_5600987469761592054_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "649704740_17982712547971860_2163016467223005971_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.495,
+    "y": 0.61,
+    "w": 0.3,
+    "h": 0.115,
+    "legivel": true,
+    "nota": "Matrícula alemã perfeitamente legível na frente do Rolls-Royce Wraith: \"KW WT44\" (banda azul UE com \"D\" à esquerda). Tem obrigatoriamente de ser desfocada."
+   }
+  ]
+ },
+ {
+  "ficheiro": "655755983_17987029754971860_2325507904983006840_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "657415605_17987029757971860_1744951999051401101_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "670005004_939204215846679_8232272140474783359_n.jpg",
+  "regioes": []
+ },
+ {
+  "ficheiro": "670280070_17987904425971860_3599527552858103193_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.665,
+    "y": 0.648,
+    "w": 0.335,
+    "h": 0.112,
+    "legivel": false,
+    "nota": "chapa da marca PERFECT FINISH, não precisa de desfoque"
+   }
+  ]
+ },
+ {
+  "ficheiro": "670879825_17987904458971860_6163868312004744285_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.752,
+    "y": 0.735,
+    "w": 0.248,
+    "h": 0.13,
+    "legivel": false,
+    "nota": "chapa da marca PERFECT FINISH, não precisa de desfoque (cortada pela margem direita da imagem)"
+   }
+  ]
+ },
+ {
+  "ficheiro": "670937424_939204119180022_5890310586571634461_n.jpg",
+  "regioes": []
+ },
+ {
+  "ficheiro": "671144037_17987904413971860_5365086870174639108_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "683632863_17989644086971860_6817468969398902750_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0,
+    "y": 0.383,
+    "w": 0.14,
+    "h": 0.07,
+    "legivel": false,
+    "nota": "Veiculos de terceiros estacionados na rua, vistos pela porta de vidro (um branco, um cinzento/prata e um vermelho). Vistos de cima e desfocados; nenhuma chapa de matricula esta visivel ou legivel, mesmo com ampliacao 12x. Nao precisa de desfoque, fica assinalado para decisao."
+   }
+  ]
+ },
+ {
+  "ficheiro": "683893277_17989644134971860_3028464146793660215_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "684842401_17989644113971860_1067587345206619904_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.835,
+    "y": 0.395,
+    "w": 0.165,
+    "h": 0.15,
+    "legivel": false,
+    "nota": "Ao fundo, pela porta/janela: viaturas claras no exterior e uma viatura escura mais um objeto azul dentro da oficina. Nenhuma matricula visivel nem legivel a 10x. Nao precisa de desfoque, fica assinalado para decisao."
+   }
+  ]
+ },
+ {
+  "ficheiro": "702545272_17992447442971860_6975149195361258559_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "702637580_17992447430971860_4051583233494506440_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "702703137_17992447472971860_6527953656282549697_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.874,
+    "y": 0.325,
+    "w": 0.044,
+    "h": 0.032,
+    "legivel": false,
+    "nota": "Traseira da carrinha branca com lettering 'Perfect Finish' (viatura do proprio estudio), vista pela porta aberta da garagem. A zona da chapa por cima do para-choques esta queimada pela luz e completamente ilegivel a esta escala; nao se distingue um unico caracter."
+   }
+  ]
+ },
+ {
+  "ficheiro": "704653138_17992447481971860_3619975026760368162_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "711720475_17994495053971860_6962342156081003633_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "717417518_17994495062971860_5216683177108800990_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.938,
+    "y": 0.272,
+    "w": 0.05,
+    "h": 0.028,
+    "legivel": false,
+    "nota": "Ao fundo, para la do portao branco da moradia, ve-se um veiculo escuro com uma faixa clara horizontal que aparenta ser a chapa de matricula. Tem cerca de 35x8 px no original, totalmente desfocado; nenhum caracter legivel. Assinalado por precaucao."
+   }
+  ]
+ },
+ {
+  "ficheiro": "717803442_17994495035971860_737483918522152563_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "722560520_17997879359971860_8463115434062830639_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "728184375_17997879422971860_599154334762790918_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.96,
+    "y": 0.648,
+    "w": 0.04,
+    "h": 0.1,
+    "legivel": false,
+    "nota": "Matricula verde de fundo branco/verde com caracteres brancos (tipo matricula temporaria/exportacao) na traseira do Ferrari Roma, cortada pelo bordo direito da imagem; so se veem 1-2 glifos parciais (parece um M/W), impossivel ler a matricula completa. NAO e a chapa da marca PERFECT FINISH. Recomendo desfocar na mesma por seguranca."
+   },
+   {
+    "tipo": "matricula",
+    "x": 0.902,
+    "y": 0.402,
+    "w": 0.04,
+    "h": 0.026,
+    "legivel": false,
+    "nota": "Mancha clara na traseira de um SUV escuro estacionado ao fundo (atras do Ferrari) compativel com chapa de matricula; a esta escala esta completamente ilegivel."
+   }
+  ]
+ },
+ {
+  "ficheiro": "730223067_17997879413971860_6844649805494324508_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "731104902_17998627604971860_5348667718141208795_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.365,
+    "y": 0.727,
+    "w": 0.245,
+    "h": 0.066,
+    "legivel": true,
+    "nota": "Matricula francesa perfeitamente legivel: BZ-75-DG (banda azul UE 'F' a esquerda), na frente do Mercedes CLA preto. Caixa inclui a banda azul da UE."
+   }
+  ]
+ },
+ {
+  "ficheiro": "731572905_17998627640971860_285959442150668008_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.716,
+    "y": 0.679,
+    "w": 0.146,
+    "h": 0.101,
+    "legivel": true,
+    "nota": "Mesma matricula francesa BZ-75-DG, agora em perspetiva/inclinada na frente do Mercedes CLA; le-se sem dificuldade. Caixa cobre a chapa inclinada de canto a canto, incluindo a banda azul UE."
+   }
+  ]
+ },
+ {
+  "ficheiro": "731736079_17998627454971860_1154825607914488529_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "735210714_17998627631971860_1124959244390461588_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.14,
+    "y": 0.653,
+    "w": 0.085,
+    "h": 0.088,
+    "legivel": false,
+    "nota": "Matricula traseira do Mercedes CLA Shooting Brake (provavelmente a mesma BZ-75-DG), vista num angulo muito obliquo e queimada pelo contraluz; mesmo com autocontraste e ampliacao 9x nao se le nenhum caracter. Recomendo desfocar na mesma."
+   }
+  ]
+ },
+ {
+  "ficheiro": "765035192_18004351403971860_8883985658044931369_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.24,
+    "y": 0.727,
+    "w": 0.175,
+    "h": 0.19,
+    "legivel": false,
+    "nota": "chapa da marca PERFECT FINISH, não precisa de desfoque — chapa preta com logótipo e texto dourado \"PERFECT FINISH\" no Lotus branco (frente)"
+   }
+  ]
+ },
+ {
+  "ficheiro": "766147178_18004351391971860_932326772825518731_n.webp",
+  "regioes": []
+ },
+ {
+  "ficheiro": "766304854_18004351412971860_7119187554577997777_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.253,
+    "y": 0.664,
+    "w": 0.198,
+    "h": 0.155,
+    "legivel": false,
+    "nota": "chapa da marca PERFECT FINISH, não precisa de desfoque — lê-se claramente \"PERFECT FINISH\" com o logótipo dourado, frente do Lotus branco"
+   }
+  ]
+ },
+ {
+  "ficheiro": "775213370_18005948114971860_7927521919081615125_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0.156,
+    "y": 0.67,
+    "w": 0.088,
+    "h": 0.08,
+    "legivel": false,
+    "nota": "matrícula real amarela (estilo luxemburguês) na traseira esquerda do Mustang; carateres não decifráveis a esta escala (muito oblíqua e desfocada), mas é matrícula verdadeira — recomenda-se desfoque à mesma"
+   }
+  ]
+ },
+ {
+  "ficheiro": "777824160_18005948141971860_1336625160018677559_n.webp",
+  "regioes": [
+   {
+    "tipo": "matricula",
+    "x": 0,
+    "y": 0.873,
+    "w": 0.075,
+    "h": 0.127,
+    "legivel": true,
+    "nota": "matrícula real amarela (estilo luxemburguês) na frente do Mustang, cortada pela margem esquerda; leem-se os últimos carateres \"549\" (possivelmente \"649\")"
+   },
+   {
+    "tipo": "rosto",
+    "x": 0.795,
+    "y": 0.3,
+    "w": 0.09,
+    "h": 0.26,
+    "legivel": false,
+    "nota": "pessoa de pé no vão da porta ao fundo (roupa azul, braço/pele visível); a cabeça fica em sombra e tapada pela ombreira — rosto não identificável. Reportado para decisão"
+   }
+  ]
+ },
+ {
+  "ficheiro": "779123948_18005948150971860_4676901082886044121_n.webp",
+  "regioes": []
+ }
+]

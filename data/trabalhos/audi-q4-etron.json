@@ -1,0 +1,15 @@
+{
+ "slug": "audi-q4-etron",
+ "veiculo": "Audi Q4 e-tron",
+ "servico": "Polimento e proteção",
+ "pagina": "car-detailing",
+ "ordem": 10,
+ "legenda": "Preto trabalhado até refletir o teto sem uma distorção.",
+ "fotos": [
+  "audi-q4-etron-1",
+  "audi-q4-etron-2",
+  "audi-q4-etron-3"
+ ],
+ "destaque": true,
+ "publicado": true
+}

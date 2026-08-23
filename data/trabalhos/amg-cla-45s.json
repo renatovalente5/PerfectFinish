@@ -1,0 +1,15 @@
+{
+ "slug": "amg-cla-45s",
+ "veiculo": "Mercedes-AMG CLA 45 S",
+ "servico": "Envelopamento",
+ "pagina": "envelopamento",
+ "ordem": 3,
+ "legenda": "Do branco de origem ao grafite acetinado integral, com desmontagem nas arestas e recortes. Pinças em vermelho.",
+ "fotos": [
+  "amg-cla-45s-1",
+  "amg-cla-45s-2",
+  "amg-cla-45s-3"
+ ],
+ "destaque": true,
+ "publicado": true
+}
