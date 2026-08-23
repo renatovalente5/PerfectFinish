@@ -187,15 +187,6 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.02
 }
 
 .cabeca-seccao { margin-bottom: var(--e-8); }
-/* Título à esquerda, botão à direita — e em coluna quando não cabe. */
-.cabeca-seccao--linha {
-  display: flex; flex-wrap: wrap; gap: var(--e-5);
-  align-items: flex-end; justify-content: space-between;
-}
-/* Sem isto o bloco do título toma a largura toda e empurra o botão para a
-   linha de baixo, mesmo quando havia espaço de sobra ao lado. */
-.cabeca-seccao--linha > div { flex: 1 1 min(100%, 22rem); min-inline-size: 0; }
-.cabeca-seccao--linha > .botao { flex: 0 0 auto; }
 .cabeca-seccao p { color: var(--osso-meio); max-width: 52ch; margin-top: var(--e-4); }
 
 /* Botões ------------------------------------------------------------------ */
@@ -552,73 +543,6 @@ body[data-menu="aberto"] { overflow: hidden; }
   .provas { margin-top: var(--e-6); }
 }
 @media (max-width: 40rem) { .heroi .sobrescrito { display: none; } }
-
-/* ------------------------------------------------------- 07 serviços */
-/* Cartões, e não um índice com miniatura ao passar o rato. O índice era
-   elegante mas obrigava a ler linha a linha, e a miniatura só aparecia no
-   computador e só com o rato em cima — no telemóvel nunca. Quem entra com
-   pressa precisa de ver as cinco coisas de uma vez. */
-.servicos {
-  display: grid; gap: clamp(.6rem, 1.8vw, 1.25rem);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
-}
-@media (min-width: 46rem)  { .servicos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 68rem)  { .servicos { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-
-.servico-cartao { display: flex; }
-.servico-cartao a {
-  position: relative; display: flex; flex-direction: column; justify-content: flex-end;
-  inline-size: 100%; min-block-size: clamp(11rem, 26vw, 15rem);
-  padding: clamp(.85rem, 2.4vw, 1.25rem);
-  border: 1px solid var(--filete-fraco); border-radius: 3px;
-  overflow: clip; text-decoration: none; isolation: isolate;
-  background: var(--carta);
-  transition: border-color .3s var(--curva), translate .3s var(--curva);
-}
-.servico-cartao a:hover, .servico-cartao a:focus-visible {
-  border-color: var(--ouro); translate: 0 -3px;
-}
-.servico-cartao img {
-  position: absolute; inset: 0; z-index: -2;
-  inline-size: 100%; block-size: 100%; object-fit: cover;
-  opacity: .62; transition: opacity .4s var(--curva), scale .5s var(--curva);
-}
-.servico-cartao a:hover img { opacity: .8; scale: 1.05; }
-.servico-cartao a::before {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(to top,
-    color-mix(in oklab, var(--tinta) 92%, transparent) 6%,
-    color-mix(in oklab, var(--tinta) 46%, transparent) 58%,
-    color-mix(in oklab, var(--tinta) 12%, transparent) 100%);
-}
-.servico-cartao .numero {
-  position: absolute; inset-block-start: clamp(.6rem, 2vw, 1rem);
-  inset-inline-end: clamp(.6rem, 2vw, 1rem);
-  font-size: var(--t--2); font-weight: 600; letter-spacing: .04em;
-  color: var(--ouro-alto); opacity: .8;
-}
-.servico-cartao h3 {
-  font-size: clamp(.86rem, 2.3vw, 1.2rem); line-height: 1.1;
-  color: var(--osso);
-  /* Espaço à direita para o título nunca passar por baixo do número. */
-  padding-inline-end: 1.6em;
-  /* «ENVELOPAMENTO» não cabe num cartão de 165 px e o `overflow-wrap` partia-a
-     em «ENVELOPAMEN / TO», que se lê mal. Com hifenização a quebra passa a ser
-     «ENVELOPA- / MENTO». O `lang="pt-PT"` no <html> é o que diz ao navegador
-     que regras usar — sem ele isto não faz nada. */
-  hyphens: auto;
-  text-wrap: initial;
-}
-.servico-cartao p {
-  font-size: clamp(.78rem, 1.9vw, .875rem); line-height: 1.45;
-  color: var(--osso-meio); margin-top: .35rem;
-}
-.servico-cartao .seta {
-  color: var(--ouro); font-size: 1.1rem; line-height: 1;
-  margin-top: .6rem; transition: translate .3s var(--curva);
-}
-.servico-cartao a:hover .seta { translate: .3rem 0; }
 
 /* A lista completa dos 13 serviços. Os cartões acima são as áreas; isto é
    para quem procura o nome exacto — «pintura de travão», «polimento de farol»
@@ -1013,36 +937,6 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .garantias h3 { font-size: var(--t-1); }
 .garantias p { font-size: var(--t--1); line-height: 1.55; }
-
-/* Processo em cartões que se empilham — comunica método, e é o que justifica
-   um preço premium. CSS puro, zero JS. */
-.processo { display: grid; gap: var(--e-5); }
-.etapa {
-  position: sticky; top: calc(var(--cabecalho-baixo) + 1.5rem + var(--i, 0) * .9rem);
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  border-radius: 4px; border: 1px solid var(--filete-fraco);
-  background: linear-gradient(158deg, var(--elevado), var(--carta) 62%);
-  display: grid; gap: var(--e-3);
-}
-.etapa__numero {
-  font-family: var(--letra-titulo);
-  font-size: var(--t--1); font-weight: 600; letter-spacing: .08em;
-  color: var(--ouro);
-}
-.etapa p { color: var(--osso-meio); max-width: 54ch; }
-
-/* Dentro da faixa clara os cartões passam a claros também. Estavam escuros,
-   e como `.claro h3` pinta os títulos de escuro o título ficava preto sobre
-   preto — invisível. Além disso um cartão preto no meio da única faixa clara
-   do site desfazia a pausa que essa faixa existe para dar. */
-.claro .etapa {
-  background: #FBFAF7;
-  border-color: rgb(0 0 0 / .10);
-  box-shadow: 0 .5rem 1.5rem rgb(0 0 0 / .05);
-}
-.claro .etapa__numero { color: var(--ouro-sombra); }   /* 5,70:1 sobre claro */
-.claro .etapa h3 { color: var(--claro-tinta); }
-.claro .etapa p  { color: var(--claro-meio); }
 
 /* -------------------------------------------------------------- 12 loja */
 .produtos {

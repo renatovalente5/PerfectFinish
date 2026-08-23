@@ -233,6 +233,28 @@ if (!definicoes.empresa.titular) {
   aviso("data/definicoes.json: sem o nome civil do titular. Também é exigido pelo artigo 10.º do DL 7/2004.");
 }
 
+/* --------------------------------------------------------- css sem dono */
+/* Uma classe usada no HTML sem regra nenhuma no CSS não dá erro — dá um
+   elemento sem estilo, e isso passa numa captura de ecrã distraída. Entrou
+   assim: ao apagar um bloco de CSS morto levei com ele o `.lista-servicos`,
+   que continuava a ser usado, e a lista dos 13 serviços ficou sem estilo. */
+const folha = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8");
+const declaradas = new Set(
+  [...folha.matchAll(/\.([a-z][a-z0-9_-]*)(?=[\s,:{>~+.\[])/g)].map((m) => m[1])
+);
+const usadas = new Set();
+for (const caminho of paginas) {
+  const html = readFileSync(caminho, "utf8");
+  for (const [, grupo] of html.matchAll(/class="([^"]+)"/g)) {
+    for (const c of grupo.split(/\s+/)) if (c) usadas.add(c);
+  }
+}
+for (const classe of usadas) {
+  if (!declaradas.has(classe)) {
+    falha(`a classe «${classe}» é usada no HTML e não tem nenhuma regra de CSS`);
+  }
+}
+
 /* ------------------------------------------------------------- backoffice */
 /* O `.pages.yml` é validado por Zod no editor do Pages CMS, mas o caminho de
    execução NÃO chama essa validação: um ficheiro com um tipo inventado ou um

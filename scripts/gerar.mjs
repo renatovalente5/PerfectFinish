@@ -156,7 +156,14 @@ const NAV = [
 ];
 
 /* -------------------------------------------------------------- estrutura */
-const CSS = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8");
+/* A folha vai embutida em cada página, portanto os comentários iam com ela —
+   e esta folha é muito comentada de propósito. Os comentários servem quem lê o
+   ficheiro; não servem ninguém no HTML. Ficam na fonte e saem no embutido.
+   (O grão é um data URI e não contém `/*`, portanto isto não lhe toca.) */
+const CSS = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8")
+  .replace(/\/\*[\s\S]*?\*\//g, "")
+  .replace(/\n{3,}/g, "\n\n")
+  .trim();
 
 function cabecalho(atual) {
   // Só a Loja recebe a marca de «página actual». As âncoras não: estando
