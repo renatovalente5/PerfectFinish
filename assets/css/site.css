@@ -55,7 +55,7 @@
   --claro-meio:  #5C5550;
 
   /* TIPO */
-  --letra-titulo: "Archivo Expanded", "Archivo", system-ui, sans-serif;
+  --letra-titulo: "Archivo", system-ui, sans-serif;
   --letra-texto:  "Inter Tight", system-ui, -apple-system, sans-serif;
 
   --t--2: .6875rem;
@@ -135,7 +135,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 h1, h2, h3, h4 {
   font-family: var(--letra-titulo);
-  font-stretch: 125%;
   text-transform: uppercase;
   text-wrap: balance;
   font-weight: 700;
@@ -144,17 +143,17 @@ h1, h2, h3, h4 {
      o cliente escrever um nome comprido no backoffice para partir a grelha. */
   overflow-wrap: break-word;
 }
-h1 { font-size: var(--t-5); line-height: .94; letter-spacing: -.005em; }
-h2 { font-size: var(--t-4); line-height: 1;   letter-spacing: -.002em; }
-h3 { font-size: var(--t-2); line-height: 1.14; letter-spacing: .012em; font-weight: 600; }
-h4 { font-size: var(--t-1); line-height: 1.2;  letter-spacing: .02em;  font-weight: 600; }
+h1 { font-size: var(--t-5); line-height: .92; letter-spacing: -.028em; }
+h2 { font-size: var(--t-4); line-height: .98; letter-spacing: -.024em; }
+h3 { font-size: var(--t-2); line-height: 1.14; letter-spacing: -.012em; font-weight: 600; }
+h4 { font-size: var(--t-1); line-height: 1.2;  letter-spacing: -.008em; font-weight: 600; }
 p  { text-wrap: pretty; }
 
 /* O <h1> do herói é o maior tipo da página. Nas páginas interiores o título
    principal também tem de ser um <h1> (um por página, por SEO e por leitores
    de ecrã), mas à escala de um <h2> — senão «Política de Privacidade» sai do
    tamanho de «PROTEÇÃO ABSOLUTA». */
-h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002em; }
+h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.024em; }
 
 /* Salto para o conteúdo, para quem navega por teclado. */
 .saltar {
@@ -175,9 +174,9 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002e
    bloco. É o elemento que mais faz o site parecer uma marca e não um modelo. */
 .sobrescrito {
   display: flex; align-items: center; gap: var(--e-3);
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t--2); font-weight: 600;
-  letter-spacing: .4em; text-transform: uppercase;
+  letter-spacing: .14em; text-transform: uppercase;
   color: var(--ouro);
   margin-bottom: var(--e-5);
 }
@@ -188,16 +187,25 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002e
 }
 
 .cabeca-seccao { margin-bottom: var(--e-8); }
+/* Título à esquerda, botão à direita — e em coluna quando não cabe. */
+.cabeca-seccao--linha {
+  display: flex; flex-wrap: wrap; gap: var(--e-5);
+  align-items: flex-end; justify-content: space-between;
+}
+/* Sem isto o bloco do título toma a largura toda e empurra o botão para a
+   linha de baixo, mesmo quando havia espaço de sobra ao lado. */
+.cabeca-seccao--linha > div { flex: 1 1 min(100%, 22rem); min-inline-size: 0; }
+.cabeca-seccao--linha > .botao { flex: 0 0 auto; }
 .cabeca-seccao p { color: var(--osso-meio); max-width: 52ch; margin-top: var(--e-4); }
 
 /* Botões ------------------------------------------------------------------ */
 .botao {
   display: inline-flex; align-items: center; gap: .6em;
   padding: .95em 1.7em;
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t--1); font-weight: 600;
-  letter-spacing: .16em; text-transform: uppercase;
-  text-decoration: none; border-radius: 2px;
+  letter-spacing: .04em; text-transform: uppercase;
+  text-decoration: none; border-radius: 3px;
   transition: background-color .22s var(--curva), color .22s var(--curva),
               border-color .22s var(--curva), translate .22s var(--curva);
 }
@@ -303,7 +311,7 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002e
 }
 .marca img { inline-size: auto; transition: block-size .38s var(--curva); }
 .marca__escudo { block-size: var(--marca-escudo, clamp(3rem, 6vw, 4.6rem)); }
-.marca__nome   { block-size: var(--marca-nome, clamp(.95rem, 1.9vw, 1.5rem)); }
+.marca__nome   { block-size: var(--marca-nome, clamp(.9rem, 1.7vw, 1.35rem)); }
 
 .cabecalho[data-encolhido="sim"] .marca {
   --marca-escudo: clamp(2.1rem, 3.6vw, 2.7rem);
@@ -316,9 +324,9 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002e
 
 .navegacao { display: flex; align-items: center; gap: clamp(1rem, 2.6vw, 2.4rem); }
 .navegacao a {
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t--1); font-weight: 600;
-  letter-spacing: .16em; text-transform: uppercase;
+  letter-spacing: .05em; text-transform: uppercase;
   text-decoration: none; color: var(--osso-meio);
   padding-block: .4rem; position: relative;
   transition: color .2s var(--curva);
@@ -384,7 +392,7 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002e
   }
   .menu__lista a {
     display: flex; align-items: baseline; gap: var(--e-4);
-    font-family: var(--letra-titulo); font-stretch: 125%;
+    font-family: var(--letra-titulo);
     font-size: clamp(1.75rem, 8vw, 2.75rem); font-weight: 700;
     line-height: 1.05; letter-spacing: .01em; text-transform: uppercase;
     text-decoration: none; color: var(--osso);
@@ -393,7 +401,7 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: 1; letter-spacing: -.002e
   }
   .menu__lista a[aria-current="page"] { color: var(--ouro-alto); }
   .menu__lista .numero {
-    font-size: var(--t--2); font-weight: 600; letter-spacing: .2em;
+    font-size: var(--t--2); font-weight: 600; letter-spacing: .08em;
     color: var(--ouro-sombra); flex: none;
   }
   .menu__pe {
@@ -429,24 +437,35 @@ body[data-menu="aberto"] { overflow: hidden; }
 /* --------------------------------------------------------------- 06 herói */
 .heroi {
   position: relative;
-  min-block-size: min(100svh, 54rem);
-  padding-block: calc(var(--cabecalho-alto) + var(--e-8)) var(--e-9);
+  min-block-size: min(100svh, 52rem);
+  padding-block: calc(var(--cabecalho-alto) + var(--e-7)) var(--e-8);
   display: flex; align-items: center;
   overflow: clip;
 }
-/* Luz quente que cai do topo, como o reflexo das luminárias hexagonais da
-   oficina. Substitui a fotografia que as imagens a 414 px não aguentam. */
-.heroi::before {
-  content: ""; position: absolute; z-index: 0;
-  inset-block-start: -30%; inset-inline-start: 50%; translate: -50% 0;
-  inline-size: min(120rem, 190%); aspect-ratio: 1;
-  background: radial-gradient(circle at 50% 42%,
-    color-mix(in oklab, var(--ouro) 17%, transparent) 0%,
-    color-mix(in oklab, var(--ouro) 6%, transparent) 26%,
-    transparent 58%);
-  pointer-events: none;
+
+/* A IMAGEM DE FUNDO.
+   Não é uma fotografia esticada — é um mosaico composto em
+   `scripts/capa.py`, onde cada peça fica ao tamanho quase nativo. Com
+   fotografias de 414 px, esticar uma só até 2560 px dava uma ampliação de
+   seis vezes e via-se logo.
+   O escurecimento já vem gravado na imagem (com inclinação, do lado do
+   texto para o lado oposto), porque um degradé por CSS por cima obrigava a
+   um segundo elemento e a mais uma camada a compor. */
+.heroi__fundo {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
 }
-.heroi__interior { position: relative; z-index: 1; }
+.heroi__fundo img {
+  inline-size: 100%; block-size: 100%; object-fit: cover;
+  object-position: 62% 50%;
+}
+/* Fecho para o preto no rodapé do herói, para a secção seguinte entrar sem
+   uma aresta. */
+.heroi::after {
+  content: ""; position: absolute; z-index: 1; inset-inline: 0; bottom: 0;
+  block-size: 30%; pointer-events: none;
+  background: linear-gradient(to top, var(--tinta), transparent);
+}
+.heroi__interior { position: relative; z-index: 2; }
 
 .heroi h1 { margin-block: var(--e-5) var(--e-6); }
 .heroi h1 span + span { margin-top: -.06em; }
@@ -463,13 +482,80 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .provas li { display: grid; gap: .15rem; }
 .provas b {
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t-2); font-weight: 700; color: var(--ouro-alto);
   line-height: 1;
 }
 .provas span { font-size: var(--t--1); color: var(--osso-fraco); letter-spacing: .04em; }
 
-/* -------------------------------------------------- 07 índice de serviços */
+/* ------------------------------------------------------- 07 serviços */
+/* Cartões, e não um índice com miniatura ao passar o rato. O índice era
+   elegante mas obrigava a ler linha a linha, e a miniatura só aparecia no
+   computador e só com o rato em cima — no telemóvel nunca. Quem entra com
+   pressa precisa de ver as cinco coisas de uma vez. */
+.servicos {
+  display: grid; gap: clamp(.6rem, 1.8vw, 1.25rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+@media (min-width: 46rem)  { .servicos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 68rem)  { .servicos { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+.servico-cartao { display: flex; }
+.servico-cartao a {
+  position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+  inline-size: 100%; min-block-size: clamp(11rem, 26vw, 15rem);
+  padding: clamp(.85rem, 2.4vw, 1.25rem);
+  border: 1px solid var(--filete-fraco); border-radius: 3px;
+  overflow: clip; text-decoration: none; isolation: isolate;
+  background: var(--carta);
+  transition: border-color .3s var(--curva), translate .3s var(--curva);
+}
+.servico-cartao a:hover, .servico-cartao a:focus-visible {
+  border-color: var(--ouro); translate: 0 -3px;
+}
+.servico-cartao img {
+  position: absolute; inset: 0; z-index: -2;
+  inline-size: 100%; block-size: 100%; object-fit: cover;
+  opacity: .62; transition: opacity .4s var(--curva), scale .5s var(--curva);
+}
+.servico-cartao a:hover img { opacity: .8; scale: 1.05; }
+.servico-cartao a::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(to top,
+    color-mix(in oklab, var(--tinta) 92%, transparent) 6%,
+    color-mix(in oklab, var(--tinta) 46%, transparent) 58%,
+    color-mix(in oklab, var(--tinta) 12%, transparent) 100%);
+}
+.servico-cartao .numero {
+  position: absolute; inset-block-start: clamp(.6rem, 2vw, 1rem);
+  inset-inline-end: clamp(.6rem, 2vw, 1rem);
+  font-size: var(--t--2); font-weight: 600; letter-spacing: .04em;
+  color: var(--ouro-alto); opacity: .8;
+}
+.servico-cartao h3 {
+  font-size: clamp(.86rem, 2.3vw, 1.2rem); line-height: 1.1;
+  color: var(--osso);
+  /* Espaço à direita para o título nunca passar por baixo do número. */
+  padding-inline-end: 1.6em;
+  /* «ENVELOPAMENTO» não cabe num cartão de 165 px e o `overflow-wrap` partia-a
+     em «ENVELOPAMEN / TO», que se lê mal. Com hifenização a quebra passa a ser
+     «ENVELOPA- / MENTO». O `lang="pt-PT"` no <html> é o que diz ao navegador
+     que regras usar — sem ele isto não faz nada. */
+  hyphens: auto;
+  text-wrap: initial;
+}
+.servico-cartao p {
+  font-size: clamp(.78rem, 1.9vw, .875rem); line-height: 1.45;
+  color: var(--osso-meio); margin-top: .35rem;
+}
+.servico-cartao .seta {
+  color: var(--ouro); font-size: 1.1rem; line-height: 1;
+  margin-top: .6rem; transition: translate .3s var(--curva);
+}
+.servico-cartao a:hover .seta { translate: .3rem 0; }
+
+/* -------------------------------------------------- 07b índice de serviços */
 .indice { list-style: none; counter-reset: servico; }
 .indice li { counter-increment: servico; border-top: 1px solid var(--filete-fraco); }
 .indice li:last-child { border-bottom: 1px solid var(--filete-fraco); }
@@ -484,8 +570,8 @@ body[data-menu="aberto"] { overflow: hidden; }
 .indice a:hover { background: color-mix(in oklab, var(--ouro) 5%, transparent); }
 
 .indice .numero {
-  font-family: var(--letra-titulo); font-stretch: 125%;
-  font-size: var(--t--1); font-weight: 600; letter-spacing: .1em;
+  font-family: var(--letra-titulo);
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .04em;
   color: var(--ouro-sombra);
   align-self: start; padding-top: .45em;
 }
@@ -562,8 +648,8 @@ body[data-menu="aberto"] { overflow: hidden; }
 .comparador__etiqueta {
   position: absolute; top: var(--e-4); z-index: 2;
   padding: .3em .7em; pointer-events: none;
-  font-family: var(--letra-titulo); font-stretch: 125%;
-  font-size: var(--t--2); font-weight: 600; letter-spacing: .2em;
+  font-family: var(--letra-titulo);
+  font-size: var(--t--2); font-weight: 600; letter-spacing: .1em;
   text-transform: uppercase;
   background: color-mix(in oklab, var(--tinta) 78%, transparent);
   backdrop-filter: blur(6px);
@@ -576,12 +662,12 @@ body[data-menu="aberto"] { overflow: hidden; }
 .par { display: grid; gap: var(--e-5); }
 .par figcaption { display: grid; gap: .2rem; }
 .par .veiculo {
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
   letter-spacing: .03em;
 }
 .par .servico {
-  font-size: var(--t--2); letter-spacing: .22em; text-transform: uppercase;
+  font-size: var(--t--2); letter-spacing: .1em; text-transform: uppercase;
   color: var(--ouro); font-weight: 600;
 }
 .par .legenda { color: var(--osso-fraco); font-size: var(--t--1); max-width: 46ch; }
@@ -645,7 +731,7 @@ body[data-menu="aberto"] { overflow: hidden; }
   min-inline-size: 1.55rem; block-size: 1.55rem;
   padding-inline: .35rem; border-radius: 1rem;
   display: grid; place-items: center;
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: .625rem; font-weight: 600; letter-spacing: .04em;
   color: var(--ouro-alto);
   background: color-mix(in oklab, var(--tinta) 72%, transparent);
@@ -660,12 +746,12 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: grid; gap: .1rem;
 }
 .obra .veiculo {
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: clamp(.68rem, 2.1vw, .8125rem); font-weight: 600; letter-spacing: .03em;
   text-transform: uppercase; line-height: 1.15;
 }
 .obra .servico {
-  font-size: clamp(.55rem, 1.7vw, .625rem); letter-spacing: .16em; text-transform: uppercase;
+  font-size: clamp(.58rem, 1.8vw, .66rem); letter-spacing: .08em; text-transform: uppercase;
   color: var(--ouro); font-weight: 600;
 }
 
@@ -737,39 +823,60 @@ body[data-menu="aberto"] { overflow: hidden; }
 /* -------------------------------------------------------- 10 avaliações */
 .avaliacoes {
   display: grid; gap: var(--e-7);
-  align-items: center;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
 }
-@media (min-width: 52rem) { .avaliacoes { grid-template-columns: auto 1fr; gap: var(--e-9); } }
+@media (min-width: 58rem) {
+  .avaliacoes { grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: var(--e-8); }
+}
 
-.nota {
-  display: grid; gap: var(--e-2); justify-items: start;
-  padding-inline-end: var(--e-7);
-}
+.nota { display: grid; gap: var(--e-4); justify-items: start; }
+.nota__linha { display: flex; align-items: center; gap: var(--e-4); }
 .nota__valor {
-  font-family: var(--letra-titulo); font-stretch: 125%;
-  font-size: clamp(3.5rem, 12vw, 6rem); font-weight: 700; line-height: .85;
-  color: var(--ouro-alto);
+  font-family: var(--letra-titulo);
+  font-size: clamp(3rem, 8vw, 4.25rem); font-weight: 700; line-height: .85;
+  letter-spacing: -.03em;
 }
-.nota__estrelas { color: var(--ouro); letter-spacing: .18em; font-size: var(--t-1); }
-.nota__conta { color: var(--osso-fraco); font-size: var(--t--1); }
+.nota__conta { display: block; font-size: var(--t--1); margin-top: .25rem; }
 
-.testemunhos { display: grid; gap: var(--e-5); }
-.testemunho {
-  padding: var(--e-5); border-radius: 3px;
-  border: 1px solid var(--filete-fraco); background: var(--carta);
+.estrelas { display: inline-flex; gap: .1em; }
+.estrelas svg { inline-size: 1em; block-size: 1em; color: var(--ouro); }
+.nota .estrelas { font-size: 1.05rem; }
+
+.criticas {
+  display: grid; gap: var(--e-4);
+  grid-template-columns: minmax(0, 1fr);
 }
-.testemunho blockquote { font-size: var(--t-1); line-height: 1.5; }
-.testemunho blockquote::before { content: "«"; color: var(--ouro); margin-inline-end: .1em; }
-.testemunho blockquote::after  { content: "»"; color: var(--ouro); margin-inline-start: .1em; }
-.testemunho figcaption {
-  margin-top: var(--e-3); font-size: var(--t--1); color: var(--osso-fraco);
-  letter-spacing: .04em;
+@media (min-width: 40rem) { .criticas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 76rem) { .criticas { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.critica {
+  display: grid; gap: var(--e-3); align-content: start;
+  padding: clamp(1rem, 2.6vw, 1.5rem);
+  border: 1px solid var(--filete-fraco); border-radius: 3px;
+  background: var(--carta);
 }
+.critica .estrelas { font-size: .8rem; }
+.critica blockquote { font-size: var(--t-0); line-height: 1.5; }
+.critica figcaption { display: grid; gap: .1rem; }
+.critica__autor { font-weight: 600; font-size: var(--t--1); }
+.critica__quando, .critica__nota { font-size: var(--t--2); color: var(--osso-fraco); }
+
 .avaliacoes__nota-legal {
-  font-size: var(--t--2); color: var(--osso-fraco); margin-top: var(--e-4);
-  max-width: 60ch;
+  font-size: var(--t--2); line-height: 1.6; margin-top: var(--e-6);
+  max-width: 78ch; color: var(--osso-fraco);
 }
+
+/* Na faixa clara tudo isto tem de mudar de tinta. */
+.claro .nota__valor { color: var(--claro-tinta); }
+.claro .nota__conta, .claro .critica__quando, .claro .critica__nota,
+.claro .avaliacoes__nota-legal { color: var(--claro-meio); }
+.claro .critica {
+  background: #FBFAF7; border-color: rgb(0 0 0 / .10);
+  box-shadow: 0 .4rem 1.2rem rgb(0 0 0 / .04);
+}
+.claro .critica blockquote, .claro .critica__autor { color: var(--claro-tinta); }
+.claro .estrelas svg { color: #B08828; }   /* 5,3:1 sobre claro */
 
 /* ------------------------------------------------------- 11 faixa clara */
 .claro {
@@ -784,13 +891,13 @@ body[data-menu="aberto"] { overflow: hidden; }
 .claro .filete { background: linear-gradient(90deg, transparent, rgb(0 0 0 / .14) 18%, rgb(0 0 0 / .14) 82%, transparent); }
 
 .garantias { list-style: none; display: grid; gap: var(--e-5); counter-reset: g; }
-@media (min-width: 42rem) { .garantias { grid-template-columns: repeat(2, 1fr); gap: var(--e-6) var(--e-7); } }
-@media (min-width: 64rem) { .garantias { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 42rem) { .garantias { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-6) var(--e-7); } }
+@media (min-width: 64rem) { .garantias { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .garantias li { counter-increment: g; display: grid; gap: var(--e-2); }
 .garantias li::before {
   content: "0" counter(g);
-  font-family: var(--letra-titulo); font-stretch: 125%;
-  font-size: var(--t--1); font-weight: 600; letter-spacing: .14em;
+  font-family: var(--letra-titulo);
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .05em;
   color: var(--ouro-sombra);
 }
 .garantias h3 { font-size: var(--t-1); }
@@ -807,8 +914,8 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: grid; gap: var(--e-3);
 }
 .etapa__numero {
-  font-family: var(--letra-titulo); font-stretch: 125%;
-  font-size: var(--t--1); font-weight: 600; letter-spacing: .18em;
+  font-family: var(--letra-titulo);
+  font-size: var(--t--1); font-weight: 600; letter-spacing: .08em;
   color: var(--ouro);
 }
 .etapa p { color: var(--osso-meio); max-width: 54ch; }
@@ -845,13 +952,13 @@ body[data-menu="aberto"] { overflow: hidden; }
 .produto__imagem img { inline-size: 100%; block-size: 100%; object-fit: cover; }
 .produto__corpo { padding: clamp(.85rem, 3vw, 1.5rem); display: grid; gap: var(--e-2); flex: 1; align-content: start; }
 .produto__familia {
-  font-size: .625rem; letter-spacing: .2em; text-transform: uppercase;
+  font-size: .66rem; letter-spacing: .08em; text-transform: uppercase;
   color: var(--ouro); font-weight: 600;
 }
 .produto h3 { font-size: var(--t-1); }
 .produto p { font-size: var(--t--1); color: var(--osso-fraco); line-height: 1.5; }
 .produto__preco {
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t-1); font-weight: 700; color: var(--ouro-alto);
   margin-top: auto; padding-top: var(--e-3);
 }
@@ -873,23 +980,27 @@ body[data-menu="aberto"] { overflow: hidden; }
 .claro .aviso strong { color: var(--claro-tinta); }
 
 /* --------------------------------------------------- 13 contactos e mapa */
-.contactos { display: grid; gap: var(--e-8); }
-@media (min-width: 56rem) { .contactos { grid-template-columns: 1fr 1.15fr; gap: var(--e-9); } }
+/* `minmax(0, …)` em toda a linha. Um `1fr` sozinho é `minmax(auto, 1fr)`, e o
+   `auto` não deixa a coluna encolher abaixo do conteúdo — foi o que fez o
+   bloco de contactos ficar com 427 px dentro de um ecrã de 305 e arrastar a
+   página toda para o lado. */
+.contactos { display: grid; gap: var(--e-8); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 56rem) { .contactos { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: var(--e-9); } }
 
-.dados { display: grid; gap: var(--e-6); align-content: start; }
-.dado { display: grid; grid-template-columns: auto 1fr; gap: var(--e-4); align-items: start; }
+.dados { display: grid; gap: var(--e-6); align-content: start; min-inline-size: 0; }
+.dado { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--e-4); align-items: start; }
 .dado svg { inline-size: 1.15rem; block-size: 1.15rem; color: var(--ouro); margin-top: .25rem; flex: none; }
 .dado dt {
-  font-size: var(--t--2); letter-spacing: .2em; text-transform: uppercase;
+  font-size: var(--t--2); letter-spacing: .1em; text-transform: uppercase;
   color: var(--osso-fraco); font-weight: 600; margin-bottom: .2rem;
 }
-.dado dd { margin: 0; }
+.dado dd { margin: 0; min-inline-size: 0; overflow-wrap: break-word; }
 .dado a { text-decoration: none; }
 .dado a:hover { color: var(--ouro-alto); }
 .custo-chamada { display: block; font-size: var(--t--2); color: var(--osso-fraco); margin-top: .1rem; }
 
-.horario { list-style: none; display: grid; gap: .35rem; font-size: var(--t--1); }
-.horario li { display: flex; justify-content: space-between; gap: var(--e-4); max-width: 22rem; }
+.horario { list-style: none; display: grid; gap: .35rem; font-size: var(--t--1); min-inline-size: 0; }
+.horario li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .2rem var(--e-4); max-inline-size: 22rem; }
 .horario li[data-hoje="sim"] { color: var(--ouro-alto); }
 .horario li[data-hoje="sim"] span:first-child::after { content: " · hoje"; color: var(--ouro); font-size: .8em; }
 .horario .dia { color: var(--osso-fraco); }
@@ -899,7 +1010,16 @@ body[data-menu="aberto"] { overflow: hidden; }
    sem consentimento manda o IP do visitante para os Estados Unidos antes de
    ele clicar em coisa nenhuma. */
 .mapa {
-  position: relative; aspect-ratio: 4 / 3; min-block-size: 20rem;
+  position: relative;
+  /* A largura manda, e a altura sai da proporção. Estava ao contrário: com
+     `min-block-size: 20rem` mais `aspect-ratio: 4/3`, a altura mínima de
+     320 px obrigava a uma largura mínima de 427 px — e num ecrã de 320 px o
+     mapa arrastava a página toda para o lado.
+     O `min()` no mínimo de altura garante que ele nunca volta a pedir mais
+     largura do que existe. */
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  min-block-size: min(20rem, 75vw);
   border: 1px solid var(--filete-fraco); border-radius: 3px;
   overflow: clip; background: var(--carta);
   display: grid; place-items: center;
@@ -935,7 +1055,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 .rodape__marca p { color: var(--osso-fraco); max-width: 34ch; }
 
 .rodape h4 {
-  font-size: var(--t--2); letter-spacing: .24em; color: var(--osso-fraco);
+  font-size: var(--t--2); letter-spacing: .1em; color: var(--osso-fraco);
   margin-bottom: var(--e-4); font-weight: 600;
 }
 .rodape ul { list-style: none; display: grid; gap: var(--e-3); }
@@ -1036,7 +1156,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 .faq summary {
   display: flex; justify-content: space-between; align-items: center; gap: var(--e-4);
   padding-block: var(--e-4); cursor: pointer; list-style: none;
-  font-family: var(--letra-titulo); font-stretch: 125%;
+  font-family: var(--letra-titulo);
   font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
   letter-spacing: .015em;
 }
@@ -1081,3 +1201,31 @@ body[data-menu="aberto"] { overflow: hidden; }
   .cabecalho, .menu, .cookies, .grao, .progresso, .lupa { display: none !important; }
   body { background: #fff; color: #000; }
 }
+
+
+/* --------------------------------------------------- 18 WhatsApp flutuante */
+/* Canto inferior direito, em todas as páginas. É o caminho mais curto para o
+   contacto e é por aí que este negócio fecha trabalho.
+   Fica acima do rodapé mas ABAIXO do aviso de cookies e do menu, para não
+   tapar nem um nem outro. */
+.zap-flutuante {
+  position: fixed; z-index: 90;
+  inset-inline-end: clamp(.9rem, 3vw, 1.75rem);
+  inset-block-end: clamp(.9rem, 3vw, 1.75rem);
+  inline-size: 3.5rem; block-size: 3.5rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #1FA855; color: #fff;
+  box-shadow: 0 .5rem 1.5rem rgb(0 0 0 / .45);
+  transition: scale .22s var(--curva), box-shadow .22s var(--curva);
+}
+.zap-flutuante svg { inline-size: 1.75rem; block-size: 1.75rem; }
+.zap-flutuante:hover { scale: 1.07; box-shadow: 0 .7rem 2rem rgb(0 0 0 / .55); }
+/* Enquanto o aviso de cookies está no ecrã, o botão sobe para não ficar por
+   baixo dele no telemóvel. */
+body:has(.cookies) .zap-flutuante { inset-block-end: calc(clamp(.9rem, 3vw, 1.75rem) + 12.5rem); }
+@media (min-width: 40rem) {
+  body:has(.cookies) .zap-flutuante { inset-block-end: clamp(.9rem, 3vw, 1.75rem); }
+}
+/* Com o menu de ecrã inteiro aberto, sai da frente. */
+body[data-menu="aberto"] .zap-flutuante { display: none; }
+@media print { .zap-flutuante { display: none; } }

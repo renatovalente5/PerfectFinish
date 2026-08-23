@@ -131,3 +131,66 @@ Ouro e preto quente, e mais nada.
 **Aviso de cookies.** O site não põe cookies nenhuns. O aviso existe porque o cliente o
 pediu e porque **serve mesmo para alguma coisa**: é o que autoriza carregar o mapa do
 Google. Sem autorização o mapa fica um cartão estático com ligação.
+
+
+---
+
+## Segunda volta — o que o cliente apontou (23-08-2026)
+
+**O defeito grave: nada era clicável.** O `<dialog>` da lupa tinha `display:
+grid` no elemento. O navegador esconde um `popover` fechado com `display:
+none`, e uma regra do autor ganha a essa — ficava um painel de ecrã inteiro,
+invisível, a comer todos os cliques. Explicava por si só os botões e as
+fotografias «que não funcionam». O `display` passa a existir só no estado
+aberto.
+
+**Landing page.** Serviços, Trabalhos e Contactos passam a ser secções da
+página inicial (`#servicos`, `#trabalhos`, `#contactos`). A Loja é a única que
+muda de página. As páginas `/servicos/<slug>/` continuam a existir e no
+sitemap — é por elas que entra quem pesquisa o serviço no Google — só saíram
+do menu.
+
+**Tipo de letra.** O Archivo estava em largura expandida (`font-stretch: 125%`)
+e com tracking até `.4em`. Passou a largura normal e o tracking caiu para
+`.14em` nos sobrescritos, `.04em` nos botões e negativo nos títulos. Era isso
+que fazia as palavras parecerem esticadas.
+
+**Imagem de fundo na capa.** Não podia ser uma fotografia esticada: com
+originais de 414 px, chegar a 2560 px é ampliar seis vezes. `scripts/capa.py`
+compõe um mosaico onde cada peça fica ao tamanho quase nativo, com
+escurecimento inclinado gravado na imagem, foco dourado e vinheta. 22 kB em
+AVIF.
+
+**«Como trabalhamos» removida.** O texto do «sobre» que vivia no cabeçalho
+dessa secção passou para a abertura de «O que fazemos», para não ficar órfão.
+
+**«O que fazemos» refeita.** Era um índice numerado com miniatura ao passar o
+rato — elegante, mas obrigava a ler linha a linha e a miniatura só existia no
+computador e só com o rato em cima. Passou a cinco cartões com fotografia,
+sempre visíveis, duas colunas no telemóvel.
+
+**Avaliações do Google.** As críticas reais do perfil estão no site
+(`data/avaliacoes.json`), com nome próprio e inicial do apelido e sem
+fotografias de perfil — o mínimo de dados pessoais para continuar credível. O
+Worker continua a ser o caminho preferido e, quando ligado, passa a mandar nos
+números.
+
+**Botão de WhatsApp** fixo no canto inferior direito, em todas as páginas.
+Sobe quando o aviso de cookies está no ecrã e desaparece com o menu aberto.
+
+### Responsividade: dois transbordos reais, encontrados a medir
+
+Testado em `iframe` a 320, 360, 390, 430, 600, 768, 834, 1024, 1280, 1440 e
+1920 px, em seis páginas.
+
+1. **`dl.dados` com 427 px num ecrã de 305.** `grid-template-columns: auto 1fr`
+   — e um `1fr` é `minmax(auto, 1fr)`, cujo `auto` não deixa a coluna encolher
+   abaixo do conteúdo. Passou a `minmax(0, 1fr)`, com `min-inline-size: 0` nos
+   descendentes.
+2. **`.mapa` preso a 445 px.** `min-block-size: 20rem` mais
+   `aspect-ratio: 4/3` obrigavam a uma largura mínima de 427 px. A largura
+   passa a mandar e o mínimo de altura leva um `min(20rem, 75vw)`.
+
+Nenhuma das duas era visível numa captura de ecrã do telemóvel — a página
+parecia bem e arrastava para o lado. `scripts/responsivo.mjs` passa a travar a
+publicação nas causas que são aritmética de CSS.

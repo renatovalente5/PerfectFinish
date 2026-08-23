@@ -31,6 +31,7 @@ const D = ler("data/definicoes.json");
 const SERVICOS = lerPasta("data/servicos");
 const TRABALHOS = lerPasta("data/trabalhos").filter((t) => t.publicado !== false);
 const PRODUTOS = lerPasta("data/loja").filter((p) => p.publicado !== false);
+const AVALIACOES = ler("data/avaliacoes.json");
 /* O ficheiro vem do backoffice como objecto (`{ pares: [...] }`); aceita-se
    também o array solto, que é como estava antes de existir o backoffice. */
 const _pares = ler("data/pares.json");
@@ -125,19 +126,30 @@ const svg = (nome, preenchido = false) =>
   `<svg viewBox="0 0 24 24" fill="${preenchido ? "currentColor" : "none"}" stroke="${preenchido ? "none" : "currentColor"}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONE[nome]}</svg>`;
 
 /* -------------------------------------------------------------- navegação */
+/* Serviços, Trabalhos e Contactos são SECÇÕES da página inicial — clicar não
+   sai da página. A Loja é a única que muda de página, por ser outra coisa:
+   produtos, não serviços.
+   As páginas /servicos/<slug>/ continuam a existir e continuam a estar no
+   sitemap: são elas que apanham as pesquisas por serviço no Google. Só não
+   estão no menu. */
 const NAV = [
-  { url: "/servicos/", nome: "Serviços" },
-  { url: "/trabalhos/", nome: "Trabalhos" },
-  { url: "/loja/", nome: "Loja" },
-  { url: "/contactos/", nome: "Contactos" },
+  { url: "/#servicos", nome: "Serviços" },
+  { url: "/#trabalhos", nome: "Trabalhos" },
+  { url: "/loja/", nome: "Loja", pagina: true },
+  { url: "/#contactos", nome: "Contactos" },
 ];
 
 /* -------------------------------------------------------------- estrutura */
 const CSS = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8");
 
 function cabecalho(atual) {
+  // Só a Loja recebe a marca de «página actual». As âncoras não: estando
+  // todas na mesma página, marcar as três ao mesmo tempo não diz nada a
+  // ninguém — e para um leitor de ecrã é ruído, porque `aria-current="page"`
+  // afirma que aquele é o destino em que estamos.
+  const eAtual = (n) => Boolean(n.pagina) && atual === n.url;
   const liga = (n) =>
-    `<a href="${u(n.url)}"${atual === n.url ? ' aria-current="page"' : ""}>${n.nome}</a>`;
+    `<a href="${u(n.url)}"${eAtual(n) ? ' aria-current="page"' : ""}>${n.nome}</a>`;
   return `<div class="progresso" aria-hidden="true"></div>
 <header class="cabecalho" data-encolhido="nao">
  <div class="cabecalho__interior">
@@ -154,7 +166,7 @@ function cabecalho(atual) {
  <div></div>
  <nav aria-label="Menu"><ul class="menu__lista">${NAV.map(
     (n, i) =>
-      `<li><a href="${u(n.url)}"${atual === n.url ? ' aria-current="page"' : ""}><span class="numero">0${i + 1}</span>${n.nome}</a></li>`
+      `<li><a href="${u(n.url)}"${eAtual(n) ? ' aria-current="page"' : ""}><span class="numero">0${i + 1}</span>${n.nome}</a></li>`
   ).join("")}</ul></nav>
  <div class="menu__pe">
   <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" rel="noopener" target="_blank">Pedir orçamento por WhatsApp</a>
@@ -334,9 +346,9 @@ function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, 
 <link rel="apple-touch-icon" href="${u("/assets/img/marca/favicon-180.png")}">
 <link rel="manifest" href="${u("/site.webmanifest")}">
 
-<link rel="preload" as="font" type="font/woff2" crossorigin href="${u("/assets/fonts/archivo-expanded-latin.woff2")}">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="${u("/assets/fonts/archivo-latin.woff2")}">
 <style>
-@font-face{font-family:"Archivo Expanded";src:url("${u("/assets/fonts/archivo-expanded-latin.woff2")}") format("woff2");font-weight:100 900;font-stretch:125%;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Archivo";src:url("${u("/assets/fonts/archivo-latin.woff2")}") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Inter Tight";src:url("${u("/assets/fonts/inter-tight-latin.woff2")}") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 ${CSS}
 </style>
@@ -357,6 +369,8 @@ ${corpo}
 </main>
 ${rodape()}
 ${AVISO_COOKIES}
+<a class="zap-flutuante" href="${zap("Olá! Gostava de pedir um orçamento.")}"
+   target="_blank" rel="noopener" aria-label="Falar por WhatsApp">${svg("zap", true)}</a>
 <dialog class="lupa" id="lupa" popover aria-label="Fotografias do trabalho">
  <button class="lupa__fecho" type="button" popovertarget="lupa" popovertargetaction="hide" aria-label="Fechar">✕</button>
  <div class="lupa__palco">
@@ -374,28 +388,43 @@ ${AVISO_COOKIES}
 /* ============================================================== SECÇÕES == */
 
 function blocoAvaliacoes({ claro = false } = {}) {
-  const estrelas = "★".repeat(5);
-  return `<section class="seccao${claro ? " claro" : ""}">
+  const estrela = (cheia) =>
+    `<svg viewBox="0 0 24 24" fill="${cheia ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICONE.estrela}</svg>`;
+  const estrelas = (n) => `<span class="estrelas" role="img" aria-label="${n} de 5 estrelas">${
+    Array.from({ length: 5 }, (_, i) => estrela(i < n)).join("")}</span>`;
+
+  const critica = (c) => `<figure class="critica">
+   ${estrelas(c.estrelas)}
+   <blockquote>${esc(c.texto)}</blockquote>
+   <figcaption>
+    <span class="critica__autor">${esc(c.autor)}</span>
+    <span class="critica__quando">${esc(c.quando)}</span>
+    ${c.nota_traducao ? `<span class="critica__nota">${esc(c.nota_traducao)}</span>` : ""}
+   </figcaption>
+  </figure>`;
+
+  return `<section class="seccao${claro ? " claro" : ""}" id="avaliacoes">
  <div class="caixa">
-  <p class="sobrescrito">O que dizem</p>
   <div class="avaliacoes" data-avaliacoes="${esc(D.google.endpoint || "")}">
    <div class="nota">
-    <span class="nota__valor">${String(D.google.nota).replace(".", ",")}</span>
-    <span class="nota__estrelas" aria-hidden="true">${estrelas}</span>
-    <span class="nota__conta">${D.google.total} avaliações no Google</span>
-    <a class="botao botao--linha" style="margin-top:1rem" href="${esc(D.google.perfil)}" target="_blank" rel="noopener">Ler no Google <span class="seta">→</span></a>
+    <p class="sobrescrito">Avaliações no Google</p>
+    <div class="nota__linha">
+     <span class="nota__valor">${String(D.google.nota).replace(".", ",")}</span>
+     <div>
+      ${estrelas(5)}
+      <span class="nota__conta">${D.google.total} avaliações</span>
+     </div>
+    </div>
+    <a class="botao ${claro ? "botao--claro" : "botao--linha"}" href="${esc(D.google.perfil)}" target="_blank" rel="noopener">Ver todas no Google <span class="seta">→</span></a>
    </div>
-   <div>
-    <p style="font-size:var(--t-2);line-height:1.35;font-family:var(--letra-titulo);font-stretch:125%;text-transform:uppercase;font-weight:600">
-     ${D.google.total} clientes avaliaram este estúdio com ${String(D.google.nota).replace(".", ",")} em 5.
-    </p>
-    <p class="avaliacoes__nota-legal">
-     A classificação e o número de avaliações vêm do perfil do Perfect Finish no Google.
-     As avaliações são escritas por clientes, no Google, e não são filtradas nem
-     ordenadas por nós — carregue em <em>Ler no Google</em> para as ver todas.
-    </p>
-   </div>
+   <div class="criticas">${AVALIACOES.criticas.map(critica).join("")}</div>
   </div>
+  <p class="avaliacoes__nota-legal">
+   Avaliações escritas por clientes no perfil do Perfect Finish no Google, onde
+   podem ser lidas na íntegra. Reproduzimos aqui algumas das mais recentes, com
+   o nome próprio e a inicial do apelido; a ordem é nossa. Não filtramos nem
+   respondemos por elas — a classificação de ${String(D.google.nota).replace(".", ",")} é a média de todas as ${D.google.total}.
+  </p>
  </div>
 </section>`;
 }
@@ -471,83 +500,85 @@ function cartaoObra(t) {
 
 function inicio() {
   const destaques = TRABALHOS.filter((t) => t.destaque).slice(0, 8);
+
+  const cartaoServico = (sv, i) => `<li class="servico-cartao">
+   <a href="${u(`/servicos/${sv.slug}/`)}">
+    ${sv.imagem ? figura("obras", sv.imagem, "", { medidas: "(min-width: 68rem) 15rem, (min-width: 46rem) 32vw, 48vw" }) : ""}
+    <span class="numero">0${i + 1}</span>
+    <h3>${esc(sv.nome)}</h3>
+    <p>${esc(sv.resumo)}</p>
+    <span class="seta" aria-hidden="true">→</span>
+   </a>
+  </li>`;
+
   const corpo = `
 <section class="heroi">
+ <div class="heroi__fundo" aria-hidden="true">
+  <picture>
+   <source media="(min-width: 48rem)" type="image/avif" srcset="${u("/assets/img/capa/capa-larga.avif")}">
+   <source media="(min-width: 48rem)" type="image/webp" srcset="${u("/assets/img/capa/capa-larga.webp")}">
+   <source type="image/avif" srcset="${u("/assets/img/capa/capa-alta.avif")}">
+   <img src="${u("/assets/img/capa/capa-alta.webp")}" alt="" width="1200" height="1700" fetchpriority="high">
+  </picture>
+ </div>
  <div class="caixa heroi__interior">
   <p class="sobrescrito">${esc(D.marca.reclamo)} · Leiria</p>
   <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
   <p class="heroi__texto">${esc(D.textos.heroi_texto)}</p>
   <div class="accoes">
    <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Pedir orçamento</a>
-   <a class="botao botao--linha" href="${u("/trabalhos/")}">Ver trabalhos <span class="seta">→</span></a>
+   <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
   </div>
   <ul class="provas">
-   <li><b>${String(D.google.nota).replace(".", ",")}</b><span>${D.google.total} avaliações no Google</span></li>
-   <li><b>${SERVICOS.length}</b><span>áreas de especialidade</span></li>
+   <li><b>${String(D.google.nota).replace(".", ",")} ★</b><span>${D.google.total} avaliações no Google</span></li>
+   <li><b>${SERVICOS.length}</b><span>especialidades</span></li>
    <li><b>Leiria</b><span>e toda a região Centro</span></li>
   </ul>
  </div>
 </section>
 
-<section class="seccao">
+<section class="seccao" id="servicos">
  <div class="caixa">
   <div class="cabeca-seccao">
    <p class="sobrescrito">O que fazemos</p>
-   <h2>Cinco especialidades,<br>um só acabamento</h2>
+   <h2>Cinco especialidades</h2>
+   <p>${esc(D.textos.sobre)}</p>
   </div>
-  <ul class="indice">
-   ${SERVICOS.map((s) => `<li><a href="${u(`/servicos/${s.slug}/`)}">
-    <span class="numero"></span>
-    <div><h3>${esc(s.nome)}</h3><p>${esc(s.resumo)}</p></div>
-    ${s.imagem ? `<figure>${figura("obras", s.imagem, `${s.nome} — Perfect Finish Studio`, { medidas: "8rem" })}</figure>` : "<figure></figure>"}
-    <span class="seta" aria-hidden="true">→</span>
-   </a></li>`).join("")}
-  </ul>
+  <ul class="servicos">${SERVICOS.map(cartaoServico).join("")}</ul>
  </div>
 </section>
 
-<section class="seccao">
+<section class="seccao" id="trabalhos">
  <div class="caixa">
   <div class="cabeca-seccao">
    <p class="sobrescrito">Antes e depois</p>
-   <h2>Arraste para ver<br>a diferença</h2>
-   <p>Fotografias dos nossos trabalhos. O mesmo carro, o mesmo enquadramento — só muda o que fizemos.</p>
+   <h2>Arraste para ver a diferença</h2>
+   <p>O mesmo carro, o mesmo enquadramento. Só muda o que fizemos.</p>
   </div>
  </div>
  <div class="pares">${PARES.map(comparador).join("")}</div>
-</section>
 
-<section class="seccao claro">
- <div class="caixa">
-  <div class="cabeca-seccao">
-   <p class="sobrescrito">Como trabalhamos</p>
-   <h2>Método, não pressa</h2>
-   <p>${esc(D.textos.sobre)}</p>
-  </div>
-  <div class="processo">
-   ${[
-      ["Diagnóstico", "Vemos o carro à frente, com luz. Dizemos o que dá para fazer, o que não dá, e o que não vale a pena."],
-      ["Preparação", "Lavagem, descontaminação e proteção do que não é para tratar. É a parte que ninguém fotografa e a que decide o resultado."],
-      ["Execução", "Tira mossas, correção, película ou vinil — com o tempo que cada um exige, e desmontagem onde o remate a pede."],
-      ["Inspeção", "Revisão sob luz rasante antes de o carro sair. Se não passa aqui, não sai."],
-    ].map(([t, p], i) => `<article class="etapa" style="--i:${i}">
-     <span class="etapa__numero">0${i + 1}</span>
-     <h3>${t}</h3><p>${p}</p></article>`).join("")}
-  </div>
- </div>
-</section>
-
-<section class="seccao">
- <div class="caixa">
-  <div class="cabeca-seccao" style="display:flex;flex-wrap:wrap;gap:var(--e-5);align-items:end;justify-content:space-between">
-   <div><p class="sobrescrito">Portefólio</p><h2>Alguns carros<br>que passaram por cá</h2></div>
-   <a class="botao botao--linha" href="${u("/trabalhos/")}">Ver todos <span class="seta">→</span></a>
+ <div class="caixa" style="margin-top:var(--e-9)">
+  <div class="cabeca-seccao cabeca-seccao--linha">
+   <div><p class="sobrescrito">Portefólio</p><h2>Carros que passaram por cá</h2></div>
+   <a class="botao botao--linha" href="${u("/trabalhos/")}">Ver os ${TRABALHOS.length} <span class="seta">→</span></a>
   </div>
   <div class="grelha">${destaques.map(cartaoObra).join("")}</div>
  </div>
 </section>
 
-${blocoAvaliacoes()}
+${blocoAvaliacoes({ claro: true })}
+
+<section class="seccao" id="contactos">
+ <div class="caixa">
+  <div class="cabeca-seccao">
+   <p class="sobrescrito">Contactos</p>
+   <h2>Onde estamos</h2>
+  </div>
+  ${blocoContactos()}
+ </div>
+</section>
+
 ${CTA("Traga-nos o carro", "Diga-nos o que precisa e recebe uma resposta com o que dá para fazer e quanto custa. Sem compromisso.")}`;
 
   return pagina({
@@ -732,11 +763,11 @@ ${CTA("Não encontra o que procura?", "Trabalhamos com mais marcas e formatos do
   });
 }
 
-function contactos() {
-  const corpo = `<section class="seccao" style="padding-top:var(--e-7)">
- <div class="caixa">
-  <div class="cabeca-seccao"><p class="sobrescrito">Contactos</p><h1 class="titulo-pagina">Onde estamos</h1></div>
-  <div class="contactos">
+/** Os contactos, o mapa e a zona de serviço. Usado na página inicial (como
+ *  secção) e na página /contactos/ (que continua a existir para quem chega
+ *  do Google a pesquisar «perfect finish contactos»). */
+function blocoContactos() {
+  return `<div class="contactos">
    <dl class="dados">
     <div class="dado">${svg("telefone")}<div>
      <dt>Telefone</dt>
@@ -756,6 +787,11 @@ function contactos() {
      <dt>Horário</dt>
      <dd><ul class="horario">${D.horario.map((h) => `<li data-dias="${esc(h.indices)}"><span class="dia">${esc(h.dias)}</span><span>${esc(h.horas)}</span></li>`).join("")}</ul></dd>
     </div></div>
+    <div class="dado">${svg("local")}<div>
+     <dt>Zona de serviço</dt>
+     <dd>Leiria, Marinha Grande, Batalha, Pombal, Porto de Mós, Ourém, Fátima,
+     Alcobaça, Nazaré e Caldas da Rainha.</dd>
+    </div></div>
    </dl>
 
    <div>
@@ -768,13 +804,14 @@ function contactos() {
      </div>
     </div>
    </div>
-  </div>
+  </div>`;
+}
 
-  <div style="margin-top:var(--e-9)">
-   <p class="sobrescrito">Zona de serviço</p>
-   <p class="medida" style="color:var(--osso-meio)">Estamos em Cardosos, à saída de Leiria pela estrada de Tomar. Recebemos carros de
-   Leiria, Marinha Grande, Batalha, Pombal, Porto de Mós, Ourém, Fátima, Alcobaça, Nazaré e Caldas da Rainha.</p>
-  </div>
+function contactos() {
+  const corpo = `<section class="seccao" style="padding-top:var(--e-7)">
+ <div class="caixa">
+  <div class="cabeca-seccao"><p class="sobrescrito">Contactos</p><h1 class="titulo-pagina">Onde estamos</h1></div>
+  ${blocoContactos()}
  </div>
 </section>
 ${CTA("Marque connosco", "Diga-nos o que precisa e combinamos o dia. A maioria dos trabalhos fica pronta no próprio dia.")}`;

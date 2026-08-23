@@ -41,6 +41,9 @@ jobs:
       # O travão. Verifica ligações, imagens, o prefixo dos caminhos, o aviso
       # do custo das chamadas, o rodapé legal e o sitemap. Se falhar não se
       # publica — mais vale ficar no ar a versão anterior.
+      - name: Verificar a responsividade do CSS
+        run: node scripts/responsivo.mjs
+
       - name: Auditar antes de publicar
         run: node scripts/auditar.mjs
 
