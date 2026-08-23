@@ -26,8 +26,8 @@ O que funciona, e é o que está aqui:
     assentar e o dourado do texto não competir com a cor dos carros.
 
 Saem duas versões, porque um recorte só não serve às duas orientações:
-  capa-larga.*   2560×1180  para computador (texto à esquerda)
-  capa-alta.*    1200×1650  para telemóvel (texto em cima)
+  capa-larga.*   2560×1180  para computador (véu à esquerda, por CSS)
+  capa-alta.*     900×900   para telemóvel (véu em cima, por CSS)
 
 Correr:  python3 scripts/capa.py
 """
@@ -59,10 +59,16 @@ PECAS = [
 
 FORMATOS = [
     #  nome          largura altura  colunas  painel de texto
-    ("capa-larga",   2560,  1180,   4,       0.58),   # fracção da largura
-    # No telemóvel a imagem é uma FAIXA por baixo do texto, e o esbatimento
-    # entre as duas é feito por CSS. Um painel gravado aqui só escurecia a
-    # faixa — que é justamente a parte que se quer ver.
+    ("capa-larga",   2560,  1180,   4,      -1.0),    # -1 = sem painel
+    # NENHUMA das duas leva painel gravado. O véu é feito por CSS.
+    #
+    # Gravá-lo na imagem parecia boa ideia e não é: o painel fica ancorado à
+    # IMAGEM, e a imagem entra com `object-fit: cover`, que corta de forma
+    # diferente a cada largura de ecrã. O texto, esse, está num contentor
+    # centrado. A 1920 px o contentor começa aos 352 px e o texto saía do
+    # painel — medido, 1,75:1 no sobrescrito.
+    # Em CSS o véu acompanha o layout e não o recorte, e afina-se sem voltar a
+    # gerar imagem nenhuma.
     ("capa-alta",     900,   900,   2,      -1.0),    # -1 = sem painel
 ]
 

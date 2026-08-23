@@ -406,3 +406,48 @@ não foi accionado.
 
 Correr sempre os três: `gerar` → `responsivo` → `auditar`. É o que o workflow
 de publicação faz, e é o que se deve fazer em local antes de olhar para o ecrã.
+
+
+---
+
+## Título novo e sem descrição (23-08-2026)
+
+O parágrafo de descrição saiu da capa. Ficou o título, uma linha de apoio, os
+dois botões e a régua de provas.
+
+**O título é a frase do próprio cliente.** «Proteção absoluta» era um slogan
+que não dizia o que a casa faz; o Facebook deles diz «PERFECT FINISH SUA
+VIATURA NOVA DE NOVO», que diz o benefício. Ficou **«A sua viatura / nova de
+novo»**, e a linha de apoio — «Tira mossas, películas, PPF e car detail em
+Leiria» — passou a ser editável no backoffice, porque agora que não há
+parágrafo nem páginas por serviço é o único sítio do `<h1>` onde os termos de
+pesquisa cabem.
+
+### O título mais longo obrigou a três correcções, todas encontradas a medir
+
+1. **Quebrava em quatro linhas.** A frase tem 13 caracteres na linha mais longa
+   contra os 8 de «Proteção absoluta», e a `--t-5` geral (máximo 6,2rem) pedia
+   361 px numa caixa de 353. O título passou a ter escala própria,
+   `clamp(1.85rem, .2rem + 8.4vw, 4.2rem)`.
+
+   Nota de método: à primeira medi a largura do `<span>` e deu 353 — igual à
+   caixa — e concluí que cabia. Não cabia: estava **já quebrado**, e 353 era a
+   largura do bloco, não da linha. A medição certa é criar um elemento com
+   `white-space: nowrap` e a mesma fonte, e ler a largura natural.
+
+2. **Os pontos de corte estavam desalinhados.** O `<picture>` trocava para a
+   imagem larga aos 48rem, mas o CSS só mudava de véu aos 64rem. Entre 768 e
+   1023 px juntava-se a imagem larga, o véu de telemóvel e uma coluna de texto
+   de 42% — e o título voltava às quatro linhas. Tudo alinhado aos 64rem.
+
+3. **O painel gravado na imagem estava ancorado à coisa errada.** O `object-fit:
+   cover` corta de forma diferente a cada largura, mas o texto está num
+   contentor centrado: a 1920 px o contentor começa aos 352 px e o texto saía
+   do escuro — **1,75:1 no sobrescrito**, medido.
+   O véu passou a ser feito **em CSS nas duas medidas** (horizontal no
+   computador, vertical no telemóvel). Acompanha o layout em vez do recorte, e
+   afina-se sem gerar imagem nenhuma. As duas imagens passaram a ser geradas
+   sem painel.
+
+Contraste no pior pixel debaixo de cada bloco, a 1425 px: sobrescrito 5,20:1 ·
+título 7,63:1 · subtítulo 7,63:1 · régua 7,65:1. No telemóvel, ≥7,5:1 em tudo.

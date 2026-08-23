@@ -618,10 +618,20 @@ content:
           - name: heroi_linha1
             label: Título — primeira linha
             type: string
-            description: 'Uma palavra fica melhor. Exemplo: Proteção'
+            description: >-
+              O título grande, em dourado, no topo da página. Duas ou três
+              palavras por linha; mais do que isso e a letra encolhe.
+              Exemplo: A sua viatura
           - name: heroi_linha2
             label: Título — segunda linha
             type: string
-            description: 'Exemplo: absoluta'
-          - { name: heroi_texto, label: Texto por baixo do título, type: text }
+            description: 'Exemplo: nova de novo'
+          - name: heroi_sub
+            label: Linha por baixo do título
+            type: string
+            description: >-
+              Uma linha só. É aqui que devem estar os serviços e «Leiria» — é o
+              que o Google lê para saber do que trata a página, agora que não há
+              páginas separadas por serviço.
+              Exemplo: Tira mossas, películas, PPF e car detail em Leiria
           - { name: sobre, label: Sobre o estúdio, type: text }

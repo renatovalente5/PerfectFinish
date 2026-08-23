@@ -620,8 +620,8 @@ function inicio() {
 <section class="heroi">
  <div class="heroi__fundo" aria-hidden="true">
   <picture>
-   <source media="(min-width: 48rem)" type="image/avif" srcset="${u("/assets/img/capa/capa-larga.avif")}">
-   <source media="(min-width: 48rem)" type="image/webp" srcset="${u("/assets/img/capa/capa-larga.webp")}">
+   <source media="(min-width: 64rem)" type="image/avif" srcset="${u("/assets/img/capa/capa-larga.avif")}">
+   <source media="(min-width: 64rem)" type="image/webp" srcset="${u("/assets/img/capa/capa-larga.webp")}">
    <source type="image/avif" srcset="${u("/assets/img/capa/capa-alta.avif")}">
    <img src="${u("/assets/img/capa/capa-alta.webp")}" alt="" width="900" height="900" fetchpriority="high">
   </picture>
@@ -630,8 +630,7 @@ function inicio() {
   <div class="heroi__texto">
    <p class="sobrescrito">${esc(D.marca.reclamo)} · Leiria</p>
    <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
-   <p class="heroi__sub">Customização automóvel em Leiria</p>
-   <p class="heroi__lead">${esc(D.textos.heroi_texto)}</p>
+   <p class="heroi__sub">${esc(D.textos.heroi_sub)}</p>
    <div class="accoes">
     <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Pedir orçamento</a>
     <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
