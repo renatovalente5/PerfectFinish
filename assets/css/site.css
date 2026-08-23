@@ -292,9 +292,14 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.02
 
 .cabecalho__interior {
   width: var(--caixa); margin-inline: auto;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: var(--e-5);
+  display: flex; align-items: center;
+  gap: clamp(1rem, 2.4vw, 2.25rem);
 }
+/* O logótipo empurra tudo o resto para a direita. Era `space-between`, o que
+   deixava o menu a flutuar no meio da barra, longe do botão a que pertence.
+   Assim as secções ficam encostadas ao «Pedir orçamento» e leem-se como um
+   só grupo. */
+.marca { margin-inline-end: auto; }
 
 /* O LOGÓTIPO. Grande no topo, encolhe ao descer, volta a crescer ao subir —
    é a única coisa do cabeçalho que se mexe, e é de propósito.
@@ -322,7 +327,7 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.02
    linha de traços cinzentos. */
 @media (max-width: 30rem) { .marca__nome { display: none; } }
 
-.navegacao { display: flex; align-items: center; gap: clamp(1rem, 2.6vw, 2.4rem); }
+.navegacao { display: flex; align-items: center; gap: clamp(.9rem, 2vw, 1.8rem); }
 .navegacao a {
   font-family: var(--letra-titulo);
   font-size: var(--t--1); font-weight: 600;
@@ -555,6 +560,49 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .servico-cartao a:hover .seta { translate: .3rem 0; }
 
+/* A lista completa dos 13 serviços. Os cartões acima são as áreas; isto é
+   para quem procura o nome exacto — «pintura de travão», «polimento de farol»
+   — e quer confirmar num relance que a casa faz aquilo. */
+.lista-servicos__caixa {
+  margin-top: var(--e-7);
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
+  border: 1px solid var(--filete-fraco); border-radius: 4px;
+  background: color-mix(in oklab, var(--ouro) 3%, var(--carta));
+}
+.lista-servicos__caixa h3 {
+  font-size: var(--t--2); letter-spacing: .1em; color: var(--ouro);
+  margin-bottom: var(--e-5); font-weight: 600;
+}
+.lista-servicos {
+  display: grid; gap: .1rem clamp(1rem, 3vw, 2.5rem);
+  grid-template-columns: minmax(0, 1fr);
+  list-style: none;
+}
+@media (min-width: 30rem) { .lista-servicos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 56rem) { .lista-servicos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 76rem) { .lista-servicos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.lista-servicos a {
+  display: flex; align-items: center; gap: .7rem;
+  padding-block: .55rem;
+  font-size: var(--t--1); text-decoration: none; color: var(--osso-meio);
+  transition: color .2s var(--curva);
+}
+.lista-servicos a:hover { color: var(--ouro-alto); }
+.lista-servicos .risco {
+  flex: none; inline-size: .85rem; block-size: 1px;
+  background: var(--ouro); opacity: .6;
+  transition: inline-size .24s var(--curva), opacity .24s var(--curva);
+}
+.lista-servicos a:hover .risco { inline-size: 1.5rem; opacity: 1; }
+
+.claro .lista-servicos__caixa {
+  background: rgb(0 0 0 / .03); border-color: rgb(0 0 0 / .1);
+}
+.claro .lista-servicos__caixa h3 { color: var(--ouro-sombra); }
+.claro .lista-servicos a { color: var(--claro-meio); }
+.claro .lista-servicos a:hover { color: var(--claro-tinta); }
+
 /* -------------------------------------------------- 07b índice de serviços */
 .indice { list-style: none; counter-reset: servico; }
 .indice li { counter-increment: servico; border-top: 1px solid var(--filete-fraco); }
@@ -562,7 +610,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 .indice a {
   display: grid; align-items: center; gap: var(--e-3) var(--e-5);
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   padding-block: clamp(1.3rem, 3vw, 2.1rem);
   text-decoration: none;
   transition: background-color .3s var(--curva);
@@ -580,6 +628,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 .indice h3 { transition: translate .3s var(--curva); }
 .indice a:hover h3 { translate: .6rem 0; color: var(--ouro-alto); }
 .indice p { color: var(--osso-fraco); font-size: var(--t--1); margin-top: .3rem; max-width: 52ch; }
+.indice a > div { min-inline-size: 0; }
 
 .indice .seta {
   color: var(--ouro); font-size: var(--t-1);
@@ -593,7 +642,7 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: none;
 }
 @media (min-width: 48rem) {
-  .indice a { grid-template-columns: auto 1fr 7.5rem auto; }
+  .indice a { grid-template-columns: auto minmax(0, 1fr) 7.5rem auto; }
   .indice figure {
     grid-column: 3; display: block;
     aspect-ratio: 4 / 3; overflow: clip; border-radius: 2px;
@@ -1049,7 +1098,7 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: grid; gap: var(--e-7);
   padding-bottom: var(--e-7);
 }
-@media (min-width: 48rem) { .rodape__topo { grid-template-columns: 1.4fr 1fr 1fr; gap: var(--e-8); } }
+@media (min-width: 48rem) { .rodape__topo { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--e-8); } }
 
 .rodape__marca img { block-size: 6rem; inline-size: auto; margin-bottom: var(--e-5); }
 .rodape__marca p { color: var(--osso-fraco); max-width: 34ch; }
@@ -1063,7 +1112,8 @@ body[data-menu="aberto"] { overflow: hidden; }
 .rodape a:hover { color: var(--ouro-alto); }
 
 /* Contactos do rodapé, com ícone em cada linha. */
-.rodape__contactos li { display: grid; grid-template-columns: auto 1fr; gap: var(--e-3); align-items: start; }
+.rodape__contactos li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--e-3); align-items: start; }
+.rodape__contactos li > div { min-inline-size: 0; overflow-wrap: break-word; }
 .rodape__contactos svg { inline-size: 1rem; block-size: 1rem; color: var(--ouro); margin-top: .3rem; }
 
 .redes { display: flex; gap: var(--e-3); margin-top: var(--e-5); }

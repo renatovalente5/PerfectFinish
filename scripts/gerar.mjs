@@ -32,6 +32,7 @@ const SERVICOS = lerPasta("data/servicos");
 const TRABALHOS = lerPasta("data/trabalhos").filter((t) => t.publicado !== false);
 const PRODUTOS = lerPasta("data/loja").filter((p) => p.publicado !== false);
 const AVALIACOES = ler("data/avaliacoes.json");
+const LISTA_SERVICOS = ler("data/lista-servicos.json").servicos;
 /* O ficheiro vem do backoffice como objecto (`{ pares: [...] }`); aceita-se
    também o array solto, que é como estava antes de existir o backoffice. */
 const _pares = ler("data/pares.json");
@@ -429,6 +430,15 @@ function blocoAvaliacoes({ claro = false } = {}) {
 </section>`;
 }
 
+/** Os 13 serviços que o estúdio faz, cada um a ligar para a página que o
+ *  cobre. Os cinco cartões acima são as áreas; esta é a lista completa, para
+ *  quem procura um serviço concreto o encontrar pelo nome exacto. */
+function listaCompleta() {
+  return `<ul class="lista-servicos">${LISTA_SERVICOS.map((sv) =>
+    `<li><a href="${u(`/servicos/${sv.pagina}/`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</a></li>`
+  ).join("")}</ul>`;
+}
+
 const CTA = (titulo, texto) => `<section class="seccao">
  <div class="caixa" style="text-align:center;display:grid;justify-items:center;gap:var(--e-5)">
   <h2 class="ouro"><span>${esc(titulo)}</span></h2>
@@ -531,7 +541,6 @@ function inicio() {
   </div>
   <ul class="provas">
    <li><b>${String(D.google.nota).replace(".", ",")} ★</b><span>${D.google.total} avaliações no Google</span></li>
-   <li><b>${SERVICOS.length}</b><span>especialidades</span></li>
    <li><b>Leiria</b><span>e toda a região Centro</span></li>
   </ul>
  </div>
@@ -545,6 +554,11 @@ function inicio() {
    <p>${esc(D.textos.sobre)}</p>
   </div>
   <ul class="servicos">${SERVICOS.map(cartaoServico).join("")}</ul>
+
+  <div class="lista-servicos__caixa">
+   <h3>Tudo o que fazemos</h3>
+   ${listaCompleta()}
+  </div>
  </div>
 </section>
 
@@ -605,6 +619,11 @@ function indiceServicos() {
     <span class="seta" aria-hidden="true">→</span>
    </a></li>`).join("")}
   </ul>
+
+  <div class="lista-servicos__caixa">
+   <h3>Tudo o que fazemos</h3>
+   ${listaCompleta()}
+  </div>
  </div>
 </section>
 ${CTA("Não sabe qual precisa?", "Descreva o problema e nós dizemos o que se aplica ao seu caso — mesmo que a resposta seja que não vale a pena.")}`;

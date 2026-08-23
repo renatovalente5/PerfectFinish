@@ -1,0 +1,56 @@
+{
+ "servicos": [
+  {
+   "nome": "Tira Mossas",
+   "pagina": "tira-mossas"
+  },
+  {
+   "nome": "Polimento",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Polimento de Farol",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Proteção e Correção de Pintura",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Película Solar",
+   "pagina": "peliculas-solares"
+  },
+  {
+   "nome": "Car Wrapping",
+   "pagina": "envelopamento"
+  },
+  {
+   "nome": "PPF",
+   "pagina": "ppf"
+  },
+  {
+   "nome": "Chrome Delete",
+   "pagina": "envelopamento"
+  },
+  {
+   "nome": "Pintura de Travão",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Reparação e Pintura de Jantes",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Decoração de Interiores",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Higienização de Interiores",
+   "pagina": "car-detailing"
+  },
+  {
+   "nome": "Sensor de Estacionamento",
+   "pagina": "car-detailing"
+  }
+ ]
+}

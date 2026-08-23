@@ -414,7 +414,44 @@ content:
           tiver o link guardado deixa de o conseguir abrir e o Google perde a
           página.
 
-  # ══════════════════════════════════════════════════════ 5. DEFINIÇÕES
+  # ══════════════════════════════════════════════════════ 5. LISTA DE SERVIÇOS
+  - name: lista_servicos
+    label: Lista de todos os serviços
+    type: file
+    path: data/lista-servicos.json
+    format: json
+    operations: { delete: false }
+    fields:
+      - name: servicos
+        label: Serviços
+        type: object
+        list:
+          collapsible: true
+          min: 1
+        description: >-
+          A lista completa que aparece na caixa «Tudo o que fazemos», na página
+          inicial e na de Serviços. É o sítio para acrescentar ou tirar um
+          serviço sem mexer nas páginas.
+        fields:
+          - name: nome
+            label: Nome do serviço
+            type: string
+            required: true
+            description: 'Como o cliente lhe chama. Exemplo: Pintura de Travão.'
+          - name: pagina
+            label: Página que o explica
+            type: select
+            required: true
+            description: 'Para onde vai quem carregar neste serviço.'
+            options:
+              values:
+                - { name: tira-mossas, label: Tira Mossas }
+                - { name: peliculas-solares, label: Películas Solares }
+                - { name: ppf, label: PPF }
+                - { name: envelopamento, label: Envelopamento }
+                - { name: car-detailing, label: Car Detailing }
+
+  # ══════════════════════════════════════════════════════ 6. DEFINIÇÕES
   - name: definicoes
     label: Dados do estúdio
     type: file

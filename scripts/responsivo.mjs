@@ -34,10 +34,14 @@ for (const m of css.matchAll(/(?:^|\n)\s*(?:inline-size|width|min-inline-size|mi
 }
 // 2. font-size em px (não escala com a preferência do utilizador).
 for (const m of css.matchAll(/font-size\s*:\s*(\d+)px/g)) problemas.push(`font-size em px: ${m[1]}px`);
-// 3. grid-template-columns com repeat(N, ...) sem minmax(0, — a causa clássica
-//    de uma coluna que não encolhe e faz a página transbordar.
-for (const m of css.matchAll(/grid-template-columns:\s*repeat\((\d+),\s*([^)]*)\)/g)) {
-  if (!/minmax\(\s*0/.test(m[2])) problemas.push(`repeat(${m[1]}, ${m[2].trim()}) sem minmax(0,…)`);
+// 3. Qualquer `1fr` numa grelha sem `minmax(0, …)`. Um `1fr` é
+//    `minmax(auto, 1fr)` e o `auto` não deixa a coluna encolher abaixo do
+//    conteúdo — é a causa nº 1 de transbordo horizontal neste projecto, e
+//    apareceu três vezes: nos contactos, nas garantias e no índice.
+for (const m of css.matchAll(/grid-template-columns:\s*([^;}]+)/g)) {
+  const valor = m[1].trim();
+  const sem = valor.replace(/minmax\(\s*0[^)]*\)/g, "");
+  if (/\b[\d.]*fr\b/.test(sem)) problemas.push(`grid-template-columns: ${valor} — «fr» sem minmax(0,…)`);
 }
 // 4. clamp() com o mínimo maior que o máximo (inverte-se em silêncio).
 for (const m of css.matchAll(/clamp\(\s*([\d.]+)rem\s*,[^,]*,\s*([\d.]+)rem\s*\)/g)) {
