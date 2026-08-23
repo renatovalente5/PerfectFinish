@@ -36,6 +36,14 @@ const LISTA_SERVICOS = ler("data/lista-servicos.json").servicos;
 /* O ficheiro vem do backoffice como objecto (`{ pares: [...] }`); aceita-se
    também o array solto, que é como estava antes de existir o backoffice. */
 const _pares = ler("data/pares.json");
+/* Páginas próprias por serviço (/servicos/ e as cinco filhas). DESLIGADAS a
+   pedido do cliente, que quer tudo numa página e o portefólio no Instagram.
+   O código e os cinco JSON ficam: se o Search Console mostrar impressões sem
+   cliques para «ppf leiria» ou «tira mossas leiria», põe-se isto a `true` e as
+   páginas voltam — com o sitemap e as migalhas atrás, sem escrever uma
+   palavra nova. */
+const PAGINAS_DE_SERVICO = false;
+
 const PARES = (Array.isArray(_pares) ? _pares : _pares.pares || [])
   .slice().sort((a, b) => (a.ordem ?? 99) - (b.ordem ?? 99));
 
@@ -82,9 +90,15 @@ const zap = (texto) =>
  * Distinguem-se pela extensão. Sem isto, a primeira fotografia que o cliente
  * carregasse aparecia partida — e ele não teria como perceber porquê.
  */
-function figura(pasta, nome, alt, { classe = "", prioridade = false, medidas = "100vw" } = {}) {
-  const carregamento = prioridade
-    ? 'fetchpriority="high"'
+function figura(pasta, nome, alt, { classe = "", prioridade = false, carga = "tarde", medidas = "100vw" } = {}) {
+  /* Três modos, e não dois:
+       "alta"  → fetchpriority="high". Só UMA por página; três anulam-se.
+       "cedo"  → acima da dobra mas não é o LCP. `lazy` aqui era uma
+                 regressão, e `fetchpriority` roubava prioridade ao LCP.
+       "tarde" → o resto. (por omissão) */
+  const modo = prioridade ? "alta" : carga;
+  const carregamento = modo === "alta" ? 'fetchpriority="high"'
+    : modo === "cedo" ? 'loading="eager" decoding="async"'
     : 'loading="lazy" decoding="async"';
   const atributos = `alt="${esc(alt)}" width="828" height="828"${classe ? ` class="${classe}"` : ""} ${carregamento}`;
 
@@ -121,6 +135,7 @@ const ICONE = {
   zap: '<path d="M20.5 11.6A8.4 8.4 0 0 1 7.8 19l-4.3 1.2 1.2-4.2A8.4 8.4 0 1 1 20.5 11.6z"/><path d="M9 9.3c.2-.5.4-.5.7-.5h.5c.2 0 .4 0 .6.5l.7 1.6c.1.3 0 .5-.1.7l-.4.4c-.1.2-.2.3 0 .6a6 6 0 0 0 2.4 2c.3.1.4 0 .6-.1l.5-.5c.2-.2.4-.2.6-.1l1.6.8c.3.1.4.3.4.5 0 .8-.6 1.5-1.4 1.6-.4 0-.8 0-3.2-1.2a8.2 8.2 0 0 1-3.4-3.5c-1-2-.8-2.5-.7-2.8z"/>',
   instagram: '<rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.1" cy="6.9" r="1.1" fill="currentColor" stroke="none"/>',
   facebook: '<path d="M13.6 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H17V3.6A22 22 0 0 0 14.6 3.5c-2.4 0-4 1.45-4 4.1v2.3H8v3.1h2.6v8z"/>',
+  saco: '<path d="M6 8h12l1 11.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5z"/><path d="M9.2 8V6.4a2.8 2.8 0 0 1 5.6 0V8"/>',
   estrela: '<path d="m12 3.6 2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 17l-5.25 2.75 1-5.85L3.5 9.75l5.9-.85z"/>',
 };
 const svg = (nome, preenchido = false) =>
@@ -136,8 +151,8 @@ const svg = (nome, preenchido = false) =>
 const NAV = [
   { url: "/#servicos", nome: "Serviços" },
   { url: "/#trabalhos", nome: "Trabalhos" },
-  { url: "/loja/", nome: "Loja", pagina: true },
   { url: "/#contactos", nome: "Contactos" },
+  { url: "/loja/", nome: "Loja", pagina: true, destaque: true },
 ];
 
 /* -------------------------------------------------------------- estrutura */
@@ -149,8 +164,10 @@ function cabecalho(atual) {
   // ninguém — e para um leitor de ecrã é ruído, porque `aria-current="page"`
   // afirma que aquele é o destino em que estamos.
   const eAtual = (n) => Boolean(n.pagina) && atual === n.url;
-  const liga = (n) =>
-    `<a href="${u(n.url)}"${eAtual(n) ? ' aria-current="page"' : ""}>${n.nome}</a>`;
+  const liga = (n) => n.destaque
+    ? `<span class="navegacao__risco" aria-hidden="true"></span>` +
+      `<a class="nav-loja" href="${u(n.url)}"${eAtual(n) ? ' aria-current="page"' : ""}>${svg("saco")}${n.nome}</a>`
+    : `<a href="${u(n.url)}"${eAtual(n) ? ' aria-current="page"' : ""}>${n.nome}</a>`;
   return `<div class="progresso" aria-hidden="true"></div>
 <header class="cabecalho" data-encolhido="nao">
  <div class="cabecalho__interior">
@@ -160,6 +177,7 @@ function cabecalho(atual) {
   </a>
   <nav class="navegacao" aria-label="Principal">${NAV.map(liga).join("")}</nav>
   <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" rel="noopener" target="_blank">Pedir orçamento</a>
+  <a class="loja-movel" href="${u("/loja/")}" aria-label="Loja">${svg("saco")}</a>
   <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu"><span></span></button>
  </div>
 </header>
@@ -194,7 +212,7 @@ function rodape() {
 
    <div>
     <h4>Serviços</h4>
-    <ul>${SERVICOS.map((s) => `<li><a href="${u(`/servicos/${s.slug}/`)}">${esc(s.nome)}</a></li>`).join("")}</ul>
+    <ul>${SERVICOS.map((s) => `<li><a href="${u(`/#s-${s.slug}`)}">${esc(s.nome)}</a></li>`).join("")}</ul>
    </div>
 
    <div>
@@ -228,7 +246,7 @@ function rodape() {
 }
 
 const AVISO_COOKIES = `<aside class="cookies" role="dialog" aria-live="polite" aria-label="Aviso de privacidade">
- <p><strong>Este site não usa cookies.</strong> Não há publicidade, não há seguimento, não há estatísticas. Só precisamos da sua autorização para carregar o <strong>mapa do Google</strong> na página de contactos, porque isso é um pedido a um servidor da Google. <a href="${u("/politica-de-cookies/")}">Saber mais</a></p>
+ <p><strong>Este site não usa cookies.</strong> Não há publicidade, não há seguimento, não há estatísticas. Só precisamos da sua autorização para carregar o <strong>mapa do Google</strong> no fim desta página, porque isso é um pedido a um servidor da Google. <a href="${u("/politica-de-cookies/")}">Saber mais</a></p>
  <div class="cookies__accoes">
   <button class="botao botao--cheio" type="button" data-aceitar>Aceitar</button>
   <button class="botao botao--linha" type="button" data-recusar>Só o essencial</button>
@@ -276,13 +294,12 @@ function dadosEstruturados(pagina) {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: `Serviços ${D.marca.nome}`,
-      itemElement: undefined,
       itemListElement: SERVICOS.map((s) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
           name: s.nome_longo,
-          url: abs(`/servicos/${s.slug}/`),
+          url: abs(`/#s-${s.slug}`),
           provider: { "@id": `${SITE}/#estudio` },
         },
       })),
@@ -435,7 +452,7 @@ function blocoAvaliacoes({ claro = false } = {}) {
  *  quem procura um serviço concreto o encontrar pelo nome exacto. */
 function listaCompleta() {
   return `<ul class="lista-servicos">${LISTA_SERVICOS.map((sv) =>
-    `<li><a href="${u(`/servicos/${sv.pagina}/`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</a></li>`
+    `<li><a href="${u(`/#s-${sv.pagina}`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</a></li>`
   ).join("")}</ul>`;
 }
 
@@ -508,37 +525,94 @@ function cartaoObra(t) {
 
 /* ================================================================ PÁGINAS = */
 
+/* As três fotografias da capa vêm dos dados (editáveis no backoffice). Se
+   faltarem, cai nos destaques — o site nunca fica sem capa por causa de um
+   campo vazio. */
+const CAPA = (D.capa?.fotos || []).filter(Boolean);
+const FOTOS_CAPA = CAPA.length === 3
+  ? CAPA
+  : TRABALHOS.filter((t) => t.destaque).slice(0, 3).map((t) => t.fotos[0]);
+
+/** Texto alternativo de uma fotografia da capa, tirado do trabalho a que ela
+ *  pertence. Estava escrito à mão e ficava a mentir assim que o cliente
+ *  trocasse uma fotografia no backoffice. */
+function alturaCapa(nome) {
+  const dono = TRABALHOS.find((t) => t.fotos?.includes(nome));
+  return dono
+    ? `${dono.veiculo} — ${dono.servico} no Perfect Finish Studio, em Leiria`
+    : "Trabalho do Perfect Finish Studio, em Leiria";
+}
+
+const IG = D.contactos.instagram;
+const ig = (texto, classe = "botao botao--linha") =>
+  `<a class="${classe}" href="${esc(IG)}" target="_blank" rel="noopener">${svg("instagram")}${texto}</a>`;
+
+/**
+ * Um serviço, sempre aberto e com a fotografia à vista.
+ *
+ * Foi <details> numa primeira ideia e está aqui a razão de não ser: uma âncora
+ * NÃO abre um <details>. O algoritmo de revelação do HTML percorre os
+ * ASCENDENTES do alvo, e um <details> não é ascendente de si mesmo — logo
+ * `/#s-ppf` faria scroll e deixaria a gaveta fechada, e toda a ideia de
+ * substituir as páginas por âncoras caía. Além disso o Safari e o Firefox não
+ * expandem <details> no Cmd+F, o que tornaria o texto dos serviços
+ * inencontrável na própria página.
+ *
+ * <article> porque é uma unidade completa e autónoma — cabeçalho, fotografia,
+ * corpo, perguntas e acção. O `id` fica no <article> e não no <h3>, para o
+ * salto começar no topo do bloco e não a meio.
+ */
+function blocoServico(sv) {
+  const semFoto = !sv.imagem;
+  return `<article class="bloco-servico${semFoto ? " bloco-servico--sem-foto" : ""}" id="s-${esc(sv.slug)}">
+ ${semFoto ? "" : `<figure class="bloco-servico__foto">${figura("obras", sv.imagem,
+     `${sv.nome} em Leiria — Perfect Finish Studio`,
+     { medidas: "(min-width: 64rem) 22rem, 92vw" })}</figure>`}
+ <div class="bloco-servico__corpo">
+  ${sv.alt ? `<p class="sobrescrito">${esc(sv.alt)}</p>` : ""}
+  <h3>${esc(sv.nome_longo)}</h3>
+  <p class="bloco-servico__resumo">${esc(sv.resumo)}</p>
+  <p>${esc(sv.intro)}</p>
+  ${sv.porque?.length ? `<ul class="porques">${sv.porque.map((x) =>
+    `<li><b>${esc(x.titulo)}</b> ${esc(x.texto)}</li>`).join("")}</ul>` : ""}
+  ${sv.lista?.length ? `<p class="bloco-servico__inclui"><b>Inclui:</b> ${sv.lista.map(esc).join(" · ")}</p>` : ""}
+  ${sv.quando_nao ? `<p class="aviso">${esc(sv.quando_nao)}</p>` : ""}
+  ${sv.legal ? `<p class="aviso">${forte(sv.legal)}</p>` : ""}
+  ${sv.faq?.length ? `<div class="faq">${sv.faq.map((x) =>
+    `<details><summary>${esc(x.pergunta)}</summary><div>${esc(x.resposta)}</div></details>`).join("")}</div>` : ""}
+  <div class="bloco-servico__accoes">
+   <a class="botao botao--linha" href="${zap(`Olá! Queria saber sobre ${sv.nome}.`)}" target="_blank" rel="noopener">Falar sobre ${esc(sv.nome.toLowerCase())} <span class="seta">→</span></a>
+   ${semFoto ? `<a class="ligacao-ig" href="${esc(IG)}" target="_blank" rel="noopener">Exemplos de mossas resolvidas, no Instagram →</a>` : ""}
+  </div>
+ </div>
+</article>`;
+}
+
 function inicio() {
   const destaques = TRABALHOS.filter((t) => t.destaque).slice(0, 8);
 
-  const cartaoServico = (sv, i) => `<li class="servico-cartao">
-   <a href="${u(`/servicos/${sv.slug}/`)}">
-    ${sv.imagem ? figura("obras", sv.imagem, "", { medidas: "(min-width: 68rem) 15rem, (min-width: 46rem) 32vw, 48vw" }) : ""}
-    <span class="numero">0${i + 1}</span>
-    <h3>${esc(sv.nome)}</h3>
-    <p>${esc(sv.resumo)}</p>
-    <span class="seta" aria-hidden="true">→</span>
-   </a>
-  </li>`;
-
   const corpo = `
 <section class="heroi">
- <div class="heroi__fundo" aria-hidden="true">
-  <picture>
-   <source media="(min-width: 48rem)" type="image/avif" srcset="${u("/assets/img/capa/capa-larga.avif")}">
-   <source media="(min-width: 48rem)" type="image/webp" srcset="${u("/assets/img/capa/capa-larga.webp")}">
-   <source type="image/avif" srcset="${u("/assets/img/capa/capa-alta.avif")}">
-   <img src="${u("/assets/img/capa/capa-alta.webp")}" alt="" width="1200" height="1700" fetchpriority="high">
-  </picture>
- </div>
  <div class="caixa heroi__interior">
-  <p class="sobrescrito">${esc(D.marca.reclamo)} · Leiria</p>
-  <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
-  <p class="heroi__texto">${esc(D.textos.heroi_texto)}</p>
-  <div class="accoes">
-   <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Pedir orçamento</a>
-   <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
+  <div class="heroi__texto">
+   <p class="sobrescrito">${esc(D.marca.reclamo)} · Leiria</p>
+   <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
+   <p class="heroi__sub">Customização automóvel em Leiria</p>
+   <p class="heroi__lead">${esc(D.textos.heroi_texto)}</p>
+   <div class="accoes">
+    <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Pedir orçamento</a>
+    <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
+   </div>
   </div>
+
+  <div class="capa-pilha">
+   ${FOTOS_CAPA.map((f, i) => `<div class="capa-peca${i === 0 ? " capa-peca--grande" : ""}">${
+     figura("obras", f, alturaCapa(f), {
+       carga: i === 0 ? "alta" : "cedo",
+       medidas: i === 0 ? "(min-width: 64rem) 23rem, 60vw" : "(min-width: 64rem) 11rem, 30vw",
+     })}</div>`).join("")}
+  </div>
+
   <ul class="provas">
    <li><b>${String(D.google.nota).replace(".", ",")} ★</b><span>${D.google.total} avaliações no Google</span></li>
    <li><b>Leiria</b><span>e toda a região Centro</span></li>
@@ -549,20 +623,21 @@ function inicio() {
 <section class="seccao" id="servicos">
  <div class="caixa">
   <div class="cabeca-seccao">
-   <p class="sobrescrito">O que fazemos</p>
-   <h2>Cinco especialidades</h2>
+   <p class="sobrescrito">Serviços</p>
+   <h2>O que fazemos</h2>
    <p>${esc(D.textos.sobre)}</p>
   </div>
-  <ul class="servicos">${SERVICOS.map(cartaoServico).join("")}</ul>
 
   <div class="lista-servicos__caixa">
-   <h3>Tudo o que fazemos</h3>
+   <h3>Todos os serviços</h3>
    ${listaCompleta()}
   </div>
+
+  <div class="blocos-servico">${SERVICOS.map(blocoServico).join("")}</div>
  </div>
 </section>
 
-<section class="seccao" id="trabalhos">
+<section class="seccao" id="antes-depois">
  <div class="caixa">
   <div class="cabeca-seccao">
    <p class="sobrescrito">Antes e depois</p>
@@ -570,14 +645,25 @@ function inicio() {
    <p>O mesmo carro, o mesmo enquadramento. Só muda o que fizemos.</p>
   </div>
  </div>
- <div class="pares">${PARES.map(comparador).join("")}</div>
+ <div class="pares">${PARES.slice(0, 3).map(comparador).join("")}</div>
+ <div class="caixa"><p class="fecho-seccao">Os cinco comparadores completos estão em <a href="${u("/trabalhos/")}">Trabalhos</a>.</p></div>
+</section>
 
- <div class="caixa" style="margin-top:var(--e-9)">
-  <div class="cabeca-seccao cabeca-seccao--linha">
-   <div><p class="sobrescrito">Portefólio</p><h2>Carros que passaram por cá</h2></div>
-   <a class="botao botao--linha" href="${u("/trabalhos/")}">Ver os ${TRABALHOS.length} <span class="seta">→</span></a>
+<section class="seccao" id="trabalhos">
+ <div class="caixa">
+  <div class="cabeca-seccao">
+   <p class="sobrescrito">Portefólio</p>
+   <h2>Carros que passaram por cá</h2>
   </div>
   <div class="grelha">${destaques.map(cartaoObra).join("")}</div>
+
+  <div class="painel-ig">
+   <p>Isto são ${destaques.length}. O portefólio completo vive no Instagram, com
+   trabalho novo quase todos os dias.</p>
+   ${ig("Ver tudo no Instagram <span class=\"seta\">→</span>")}
+   <p class="painel-ig__conta">@perfectfinish.pt</p>
+   <p class="fecho-seccao">…ou ver os ${TRABALHOS.length} trabalhos aqui no site → <a href="${u("/trabalhos/")}">Trabalhos</a></p>
+  </div>
  </div>
 </section>
 
@@ -591,14 +677,12 @@ ${blocoAvaliacoes({ claro: true })}
   </div>
   ${blocoContactos()}
  </div>
-</section>
-
-${CTA("Traga-nos o carro", "Diga-nos o que precisa e recebe uma resposta com o que dá para fazer e quanto custa. Sem compromisso.")}`;
+</section>`;
 
   return pagina({
     url: "/",
-    titulo: "Perfect Finish Studio — Car Detail e Tira Mossas em Leiria",
-    descricao: "Estúdio de customização premium em Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail. 4,9 ★ no Google.",
+    titulo: "Tira Mossas, Películas e PPF em Leiria | Perfect Finish",
+    descricao: "Estúdio de customização em Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail. 4,9 ★ em 94 avaliações no Google.",
     corpo,
   });
 }
@@ -730,7 +814,14 @@ function trabalhos() {
  <div class="pares">${PARES.map(comparador).join("")}</div>
 </section>
 
-${blocoAvaliacoes({ claro: true })}
+<section class="seccao claro">
+ <div class="caixa" style="text-align:center;display:grid;justify-items:center;gap:var(--e-5)">
+  <p class="sobrescrito">Instagram</p>
+  <h2>Há mais, e é actualizado quase todos os dias</h2>
+  <p class="medida">Estes são os trabalhos que escolhemos para aqui. O portefólio completo está no Instagram.</p>
+  ${ig("Ver tudo no Instagram <span class=\"seta\">→</span>", "botao botao--claro")}
+ </div>
+</section>
 ${CTA("O próximo pode ser o seu", "Traga o carro ou mande-nos uma fotografia. Respondemos com o que dá para fazer e quanto custa.")}`;
 
   return pagina({
@@ -805,6 +896,10 @@ function blocoContactos() {
     <div class="dado">${svg("relogio")}<div>
      <dt>Horário</dt>
      <dd><ul class="horario">${D.horario.map((h) => `<li data-dias="${esc(h.indices)}"><span class="dia">${esc(h.dias)}</span><span>${esc(h.horas)}</span></li>`).join("")}</ul></dd>
+    </div></div>
+    <div class="dado">${svg("instagram")}<div>
+     <dt>Instagram</dt>
+     <dd><a href="${esc(IG)}" target="_blank" rel="noopener">@perfectfinish.pt</a></dd>
     </div></div>
     <div class="dado">${svg("local")}<div>
      <dt>Zona de serviço</dt>
@@ -938,7 +1033,7 @@ regista tecnicamente os pedidos que recebe, incluindo o endereço IP, por motivo
 de funcionamento. Não temos acesso a esses registos nem os usamos.</p>
 
 <h2>Mapa do Google</h2>
-<p>Na página de <a href="${u("/contactos/")}">Contactos</a> existe um mapa. <strong>Esse mapa não é
+<p>No fim da página inicial, em <a href="${u("/#contactos")}">Contactos</a>, existe um mapa. <strong>Esse mapa não é
 carregado automaticamente.</strong> Só é carregado se o autorizar expressamente, porque carregá-lo
 implica um pedido a servidores da Google, que passa a conhecer o seu endereço IP e a receber
 informação sobre o seu navegador. Enquanto não autorizar, vê apenas um cartão estático e uma
@@ -980,8 +1075,8 @@ const politicaCookies = () => paginaTexto(
 sociais. Não usamos Google Analytics nem nenhuma ferramenta equivalente.</p>
 
 <h2>Então porque aparece um aviso?</h2>
-<p>Porque há uma coisa que precisa mesmo da sua autorização: o <strong>mapa do Google</strong> na
-página de contactos. Carregar esse mapa é fazer um pedido a servidores da Google, que passam a
+<p>Porque há uma coisa que precisa mesmo da sua autorização: o <strong>mapa do Google</strong> no
+fim da página inicial. Carregar esse mapa é fazer um pedido a servidores da Google, que passam a
 conhecer o seu endereço IP. Não fazemos isso sem que nos diga que sim.</p>
 <p>Se carregar em «Só o essencial», o mapa não é carregado e fica apenas uma ligação que abre o
 Google Maps quando <em>você</em> quiser.</p>
@@ -1009,9 +1104,16 @@ function naoEncontrada() {
       <p class="sobrescrito">Erro 404</p>
       <h1 class="ouro" style="font-size:var(--t-4)"><span>Página não</span><span>encontrada</span></h1>
       <p class="medida" style="color:var(--osso-meio)">A página que procura mudou de sítio ou nunca existiu.</p>
+      <p class="medida" style="color:var(--osso-fraco);font-size:var(--t--1)">
+       As páginas de cada serviço passaram a ser secções da página inicial.
+       Talvez seja isto que procura:</p>
+      <ul class="lista-servicos" style="text-align:left;max-width:34rem">
+       ${SERVICOS.map((sv) => `<li><a href="${u(`/#s-${sv.slug}`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome_longo)}</a></li>`).join("")}
+      </ul>
       <div class="accoes" style="justify-content:center">
-       <a class="botao botao--cheio" href="${u("/")}">Voltar ao início</a>
-       <a class="botao botao--linha" href="${u("/servicos/")}">Ver serviços <span class="seta">→</span></a>
+       <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Falar por WhatsApp</a>
+       <a class="botao botao--linha" href="${u("/trabalhos/")}">Ver trabalhos <span class="seta">→</span></a>
+       <a class="botao botao--linha" href="${u("/loja/")}">Loja <span class="seta">→</span></a>
       </div>
      </div></section>`,
   });
@@ -1030,11 +1132,16 @@ mkdirSync(SAIDA, { recursive: true });
 
 const PAGINAS = [
   ["index.html", inicio(), "/"],
-  ["servicos/index.html", indiceServicos(), "/servicos/"],
-  ...SERVICOS.map((s) => [`servicos/${s.slug}/index.html`, paginaServico(s), `/servicos/${s.slug}/`]),
+
+  /* As páginas próprias por serviço só entram com a bandeira ligada. O
+     sitemap é derivado desta lista, portanto acompanha sozinho. */
+  ...(PAGINAS_DE_SERVICO ? [
+    ["servicos/index.html", indiceServicos(), "/servicos/"],
+    ...SERVICOS.map((s) => [`servicos/${s.slug}/index.html`, paginaServico(s), `/servicos/${s.slug}/`]),
+  ] : []),
+
   ["trabalhos/index.html", trabalhos(), "/trabalhos/"],
   ["loja/index.html", loja(), "/loja/"],
-  ["contactos/index.html", contactos(), "/contactos/"],
   ["informacao-legal/index.html", informacaoLegal(), "/informacao-legal/"],
   ["politica-de-privacidade/index.html", politicaPrivacidade(), "/politica-de-privacidade/"],
   ["politica-de-cookies/index.html", politicaCookies(), "/politica-de-cookies/"],

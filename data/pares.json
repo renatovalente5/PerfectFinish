@@ -17,7 +17,7 @@
    "servico": "Pintura de travão",
    "antes": "par-brembo-antes",
    "depois": "par-brembo-depois",
-   "ordem": 2,
+   "ordem": 4,
    "legenda": "Desmontagem, preparação e esmalte de alta temperatura numa pinça Brembo.",
    "alt_antes": "Pinça de travão Brembo desgastada, antes da intervenção",
    "alt_depois": "A mesma pinça Brembo pintada de vermelho, montada na jante"
@@ -28,7 +28,7 @@
    "servico": "Envelopamento",
    "antes": "par-amg-cla-antes",
    "depois": "par-amg-cla-depois",
-   "ordem": 3,
+   "ordem": 2,
    "legenda": "Do branco de origem ao grafite acetinado, em película. A pintura original ficou intacta por baixo.",
    "alt_antes": "Mercedes-AMG CLA 45 S Shooting Brake branco de fábrica, dentro do estúdio",
    "alt_depois": "O mesmo Mercedes-AMG CLA 45 S envolvido em vinil grafite acetinado"
@@ -39,7 +39,7 @@
    "servico": "Envelopamento",
    "antes": "par-audi-q7-antes",
    "depois": "par-audi-q7-depois",
-   "ordem": 4,
+   "ordem": 3,
    "legenda": "Cinzento de série a camaleão: a cor muda com a luz e a pintura fica protegida.",
    "alt_antes": "Audi Q7 S line no cinzento metalizado de fábrica",
    "alt_depois": "O mesmo Audi Q7 com película camaleão, em tons de lilás e turquesa"

@@ -59,5 +59,12 @@
   "heroi_linha2": "absoluta",
   "heroi_texto": "Tira mossas sem tocar na pintura, películas, PPF, envelopamento e car detail. Em Leiria, para quem trata o carro como se trata um relógio.",
   "sobre": "Somos um estúdio jovem e dedicado inteiramente à estética automóvel. Trabalhamos carro a carro, com o tempo que cada acabamento exige — do utilitário do dia-a-dia ao desportivo que só sai ao domingo."
+ },
+ "capa": {
+  "fotos": [
+   "ferrari-roma-1",
+   "rolls-royce-wraith-1",
+   "tesla-pincas-1"
+  ]
  }
 }

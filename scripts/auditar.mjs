@@ -67,15 +67,40 @@ for (const caminho of paginas) {
   const html = readFileSync(caminho, "utf8");
 
   /* --- ligações internas ------------------------------------------------ */
-  for (const [, href] of html.matchAll(/href="(\/[^"#?]*)"/g)) {
-    if (BASE && !href.startsWith(BASE + "/") && href !== BASE) {
+  /* O padrão apanha AGORA as ligações com âncora. Antes era
+     `href="(\/[^"#?]*)"`, que excluía tudo o que tivesse `#` — e como a
+     arquitectura passou a depender de âncoras (`/#s-ppf`), um caminho sem o
+     prefixo da subpasta publicava em silêncio e ninguém dava por isso. */
+  const idsDaPagina = new Set(
+    [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])
+  );
+
+  for (const [, href] of html.matchAll(/href="(\/[^"?]*)"/g)) {
+    const [caminho, ancora] = href.split("#");
+
+    if (BASE && caminho && !caminho.startsWith(BASE + "/") && caminho !== BASE) {
       falha(`${nome}: ligação sem o prefixo «${BASE}» → ${href}`);
       continue;
     }
-    const relativo = BASE ? href.slice(BASE.length) : href;
-    const alvo = relativo.endsWith("/") ? relativo + "index.html" : relativo;
-    if (!existe.has(alvo) && !existe.has(alvo + "/index.html")) {
-      falha(`${nome}: ligação para página que não existe → ${href}`);
+
+    if (caminho) {
+      const relativo = BASE ? caminho.slice(BASE.length) : caminho;
+      const alvo = relativo.endsWith("/") ? relativo + "index.html" : relativo;
+      if (!existe.has(alvo) && !existe.has(alvo + "/index.html")) {
+        falha(`${nome}: ligação para página que não existe → ${href}`);
+        continue;
+      }
+    }
+
+    /* Uma âncora só se pode verificar quando aponta para ESTA página: para
+       outra, o `id` está noutro ficheiro e vê-se quando esse for auditado. */
+    if (ancora) {
+      const paraEstaPagina = !caminho
+        || caminho === BASE + nome.replace(/index\.html$/, "")
+        || (nome === "/index.html" && (caminho === BASE + "/" || caminho === BASE));
+      if (paraEstaPagina && !idsDaPagina.has(ancora)) {
+        falha(`${nome}: âncora #${ancora} não existe nesta página → ${href}`);
+      }
     }
   }
 

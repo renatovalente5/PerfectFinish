@@ -440,48 +440,95 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 
 /* --------------------------------------------------------------- 06 herói */
+/* A capa não tem imagem de FUNDO: tem três fotografias ao lado do texto, à
+   vista, sem véu e sem desfoque.
+   O mosaico de fundo foi tentado e foi mal. Com originais de 414 px, cobrir
+   2560 px obriga a ampliar seis vezes; para o texto continuar legível é
+   preciso um véu a 97%, e então as fotografias somem — que foi exactamente a
+   queixa. Separar em vez de sobrepor resolve as duas coisas de uma vez: as
+   fotografias aparecem inteiras, e o texto tem o contraste do tema (14,6:1)
+   sem depender de máscara nenhuma.
+   REGRA DURA: nenhuma caixa de fotografia passa de 414 px CSS em todo o site.
+   É o tamanho do original, e é o que garante que nunca se amplia. */
 .heroi {
   position: relative;
-  min-block-size: min(100svh, 52rem);
   padding-block: calc(var(--cabecalho-alto) + var(--e-7)) var(--e-8);
   display: flex; align-items: center;
   overflow: clip;
 }
+.heroi::before {
+  content: ""; position: absolute; z-index: 0;
+  inset-block-start: -40%; inset-inline-start: 34%; translate: -50% 0;
+  inline-size: min(70rem, 120%); aspect-ratio: 1;
+  background: radial-gradient(closest-side,
+    color-mix(in oklab, var(--ouro) 12%, transparent), transparent 72%);
+  pointer-events: none;
+}
 
-/* A IMAGEM DE FUNDO.
-   Não é uma fotografia esticada — é um mosaico composto em
-   `scripts/capa.py`, onde cada peça fica ao tamanho quase nativo. Com
-   fotografias de 414 px, esticar uma só até 2560 px dava uma ampliação de
-   seis vezes e via-se logo.
-   O escurecimento já vem gravado na imagem (com inclinação, do lado do
-   texto para o lado oposto), porque um degradé por CSS por cima obrigava a
-   um segundo elemento e a mais uma camada a compor. */
-.heroi__fundo {
-  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+.heroi__interior {
+  position: relative; z-index: 1;
+  display: grid; gap: var(--e-6) clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
 }
-.heroi__fundo img {
-  inline-size: 100%; block-size: 100%; object-fit: cover;
-  object-position: 62% 50%;
+@media (min-width: 64rem) {
+  .heroi { --capa-col: min(23rem, 40%); }
+  .heroi__interior {
+    grid-template-columns: minmax(0, 1fr) var(--capa-col);
+    grid-template-areas: "texto capa" "provas capa";
+    align-content: center;
+  }
+  .heroi__texto  { grid-area: texto; }
+  .capa-pilha    { grid-area: capa; }
+  .provas        { grid-area: provas; }
 }
-/* Fecho para o preto no rodapé do herói, para a secção seguinte entrar sem
-   uma aresta. */
-.heroi::after {
-  content: ""; position: absolute; z-index: 1; inset-inline: 0; bottom: 0;
-  block-size: 30%; pointer-events: none;
-  background: linear-gradient(to top, var(--tinta), transparent);
+/* Ecrã largo mas baixo (1366×768 é o caso). Sem isto o painel da capa mede
+   555 px, o total dá 803 e corta — medido, não estimado. */
+@media (min-width: 64rem) and (max-height: 52rem) {
+  .heroi { --capa-col: min(18rem, 34%); }
 }
-.heroi__interior { position: relative; z-index: 2; }
 
-.heroi h1 { margin-block: var(--e-5) var(--e-6); }
+.heroi h1 { margin-block: var(--e-5) var(--e-3); }
 .heroi h1 span + span { margin-top: -.06em; }
+/* «Proteção absoluta» é uma assinatura, não uma descrição. Este subtítulo é o
+   que diz ao Google e a quem chega o que é que a casa faz — e o <h1> é a
+   única arma que resta agora que não há páginas por serviço. */
+.heroi__sub {
+  font-family: var(--letra-titulo); font-size: var(--t-1);
+  letter-spacing: -.01em; color: var(--osso-meio);
+  margin-bottom: var(--e-5);
+}
+.heroi__lead { color: var(--osso-meio); font-size: var(--t-1); max-width: 42ch; }
+.heroi .accoes { margin-top: var(--e-6); }
 
-.heroi__texto { color: var(--osso-meio); font-size: var(--t-1); max-width: 44ch; }
-.heroi .accoes { margin-top: var(--e-7); }
+/* A pilha: uma peça grande e duas pequenas ao lado. */
+.capa-pilha {
+  display: grid; gap: 6px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+@media (min-width: 64rem) {
+  .capa-pilha { grid-template-columns: minmax(0, 1fr); }
+  .capa-peca--grande { grid-column: 1; }
+  .capa-pilha { grid-template-areas: "grande" "peq"; }
+  .capa-peca--grande { grid-area: grande; }
+  .capa-pilha > .capa-peca:not(.capa-peca--grande):nth-of-type(2) { grid-area: peq; justify-self: start; inline-size: calc(50% - 3px); }
+  .capa-pilha > .capa-peca:nth-of-type(3) { grid-area: peq; justify-self: end; inline-size: calc(50% - 3px); }
+}
+.capa-peca {
+  aspect-ratio: 1; overflow: clip; border-radius: 3px;
+  border: 1px solid var(--filete); background: var(--carta);
+  box-shadow: 0 1.5rem 3.5rem rgb(0 0 0 / .5);
+}
+.capa-peca img { inline-size: 100%; block-size: 100%; object-fit: cover; }
+/* No telemóvel a peça grande ocupa duas linhas à esquerda e as pequenas
+   empilham à direita — duas fotografias inteiras no primeiro ecrã. */
+@media (max-width: 63.9375rem) {
+  .capa-pilha { grid-template-rows: repeat(2, auto); }
+  .capa-peca--grande { grid-row: span 2; }
+}
 
-/* A régua de provas, por baixo do herói. */
 .provas {
-  display: flex; flex-wrap: wrap; gap: var(--e-5) clamp(1.5rem, 5vw, 4rem);
-  margin-top: var(--e-9); padding-top: var(--e-6);
+  display: flex; flex-wrap: wrap; gap: var(--e-5) clamp(1.5rem, 5vw, 3.5rem);
+  margin-top: var(--e-7); padding-top: var(--e-5);
   border-top: 1px solid var(--filete-fraco);
   list-style: none;
 }
@@ -489,9 +536,20 @@ body[data-menu="aberto"] { overflow: hidden; }
 .provas b {
   font-family: var(--letra-titulo);
   font-size: var(--t-2); font-weight: 700; color: var(--ouro-alto);
-  line-height: 1;
+  line-height: 1; letter-spacing: -.02em;
 }
-.provas span { font-size: var(--t--1); color: var(--osso-fraco); letter-spacing: .04em; }
+.provas span { font-size: var(--t--1); color: var(--osso-fraco); letter-spacing: .02em; }
+
+/* Telemóvel: o espaçamento tem de encolher, senão o painel fica abaixo da
+   dobra e o primeiro ecrã não mostra fotografia nenhuma. */
+@media (max-width: 63.9375rem) {
+  .heroi { padding-block-start: calc(var(--cabecalho-alto) + var(--e-5)); }
+  .heroi h1 { margin-block: var(--e-4) var(--e-2); }
+  .heroi__sub { margin-bottom: var(--e-4); }
+  .heroi .accoes { margin-top: var(--e-5); }
+  .provas { margin-top: var(--e-6); }
+}
+@media (max-width: 40rem) { .heroi .sobrescrito { display: none; } }
 
 /* ------------------------------------------------------- 07 serviços */
 /* Cartões, e não um índice com miniatura ao passar o rato. O índice era
@@ -732,7 +790,9 @@ body[data-menu="aberto"] { overflow: hidden; }
   margin-inline: calc(50% - 50vw); padding-inline: max(var(--goteira), calc(50vw - var(--caixa) / 2));
 }
 .pares::-webkit-scrollbar { display: none; }
-.pares > .par { flex: 0 0 min(82vw, 27rem); scroll-snap-align: center; }
+/* 25.875rem = 414 px, o tamanho do original. Era 27rem (432) e era o
+   único ponto do site a ampliar. */
+.pares > .par { flex: 0 0 min(82vw, 25.875rem); scroll-snap-align: center; }
 
 /* ---------------------------------------------------------- 09 trabalhos */
 /* Colunas fixas por medida, e não `auto-fill`, para o número de colunas ser
@@ -1233,6 +1293,11 @@ body[data-menu="aberto"] { overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 
+  /* Sem isto, a transição de `block-size: 0` para `auto` no
+     `::details-content` da FAQ não anima nada — abre a seco, mesmo no
+     Chrome. É a única forma portável de animar altura automática. */
+  :root { interpolate-size: allow-keywords; }
+
   @supports (animation-timeline: view()) {
     .revelar {
       animation: revelar linear both;
@@ -1279,3 +1344,132 @@ body:has(.cookies) .zap-flutuante { inset-block-end: calc(clamp(.9rem, 3vw, 1.75
 /* Com o menu de ecrã inteiro aberto, sai da frente. */
 body[data-menu="aberto"] .zap-flutuante { display: none; }
 @media print { .zap-flutuante { display: none; } }
+
+
+/* ------------------------------------------------ 19 blocos de serviço */
+/* Cinco blocos SEMPRE ABERTOS, com a fotografia à vista.
+   Foi tentado com <details> e não pode ser: uma âncora não abre um <details>
+   (o algoritmo de revelação do HTML percorre os ascendentes do alvo, e um
+   <details> não é ascendente de si mesmo), portanto `/#s-ppf` faria scroll e
+   deixaria a gaveta fechada. E o Safari e o Firefox não expandem <details> no
+   Cmd+F, o que tornaria o texto dos serviços inencontrável na página. */
+.blocos-servico { display: grid; gap: clamp(2rem, 5vw, 4rem); margin-top: var(--e-8); }
+
+.bloco-servico {
+  display: grid; gap: clamp(1rem, 3vw, 2rem);
+  grid-template-columns: minmax(0, 1fr);
+  padding-top: clamp(2rem, 5vw, 4rem);
+  border-top: 1px solid var(--filete-fraco);
+}
+.bloco-servico:first-child { padding-top: 0; border-top: 0; }
+@media (min-width: 64rem) {
+  .bloco-servico { grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); }
+  .bloco-servico--sem-foto { grid-template-columns: minmax(0, 1fr); }
+}
+.bloco-servico__foto { margin: 0; position: sticky; top: calc(var(--cabecalho-baixo) + 2rem); }
+@media (max-width: 63.9375rem) { .bloco-servico__foto { position: static; } }
+.bloco-servico__foto picture, .bloco-servico__foto img {
+  display: block; inline-size: 100%; block-size: auto;
+  border-radius: 3px; border: 1px solid var(--filete-fraco);
+}
+
+.bloco-servico__corpo { display: grid; gap: var(--e-4); align-content: start; min-inline-size: 0; }
+.bloco-servico__corpo h3 { font-size: var(--t-2); }
+.bloco-servico__resumo { color: var(--osso); font-size: var(--t-1); }
+.bloco-servico__corpo > p { color: var(--osso-meio); max-width: 62ch; }
+
+.porques { list-style: none; display: grid; gap: var(--e-3); margin: var(--e-2) 0; }
+.porques li {
+  padding-inline-start: var(--e-4);
+  border-inline-start: 1px solid var(--filete);
+  font-size: var(--t--1); color: var(--osso-meio); max-width: 60ch;
+}
+.porques b {
+  display: block; color: var(--osso); font-weight: 600;
+  font-family: var(--letra-titulo); text-transform: uppercase;
+  font-size: var(--t--2); letter-spacing: .04em; margin-bottom: .2rem;
+}
+
+.bloco-servico__inclui {
+  font-size: var(--t--1); color: var(--osso-meio);
+  padding: var(--e-4); border-radius: 3px;
+  background: color-mix(in oklab, var(--ouro) 4%, var(--carta));
+  border: 1px solid var(--filete-fraco);
+}
+.bloco-servico__inclui b { color: var(--ouro-alto); font-weight: 600; }
+
+.bloco-servico__accoes {
+  display: flex; flex-wrap: wrap; gap: var(--e-4) var(--e-5);
+  align-items: center; margin-top: var(--e-3);
+}
+.ligacao-ig, .fecho-seccao { font-size: var(--t--1); color: var(--osso-fraco); }
+.fecho-seccao { margin-top: var(--e-5); }
+.ligacao-ig:hover, .fecho-seccao a { color: var(--ouro-alto); }
+
+/* ---------------------------------------------------- 20 painel do Instagram */
+/* O portefólio completo vive no Instagram. Este é o ponto de saída principal,
+   e fica DEPOIS da prova — quem sai daqui já viu trabalho. */
+.painel-ig {
+  margin-top: var(--e-7);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--filete); border-radius: 4px;
+  background: color-mix(in oklab, var(--ouro) 4%, var(--carta));
+  display: grid; gap: var(--e-4); justify-items: center; text-align: center;
+}
+.painel-ig > p:first-child { max-width: 46ch; color: var(--osso-meio); }
+.painel-ig .botao svg { inline-size: 1.05em; block-size: 1.05em; }
+.painel-ig__conta {
+  font-family: var(--letra-titulo); font-size: var(--t--1);
+  letter-spacing: .04em; color: var(--ouro);
+}
+.painel-ig .fecho-seccao { margin-top: 0; }
+
+/* ------------------------------------------------------- 21 navbar: Loja */
+/* Dois destaques lado a lado resolvem-se por MATÉRIA, não por cor:
+   preenchido (WhatsApp) > contornado (Loja) > texto simples (as secções).
+   O filete é um elemento a sério e não um ::before com deslocamentos
+   adivinhados — o intervalo visual é o `gap` da navegação MAIS o do
+   cabeçalho, e nenhum `calc` acerta nisso. Um filho de flex é centrado pelo
+   próprio flexbox. */
+.navegacao__risco {
+  flex: none; inline-size: 1px; block-size: 1.15rem;
+  background: var(--filete);
+}
+
+/* `.navegacao .nav-loja` e não `.nav-loja`: `.navegacao a` tem mais
+   especificidade e o seu `padding-block: .4rem` achatava a pastilha. */
+.navegacao .nav-loja {
+  display: inline-flex; align-items: center; gap: .45em;
+  padding: .5em 1.05em; border-radius: 3px;
+  border: 1px solid var(--ouro-fundo);
+  background: color-mix(in oklab, var(--ouro) 8%, transparent);
+  color: var(--ouro-alto);
+  transition: border-color .2s var(--curva), background-color .2s var(--curva),
+              color .2s var(--curva);
+}
+.navegacao .nav-loja::after { display: none; }
+.navegacao .nav-loja svg { inline-size: .95em; block-size: .95em; flex: none; }
+.navegacao .nav-loja:hover, .navegacao .nav-loja:focus-visible {
+  border-color: var(--ouro-alto); color: var(--ouro-alto);
+  background: color-mix(in oklab, var(--ouro) 16%, transparent);
+}
+.navegacao .nav-loja[aria-current="page"] {
+  background: var(--ouro); border-color: var(--ouro); color: #1A1410;
+}
+
+/* No telemóvel a Loja tem alvo próprio na barra, à esquerda da hamburguer.
+   NÃO leva a classe `.botao`: a regra dos 60rem esconde
+   `.cabecalho__interior > .botao` e a Loja desaparecia com ela. */
+.loja-movel { display: none; }
+@media (max-width: 60rem) {
+  .loja-movel {
+    display: grid; place-items: center; flex: none;
+    inline-size: 2.75rem; block-size: 2.75rem; border-radius: 3px;
+    border: 1px solid var(--ouro-fundo); color: var(--ouro-alto);
+    background: color-mix(in oklab, var(--ouro) 8%, transparent);
+  }
+  .loja-movel svg { inline-size: 1.25rem; block-size: 1.25rem; }
+  /* O item 04 do menu de ecrã inteiro é a Loja, e destaca-se. */
+  .menu__lista li:last-child a { color: var(--ouro-alto); border-top: 1px solid var(--filete); }
+  .menu__lista li:last-child .numero { color: var(--ouro); }
+}

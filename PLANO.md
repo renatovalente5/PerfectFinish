@@ -194,3 +194,113 @@ Testado em `iframe` a 320, 360, 390, 430, 600, 768, 834, 1024, 1280, 1440 e
 Nenhuma das duas era visível numa captura de ecrã do telemóvel — a página
 parecia bem e arrastava para o lado. `scripts/responsivo.mjs` passa a travar a
 publicação nas causas que são aritmética de CSS.
+
+
+---
+
+## Terceira volta — o Instagram passa a ser o portefólio (23-08-2026)
+
+O cliente redefiniu a ideia do site: **mostrar algumas coisas e mandar para o
+Instagram**, onde está o portefólio todo. Decidido com três propostas
+independentes, cada uma julgada por três lentes (dono do estúdio, visitante no
+telemóvel, engenheiro/SEO), e sintetizado numa especificação.
+
+### Páginas: 14 → 7
+
+Ficam `/`, `/trabalhos/`, `/loja/` e as três legais, mais o 404.
+Apagam-se `/servicos/`, as cinco `/servicos/<slug>/` e `/contactos/` — esta
+última era **órfã**: o menu já apontava para `/#contactos` e nada no site lhe
+ligava, e duplicava o mesmo bloco.
+
+**Sem páginas de substituição.** Cada uma teria de levar canonical, title,
+description, JSON-LD, o rodapé legal completo e os ~55 kB de CSS embutido para
+passar a auditoria: **~75 kB cada, 450 kB no total**, e seis páginas legais a
+manter. Contra: o repositório tem um dia, zero indexação e zero backlinks. O
+404 do GitHub Pages faz o resgate de graça e passou a listar os cinco serviços
+com âncora.
+
+**`PAGINAS_DE_SERVICO = false`** no topo do gerador. O código e os cinco JSON
+ficam intactos. Se o Search Console mostrar impressões sem cliques para «ppf
+leiria» ou «tira mossas leiria», põe-se a `true` e as páginas voltam — com o
+sitemap e as migalhas atrás, sem escrever uma palavra nova.
+
+### Os 13 serviços sem páginas: cinco blocos SEMPRE ABERTOS
+
+Foi tentado com `<details>` e **não pode ser**: uma âncora não abre um
+`<details>`. O algoritmo de revelação do HTML percorre os *ascendentes* do
+alvo, e um `<details>` não é ascendente de si mesmo — `/#s-ppf` faria scroll e
+deixaria a gaveta fechada, e toda a ideia de substituir páginas por âncoras
+caía. Além disso o Safari e o Firefox não expandem `<details>` no Cmd+F, o que
+tornaria o texto dos serviços inencontrável na própria página.
+
+`<article>` com o `id` no artigo (não no `<h3>`, senão o salto começa a meio do
+bloco). Lista dos 13 nomes por cima, a saltar para as âncoras. **986 palavras
+já escritas** foram reaproveitadas; zero palavras novas.
+
+### A capa: separar em vez de sobrepor
+
+O mosaico de fundo foi tentado duas vezes e falhou as duas. Com originais de
+414 px, cobrir 2560 px obriga a ampliar seis vezes; para o texto continuar
+legível é preciso um véu a 97%, e então as fotografias somem — que era
+exactamente a queixa do cliente.
+
+Agora: **texto à esquerda sobre preto chapado, três fotografias à direita,
+inteiras, sem véu e sem desfoque.** O contraste é o do tema (14,6:1) e não
+depende de máscara nenhuma. `scripts/capa.py` e os 509 kB de
+`assets/img/capa/` foram apagados; a capa nova pesa menos e mostra três carros
+a sério.
+
+**REGRA DURA, a partir de agora: nenhuma caixa de fotografia passa de 414 px
+CSS em todo o site.** É o tamanho do original. O comparador antes/depois era o
+único ponto a violá-la (27rem = 432 px) e passou a 25,875rem.
+
+**A escolha das três fotografias foi medida, não palpitada.** O Audi Q7
+camaleão foi a primeira escolha e a 114 px lê-se como um quadrado negro — o
+carro dissolve-se no fundo escuro. Renderizei nove candidatos ao tamanho real
+e ficou o Rolls-Royce, cuja grelha cromada se lê a qualquer tamanho.
+
+### Navbar
+
+Ordem: **Serviços · Trabalhos · Contactos │ [Loja] · [Pedir orçamento]**.
+
+Dois destaques lado a lado resolvem-se por **matéria**, não por cor:
+preenchido (WhatsApp) > contornado (Loja) > texto simples. O filete é um
+elemento a sério e não um `::before` com deslocamentos adivinhados — o
+intervalo visual é o `gap` da navegação **mais** o do cabeçalho, e nenhum
+`calc` acerta nisso.
+
+No telemóvel a Loja tem alvo próprio na barra (2,75rem, ao lado da
+hamburguer). Não leva a classe `.botao`, senão desaparecia com a regra dos
+60rem que esconde `.cabecalho__interior > .botao`.
+
+### Um bug real na auditoria, encontrado a especificar isto
+
+O padrão das ligações era `href="(\/[^"#?]*)"` — **excluía tudo o que tivesse
+`#`**. Como a arquitectura nova depende de âncoras, um `/#s-ppf` sem o prefixo
+`/PerfectFinish` publicava em silêncio. Corrigido, e acrescentada a
+verificação de que **todo o `#id` referido numa página existe nessa página**.
+Ambos testados a provocar o erro de propósito.
+
+### Instagram: quatro saídas, e nenhuma acima da dobra
+
+Fim de `#trabalhos` (a principal, painel próprio), dentro do bloco do tira
+mossas (no lugar da fotografia que não existe), nos contactos e no rodapé.
+
+**Nada na capa e nada no menu — e isto contraria o cliente à letra.** Um link
+para fora acima da dobra gasta a visita antes de a prova ser vista. O
+objectivo é que saiam para o Instagram *depois* de acreditarem.
+E `/trabalhos/` **não** se apagou: é a apólice. O Instagram mostra um muro de
+login a quem não tem conta, e se a conta cair a montra cai com ela.
+
+### O que se perde, dito sem maquilhagem
+
+Quatro intenções comerciais distintas — «tira mossas leiria», «películas
+solares leiria», «ppf leiria», «car wrapping leiria» — passam de quatro `<h1>`
+em quatro URL para quatro `<h3>` numa página. Uma página posiciona-se bem para
+um tema, não para quatro. A mitigação (âncoras, 986 palavras, `hasOfferCatalog`
+nas âncoras, `alt` com o nome do serviço, `/trabalhos/` com 52 fotografias
+legendadas) segura cauda longa e «marca + serviço»; **não** segura os termos de
+cabeça contra quem tenha página dedicada. O `<title>` de `/` passou a
+«Tira Mossas, Películas e PPF em Leiria» e o de `/trabalhos/` cobre
+«Envelopamento» — é uma divisão deliberada entre as duas únicas páginas
+indexáveis que restam.

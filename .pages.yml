@@ -79,8 +79,8 @@ content:
         label: Aparece na página de
         type: select
         description: >-
-          Além da página Trabalhos, este trabalho também aparece na página do
-          serviço que escolher aqui.
+          Além da página Trabalhos, indica a que serviço este trabalho
+          pertence.
         options:
           values:
             - { name: tira-mossas, label: Tira Mossas }
@@ -304,7 +304,7 @@ content:
         label: Nome completo
         type: string
         required: true
-        description: 'O título da página. Exemplo: Películas solares e vidros escurecidos.'
+        description: 'O nome por extenso. Exemplo: Películas solares e vidros escurecidos.'
       - name: alt
         label: Outro nome por que é conhecido
         type: string
@@ -320,12 +320,12 @@ content:
         label: Texto de abertura
         type: text
         required: true
-        description: 'Duas ou três frases, no início da página do serviço.'
+        description: 'Duas ou três frases, no início do bloco deste serviço.'
       - name: imagem
         label: Fotografia do serviço
         type: image
         options: { media: obras }
-        description: 'Aparece ao passar o rato na lista de serviços, no computador.'
+        description: 'Aparece no bloco deste serviço, na página inicial.'
 
       - name: porque
         label: Porquê — os três argumentos
@@ -372,9 +372,9 @@ content:
           collapsible: true
           max: 8
         description: >-
-          Aparecem no fim da página, numa lista que abre e fecha. São as
-          perguntas que lhe fazem ao telefone — escrevê-las aqui poupa-lhe as
-          chamadas e ajuda a aparecer no Google.
+          Aparecem no fim do bloco deste serviço, numa lista que abre e
+          fecha. São as perguntas que lhe fazem ao telefone — escrevê-las aqui
+          poupa-lhe as chamadas e ajuda a aparecer no Google.
         fields:
           - { name: pergunta, label: Pergunta, type: string, required: true }
           - { name: resposta, label: Resposta, type: text, required: true }
@@ -387,16 +387,6 @@ content:
           AVANÇADO. As referências dos trabalhos (o campo «Referência» de cada
           um), uma por linha. Normalmente não é preciso mexer: basta escolher
           o serviço no campo «Aparece na página de» de cada trabalho.
-      - name: titulo_seo
-        label: Título no Google
-        type: string
-        description: >-
-          O que aparece como título azul no Google. Até 60 caracteres, e deve
-          incluir o serviço e «Leiria».
-      - name: descricao_seo
-        label: Descrição no Google
-        type: text
-        description: 'O texto cinzento por baixo do título no Google. Até 155 caracteres.'
       - name: ordem
         label: Ordem
         type: number
@@ -410,9 +400,8 @@ content:
           regex: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
           message: 'Só letras minúsculas sem acentos, números e hífens.'
         description: >-
-          É o fim do endereço da página. DEPOIS DE PUBLICADO NÃO MUDE — quem
-          tiver o link guardado deixa de o conseguir abrir e o Google perde a
-          página.
+          Identifica o serviço e é o destino dos links de «Todos os serviços»
+          (fica #s-tira-mossas, por exemplo). DEPOIS DE PUBLICADO NÃO MUDE.
 
   # ══════════════════════════════════════════════════════ 5. LISTA DE SERVIÇOS
   - name: lista_servicos
@@ -429,9 +418,9 @@ content:
           collapsible: true
           min: 1
         description: >-
-          A lista completa que aparece na caixa «Tudo o que fazemos», na página
-          inicial e na de Serviços. É o sítio para acrescentar ou tirar um
-          serviço sem mexer nas páginas.
+          A lista completa que aparece em «Todos os serviços», na página
+          inicial. Cada nome salta para o bloco que o explica, na mesma
+          página. É o sítio para acrescentar ou tirar um serviço.
         fields:
           - name: nome
             label: Nome do serviço
@@ -442,7 +431,7 @@ content:
             label: Página que o explica
             type: select
             required: true
-            description: 'Para onde vai quem carregar neste serviço.'
+            description: 'Para que bloco da página inicial salta quem carregar neste nome.'
             options:
               values:
                 - { name: tira-mossas, label: Tira Mossas }
@@ -589,6 +578,25 @@ content:
             description: >-
               Só se existir firma registada no RNPC. Um empresário em nome
               individual sem firma registada não tem este número — deixe vazio.
+
+      - name: capa
+        label: Fotografias da capa
+        type: object
+        description: >-
+          As três fotografias que aparecem ao lado do título, no topo da página
+          inicial. Não são de fundo: aparecem inteiras e sem véu por cima.
+        fields:
+          - name: fotos
+            label: As três fotografias
+            type: image
+            options:
+              media: obras
+              multiple: { min: 3, max: 3 }
+            description: >-
+              Exactamente três, por esta ordem: a PRIMEIRA aparece grande, as
+              outras duas pequenas ao lado. A grande deve ser a melhor
+              fotografia que tiver — carro inteiro, boa luz. Arraste para
+              trocar a ordem.
 
       - name: marca
         label: Nome e descrição
