@@ -357,3 +357,52 @@ espaço reservado usam a mesma variável, `--faixa: min(44svh, 24rem)`.
 **Navbar:** a Loja passou para depois dos Contactos, em pastilha de contorno
 dourado, com um filete a separá-la dos três links. Na página da Loja a
 pastilha fica dourada cheia.
+
+
+---
+
+## A capa é fundo a sério, também no telemóvel (23-08-2026)
+
+A faixa de fotografias por baixo do texto foi um erro. Num telemóvel alto caía
+toda abaixo da dobra e ficava um sliver de fotografia — o cliente mandou uma
+captura do iPhone a mostrá-lo e disse «quero a foto como background e não só
+ao lado». Tem razão.
+
+A fotografia cobre agora o herói todo, nas duas medidas. O contraste vem de um
+véu **em degradé**, e não de um véu uniforme: forte em cima onde está o texto,
+leve em baixo onde se veem os carros. Um véu uniforme forte o suficiente para o
+texto apaga as fotografias — foi a primeira queixa, e a aritmética explica-a:
+para o dourado `#CBAD4F` chegar a 4,5:1, o fundo por baixo dele tem de descer
+a uma luminância relativa de 0,054, o que sobre uma fotografia de luminância
+média 120/255 obriga a escurecer ~72%.
+
+**Medido, não estimado.** Compõe-se num canvas exactamente o que o ecrã mostra
+— a imagem com a geometria do `object-fit: cover` mais o mesmo degradé que o
+CSS aplica — e lê-se o pixel MAIS CLARO debaixo de cada bloco de texto:
+
+| | pior caso |
+|---|---|
+| `<h1>` dourado | 7,94:1 |
+| subtítulo | 7,82:1 |
+| corpo | 7,85:1 |
+| régua de provas | 7,53:1 |
+
+A régua de provas dava **3,66:1** na primeira medição, porque cai na zona clara
+do véu — que é justamente onde se querem ver os carros. Em vez de escurecer o
+véu todo, a régua passou a ter um painel próprio. Lê-se como uma barra de
+números, que é o que é.
+
+### Uma lição de processo
+
+O texto da capa desapareceu por completo numa das iterações: `.heroi__interior`
+perdeu as suas regras (incluindo o `z-index: 2`) quando apaguei o CSS da pilha
+de fotografias, e o véu passou a ficar por cima do texto.
+
+**A geometria dizia que estava tudo bem** — posição certa, opacidade 1, cor
+certa. Só não era pintado. E a auditoria tem exactamente o travão que apanha
+isto (toda a classe usada no HTML tem de ter regras de CSS) — mas eu corri o
+gerador e o `responsivo.mjs` e **saltei o `auditar.mjs`**. O travão existia e
+não foi accionado.
+
+Correr sempre os três: `gerar` → `responsivo` → `auditar`. É o que o workflow
+de publicação faz, e é o que se deve fazer em local antes de olhar para o ecrã.

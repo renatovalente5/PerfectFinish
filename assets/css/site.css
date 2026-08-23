@@ -461,43 +461,55 @@ body[data-menu="aberto"] { overflow: hidden; }
   object-position: 0% 50%;
 }
 
-/* NO TELEMÓVEL A IMAGEM É UMA FAIXA EM BAIXO, não um fundo.
-   Num ecrã estreito o texto ocupa a largura toda, portanto não há lado
-   nenhum onde as fotografias possam ficar à vista: ou se tapa a imagem com um
-   véu (e volta a queixa de que não se vê nada), ou se separa. Separa-se.
-   Em cima o texto sobre preto chapado; em baixo uma faixa de fotografias
-   inteiras, sem véu, com uma passagem esbatida entre as duas. */
+/* O TEXTO POR CIMA DO FUNDO.
+   O `z-index: 2` não é decoração: sem ele o véu (`.heroi__fundo::before`,
+   z-index 1) fica por cima do texto e a capa aparece só com a fotografia, sem
+   uma palavra. Aconteceu — as regras deste bloco foram apagadas por engano ao
+   remover o CSS da pilha de fotografias, e a geometria continuava a dizer que
+   o texto estava no lugar certo, com opacidade 1 e a cor certa. Só não era
+   pintado. */
+.heroi__interior { position: relative; z-index: 2; }
+
+/* NO TELEMÓVEL A IMAGEM É FUNDO A SÉRIO, atrás do texto.
+   Tentei uma faixa por baixo do texto e o cliente disse — com razão — que
+   queria «a foto como background e não só ao lado»: num telemóvel alto a
+   faixa caía toda abaixo da dobra e ficava um sliver de fotografia.
+   Agora a fotografia cobre o herói todo e o contraste vem de um véu em
+   degradé: forte em cima, onde está o texto; leve em baixo, onde se veem os
+   carros. Não é um véu uniforme — um véu uniforme forte o suficiente para o
+   texto apaga as fotografias, que foi a primeira queixa.
+   Os valores foram medidos, não estimados: ver a nota de contraste abaixo. */
 @media (max-width: 63.9375rem) {
-  /* A MESMA expressão nos dois sítios: a altura da faixa e o espaço que lhe é
-     reservado. Estava `block-size: 47%` na faixa e `padding-block-end: 49%` no
-     interior — e um `padding` em percentagem resolve contra a LARGURA, não a
-     altura. Reservava 191 px onde a faixa media 404, e a régua de provas
-     acabava por cima da fotografia. */
-  .heroi { --faixa: min(44svh, 24rem); padding-block-end: 0; }
-  .heroi__fundo { inset: auto 0 0 0; block-size: var(--faixa); }
-  .heroi__fundo::before {
-    content: ""; position: absolute; inset-inline: 0; top: 0; z-index: 1;
-    block-size: 30%;
-    background: linear-gradient(to bottom, var(--tinta), transparent);
+  .heroi {
+    min-block-size: 100svh;
+    padding-block: calc(var(--cabecalho-alto) + var(--e-5)) var(--e-9);
+    align-items: start;
   }
-  .heroi__interior { padding-block-end: calc(var(--faixa) + var(--e-5)); }
-}
-/* Fecho para o preto no rodapé, para a secção seguinte entrar sem aresta. */
-@media (min-width: 64rem) {
-  .heroi::after {
-    content: ""; position: absolute; z-index: 1; inset-inline: 0; bottom: 0;
-    block-size: 26%; pointer-events: none;
-    background: linear-gradient(to top, var(--tinta), transparent);
+  .heroi__fundo::before {
+    content: ""; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to bottom,
+      rgb(15 13 13 / .94) 0%,
+      rgb(15 13 13 / .93) 46%,
+      rgb(15 13 13 / .74) 68%,
+      rgb(15 13 13 / .42) 86%,
+      rgb(15 13 13 / .58) 100%);
+  }
+
+  /* A régua de provas cai na zona clara do véu — que é justamente onde se
+     querem ver os carros. Medida ali, dava 3,66:1, abaixo do mínimo.
+     Em vez de escurecer o véu todo (e apagar as fotografias outra vez), a
+     régua leva um painel próprio. Lê-se como uma barra de números, que é o
+     que é. */
+  .provas {
+    padding: var(--e-4) var(--e-5);
+    border: 1px solid var(--filete-fraco);
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--tinta) 88%, transparent);
+    backdrop-filter: blur(8px);
+    gap: var(--e-4) var(--e-6);
   }
 }
 
-.heroi__interior {
-  position: relative; z-index: 2;
-  display: grid; gap: var(--e-6) clamp(1.5rem, 4vw, 3.5rem);
-  align-items: start;
-}
-/* O texto ocupa a coluna do painel escuro gravado na imagem — 46% da largura
-   na versão larga. Passar disso e o texto começa a cair sobre fotografia. */
 @media (min-width: 48rem) {
   .heroi__texto, .provas { max-inline-size: min(36rem, 42%); }
 }
