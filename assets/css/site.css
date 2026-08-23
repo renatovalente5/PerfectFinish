@@ -139,6 +139,10 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   text-wrap: balance;
   font-weight: 700;
+  /* O Archivo Expanded em maiúsculas é largo, e em português há palavras
+     longas — «DESCONTAMINANTE» saía fora do cartão da loja. Sem isto, basta
+     o cliente escrever um nome comprido no backoffice para partir a grelha. */
+  overflow-wrap: break-word;
 }
 h1 { font-size: var(--t-5); line-height: .94; letter-spacing: -.005em; }
 h2 { font-size: var(--t-4); line-height: 1;   letter-spacing: -.002em; }
@@ -596,10 +600,18 @@ body[data-menu="aberto"] { overflow: hidden; }
 .pares > .par { flex: 0 0 min(82vw, 27rem); scroll-snap-align: center; }
 
 /* ---------------------------------------------------------- 09 trabalhos */
+/* Colunas fixas por medida, e não `auto-fill`, para o número de colunas ser
+   uma decisão e não um resultado.
+   Duas colunas no telemóvel, e não uma: com 18 trabalhos, uma coluna dá uma
+   página de dez mil píxeis. E há uma segunda razão, mais importante — os
+   originais têm 414 px de lado, portanto uma peça de 165 px continua nítida
+   num ecrã de retina (165 × 2 = 330 < 414), enquanto uma de 342 px já não. */
 .grelha {
-  display: grid; gap: clamp(.75rem, 2vw, 1.4rem);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+  display: grid; gap: clamp(.6rem, 2vw, 1.4rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+@media (min-width: 40rem) { .grelha { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .grelha { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .obra { position: relative; margin: 0; }
 .obra__foto {
   position: relative; display: block;
@@ -627,16 +639,16 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 .obra figcaption {
   position: absolute; inset-inline: 0; bottom: 0; z-index: 1;
-  padding: var(--e-4); pointer-events: none;
+  padding: clamp(.6rem, 2.2vw, 1rem); pointer-events: none;
   display: grid; gap: .1rem;
 }
 .obra .veiculo {
   font-family: var(--letra-titulo); font-stretch: 125%;
-  font-size: var(--t--1); font-weight: 600; letter-spacing: .04em;
-  text-transform: uppercase; line-height: 1.2;
+  font-size: clamp(.68rem, 2.1vw, .8125rem); font-weight: 600; letter-spacing: .03em;
+  text-transform: uppercase; line-height: 1.15;
 }
 .obra .servico {
-  font-size: .625rem; letter-spacing: .2em; text-transform: uppercase;
+  font-size: clamp(.55rem, 1.7vw, .625rem); letter-spacing: .16em; text-transform: uppercase;
   color: var(--ouro); font-weight: 600;
 }
 
@@ -766,9 +778,12 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 /* -------------------------------------------------------------- 12 loja */
 .produtos {
-  display: grid; gap: clamp(1rem, 2.4vw, 1.75rem);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  display: grid; gap: clamp(.6rem, 2.4vw, 1.75rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+@media (min-width: 48rem) { .produtos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 68rem) { .produtos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 26rem) { .produtos { grid-template-columns: minmax(0, 1fr); } }
 .produto {
   display: flex; flex-direction: column;
   border: 1px solid var(--filete-fraco); border-radius: 3px;
@@ -778,7 +793,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 .produto:hover { border-color: var(--filete); translate: 0 -3px; }
 .produto__imagem { aspect-ratio: 1; background: var(--tinta); }
 .produto__imagem img { inline-size: 100%; block-size: 100%; object-fit: cover; }
-.produto__corpo { padding: var(--e-5); display: grid; gap: var(--e-2); flex: 1; align-content: start; }
+.produto__corpo { padding: clamp(.85rem, 3vw, 1.5rem); display: grid; gap: var(--e-2); flex: 1; align-content: start; }
 .produto__familia {
   font-size: .625rem; letter-spacing: .2em; text-transform: uppercase;
   color: var(--ouro); font-weight: 600;
@@ -792,7 +807,8 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .produto__preco small { display: block; font-size: var(--t--2); font-weight: 400;
   letter-spacing: .04em; color: var(--osso-fraco); text-transform: none; }
-.produto .botao { margin: 0 var(--e-5) var(--e-5); justify-content: center; }
+.produto .botao { margin: 0 clamp(.85rem,3vw,1.5rem) clamp(.85rem,3vw,1.5rem); justify-content: center; }
+.produto h3 { font-size: clamp(.95rem, 2.6vw, 1.15rem); }
 
 .aviso {
   padding: var(--e-5); border-radius: 3px;
