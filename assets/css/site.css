@@ -671,12 +671,20 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 /* Lupa. O `popover` dá camada de topo, fecho com Esc, fecho ao tocar fora e
    gestão do foco sem uma linha de JS. */
+/* ATENÇÃO AO `display` AQUI.
+   O navegador esconde um `popover` fechado com `display: none` na sua folha
+   de estilo. Declarar `display: grid` no elemento ganha a essa regra, e o
+   resultado é um painel de ecrã inteiro invisível, por cima de tudo, a comer
+   todos os cliques da página — botões, ligações, fotografias. Foi exactamente
+   o que aconteceu.
+   Por isso o `display` só existe no estado aberto. É a mesma armadilha do
+   atributo `hidden`, que também não esconde nada se o CSS declarar `display`. */
 .lupa {
   inline-size: 100%; max-inline-size: 100%;
   block-size: 100%; max-block-size: 100%;
   border: 0; padding: 0; background: transparent;
-  display: grid; place-items: center;
 }
+.lupa:popover-open { display: grid; place-items: center; }
 .lupa::backdrop { background: color-mix(in oklab, #000 88%, transparent); }
 /* Palco da lupa: a imagem ao centro e uma seta de cada lado. Em ecrã largo
    as setas ficam fora da imagem; no telemóvel sobrepõem-se às margens, que é
