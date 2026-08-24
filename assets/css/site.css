@@ -93,6 +93,19 @@
    assim que um filtro deixa de esconder o que devia sem dar erro nenhum. */
 [hidden] { display: none !important; }
 
+/* A indentação das listas vem de `padding-inline-start: 40px` na folha do
+   NAVEGADOR. O reset acima é `* { margin: 0 }` — zera margens e não paddings —
+   e `list-style: none` tira o marcador mas NÃO tira o recuo. Resultado medido
+   neste site: .cartoes-servico, .horario e .lista-servicos estavam empurradas
+   40 px para a direita e transbordavam 40 px para fora do contentor. Todo o
+   cuidado com `minmax(0, 1fr)` nas grelhas não servia de nada, porque o
+   problema não estava nas colunas — estava antes delas.
+   O `[class]` limita isto às listas que o site estiliza: as listas de texto
+   corrido das páginas legais não têm classe e ficam com marcador e recuo, como
+   devem. O `:where()` mantém a especificidade em zero, para que qualquer regra
+   de classe mais abaixo continue a ganhar (é o caso de .menu__lista). */
+:where(ul, ol)[class] { padding-inline-start: 0; }
+
 html {
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;
@@ -380,15 +393,18 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.02
   }
   .menu[data-aberto="sim"] { opacity: 1; visibility: visible; }
 
-  /* O item da grelha é o <nav>, não a <ul>. Sem isto a lista fica encostada
-     ao topo da faixa e o `justify-content: center` da <ul> não tem altura
-     nenhuma para centrar. */
+  /* O item da grelha é o <nav>, não a <ul>. Continua a ser preciso mesmo com
+     a lista encostada ao topo: é isto que dá à <ul> uma altura limitada, sem a
+     qual o `overflow-y: auto` de baixo não teria contra o que rolar num
+     telemóvel deitado. */
   .menu > nav { display: grid; min-block-size: 0; }
 
   .menu__lista {
-    display: flex; flex-direction: column; justify-content: center;
+    /* Encostada ao topo, como foi pedido. Esteve centrada e ficava a flutuar
+       no meio do ecrã, longe do botão que a abriu. */
+    display: flex; flex-direction: column; justify-content: flex-start;
     gap: clamp(.5rem, 2.2vh, 1.1rem);
-    padding: var(--e-6) var(--goteira);
+    padding: var(--e-5) var(--goteira) var(--e-6);
     list-style: none;
     overflow-y: auto;   /* ecrãs baixos (telemóvel deitado) não cortam itens */
   }
@@ -593,7 +609,13 @@ body[data-menu="aberto"] { overflow: hidden; }
   .heroi .accoes { margin-top: var(--e-5); }
   .provas { margin-top: var(--e-6); }
 }
-@media (max-width: 40rem) { .heroi .sobrescrito { display: none; } }
+/* O sobrescrito esteve escondido abaixo de 40rem para poupar altura. Voltou:
+   é a linha que diz o nome do estúdio e a cidade, e num telemóvel é
+   precisamente onde isso mais conta. Fica só mais apertado. */
+@media (max-width: 40rem) {
+  .heroi .sobrescrito { margin-bottom: var(--e-3); font-size: .68rem; letter-spacing: .12em; }
+  .heroi .sobrescrito::before { inline-size: 1rem; }
+}
 
 /* A lista completa dos 13 serviços. Os cartões acima são as áreas; isto é
    para quem procura o nome exacto — «pintura de travão», «polimento de farol»
@@ -1122,7 +1144,7 @@ body[data-menu="aberto"] { overflow: hidden; }
   font-size: var(--t--2); letter-spacing: .1em; color: var(--osso-fraco);
   margin-bottom: var(--e-4); font-weight: 600;
 }
-.rodape ul { list-style: none; display: grid; gap: var(--e-3); }
+.rodape ul { list-style: none; display: grid; gap: var(--e-3); padding: 0; }
 .rodape a { text-decoration: none; color: var(--osso-meio); transition: color .2s var(--curva); }
 .rodape a:hover { color: var(--ouro-alto); }
 

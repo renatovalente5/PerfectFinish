@@ -613,7 +613,6 @@ function cartaoServico(sv) {
 }
 
 function inicio() {
-  const destaques = TRABALHOS.filter((t) => t.destaque).slice(0, 8);
 
   const corpo = `
 <section class="heroi">
@@ -662,7 +661,7 @@ function inicio() {
  </div>
 </section>
 
-<section class="seccao" id="antes-depois">
+<section class="seccao" id="trabalhos">
  <div class="caixa">
   <div class="cabeca-seccao">
    <p class="sobrescrito">Antes e depois</p>
@@ -671,20 +670,9 @@ function inicio() {
   </div>
  </div>
  <div class="pares">${PARES.slice(0, 3).map(comparador).join("")}</div>
- <div class="caixa"><p class="fecho-seccao">Os cinco comparadores completos estão em <a href="${u("/trabalhos/")}">Trabalhos</a>.</p></div>
-</section>
-
-<section class="seccao" id="trabalhos">
  <div class="caixa">
-  <div class="cabeca-seccao">
-   <p class="sobrescrito">Portefólio</p>
-   <h2>Carros que passaram por cá</h2>
-  </div>
-  <div class="grelha">${destaques.map(cartaoObra).join("")}</div>
-
   <div class="painel-ig">
-   <p>Isto são ${destaques.length}. O portefólio completo vive no Instagram, com
-   trabalho novo quase todos os dias.</p>
+   <p>O portefólio completo vive no Instagram, com trabalho novo quase todos os dias.</p>
    ${ig("Ver tudo no Instagram <span class=\"seta\">→</span>")}
    <p class="painel-ig__conta">@perfectfinish.pt</p>
    <p class="fecho-seccao">…ou ver os ${TRABALHOS.length} trabalhos aqui no site → <a href="${u("/trabalhos/")}">Trabalhos</a></p>

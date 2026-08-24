@@ -47,7 +47,17 @@ for (const m of css.matchAll(/grid-template-columns:\s*([^;}]+)/g)) {
 for (const m of css.matchAll(/clamp\(\s*([\d.]+)rem\s*,[^,]*,\s*([\d.]+)rem\s*\)/g)) {
   if (Number(m[1]) > Number(m[2])) problemas.push(`clamp invertido: ${m[0]}`);
 }
-// 5. 100vw em propriedades de largura: inclui a barra de scroll e transborda.
+// 5. O reset do recuo das listas tem de existir. A indentação de 40px vem da
+//    folha do NAVEGADOR: `* { margin: 0 }` não a tira e `list-style: none`
+//    também não. Sem este reset, TODA a lista estilizada fica 40px à direita e
+//    a grelha transborda 40px — foi medido em .cartoes-servico, .horario e
+//    .lista-servicos, e nem o cuidado com minmax(0,1fr) o evitava, porque o
+//    problema está antes das colunas. Verifica-se a existência do reset, não
+//    cada regra: é o reset que resolve todas de uma vez.
+if (!/:where\(ul,\s*ol\)\[class\]\s*\{[^}]*padding-inline-start:\s*0/.test(css)) {
+  problemas.push("falta o reset `:where(ul, ol)[class] { padding-inline-start: 0 }` — as listas voltam a ter 40px de recuo do navegador");
+}
+// 6. 100vw em propriedades de largura: inclui a barra de scroll e transborda.
 for (const m of css.matchAll(/(?<!max-)(?:inline-size|width)\s*:\s*100vw/g)) problemas.push("largura 100vw (inclui a barra de scroll)");
 
 console.log(problemas.length ? problemas.map(p => "  " + p).join("\n") : "  nada a apontar");
