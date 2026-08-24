@@ -655,17 +655,14 @@ content:
         label: Textos da página inicial
         type: object
         fields:
-          - name: heroi_linha1
-            label: Título — primeira linha
-            type: string
+          - name: heroi_titulo
+            label: Título grande da capa
+            type: text
             description: >-
-              O título grande, em dourado, no topo da página. Duas ou três
-              palavras por linha; mais do que isso e a letra encolhe.
-              Exemplo: A sua viatura
-          - name: heroi_linha2
-            label: Título — segunda linha
-            type: string
-            description: 'Exemplo: nova de novo'
+              O título em dourado no topo da página. UMA LINHA POR LINHA: cada
+              vez que carregar em Enter começa uma linha nova no site. Duas ou
+              três palavras por linha — mais do que isso e a linha não cabe.
+              Exemplo (três linhas): Studio de / Customização / Premium
           - name: heroi_sub
             label: Linha por baixo do título
             type: string

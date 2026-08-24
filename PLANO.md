@@ -563,3 +563,61 @@ cortado — parece transbordo horizontal onde não há nenhum. A medição no pa
 real deu `scrollWidth - clientWidth = 0` e os azulejos a x=18 e x=200 dentro de
 uma caixa de 353 px. Confirmar sempre com medição antes de acreditar numa
 captura que mostra conteúdo cortado.
+
+
+---
+
+## A página /trabalhos/ saiu (24-08-2026)
+
+O cliente quer tudo na inicial e na Loja. Verificado antes de apagar: as
+galerias dos azulejos dos Serviços cobrem **os 18 trabalhos**, portanto não se
+perde conteúdo nenhum — só deixa de haver uma segunda porta para o mesmo.
+
+O que foi preciso refazer:
+· os cinco comparadores passaram todos para a inicial (eram dois; os outros três
+  viviam na página que saiu e ficariam inalcançáveis);
+· a linha de fecho do painel do Instagram mandava para /trabalhos/ e passou a
+  dizer o que há na inicial;
+· o botão da página 404 aponta para /#trabalhos/ em vez da página.
+O `cartaoObra` e a `.grelha` ficam a ser usados só pelo código morto das páginas
+de serviço.
+
+**Custo medido, para decidir:** o antes-e-depois no telemóvel passou de ~1430
+para **3556 px** com cinco comparadores, e a página toda para 9468 px. Cortar
+para três resolve numa linha (`PARES.slice(0, 3)`).
+
+## Serviços em fundo claro (24-08-2026)
+
+O que muda não é o fundo, é o dourado. `--ouro` #AC8A39 sobre o claro #F2EFE9 dá
+**2,84:1** e reprova; `--ouro-sombra` #7A571D dá **5,70:1** e já existe na
+paleta. Medido no navegador depois de aplicado: sobrescrito 5,70, título 14,18,
+nomes da tira 6,38.
+
+O azulejo do Instagram fica ESCURO de propósito: é o único sem fotografia e o
+único que leva para fora, e sobre o claro lê-se como peça à parte.
+
+**ARMADILHA em que caí:** a regra `.claro .montra__peca > a` (0,3,0) anulava o
+gradiente de `.montra__ig > a` (0,2,0). O azulejo saía claro e «Mais no
+Instagram» em #CBAD4F ficava a **1,90:1**. Vi na captura, confirmei por medição,
+e o selector passou a repetir o `.claro` para empatar e ganhar por ordem. De
+caminho apanhei um defeito que já lá estava: `@perfectfinish.pt` em
+`--osso-fraco` dava 3,98:1 contra o extremo claro do gradiente — passou a
+`--osso-meio`, 6,78:1.
+
+## Título da capa: um campo, não N campos (24-08-2026)
+
+«Studio de Customização Premium» não cabe em duas linhas. Medido a 1440 px com
+fonte de 67 px numa coluna de 608: «Studio de Customização» dá 902 px e
+«Customização Premium» dá 864. Em duas linhas obrigaria a descer de 4,2rem para
+~2,9rem e a capa perdia força. Em três linhas a mais larga é «Customização», com
+537 px, e cabe com 71 de folga.
+
+Por isso os dois campos fixos (`heroi_linha1/2`) deram lugar a UM campo de texto
+com quebras de linha, uma `<span>` por linha. O gradiente dourado é
+`background-clip: text` e tem de ser aplicado linha a linha (num bloco de várias
+linhas o degradé ladrilha e parte os diacríticos), mas isso agora não custa
+campos novos no backoffice de cada vez que o título muda de forma.
+
+A medição certa é um elemento SOLTO com `white-space: nowrap` e a mesma fonte.
+Ler a largura do `<span>` dá a largura da CAIXA e não da linha — foi assim que
+uma vez concluí que cabia uma frase que já estava quebrada.

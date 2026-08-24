@@ -1149,6 +1149,44 @@ html[data-js] .comparador:has(.comparador__regua:focus-visible) .comparador__peg
 .claro .sobrescrito::before { background: linear-gradient(90deg, transparent, var(--ouro-sombra)); }
 .claro .filete { background: linear-gradient(90deg, transparent, rgb(0 0 0 / .14) 18%, rgb(0 0 0 / .14) 82%, transparent); }
 
+/* A SECÇÃO DOS SERVIÇOS EM CLARO.
+   O que muda não é o fundo, é o dourado: `--ouro` #AC8A39 sobre o claro dá
+   2,84:1 e reprova. `--ouro-sombra` #7A571D dá 5,70:1 e já existe na paleta —
+   não é cor nova, é a mesma família mais escura. Medido, não escolhido a olho.
+   O `--filete-fraco` é ouro a 11% de opacidade: sobre escuro lê-se, sobre
+   claro desaparece. Aqui a moldura passa a preto a 12%. */
+.claro .rol-servicos li { color: var(--claro-meio); }
+.claro .rol-servicos .risco { background: var(--ouro-sombra); opacity: .7; }
+.claro .rol-servicos a { color: var(--claro-meio); }
+.claro .rol-servicos a:hover { color: var(--ouro-sombra); }
+.claro .montra__peca > button,
+.claro .montra__peca > a {
+  border-color: rgb(0 0 0 / .12);
+  /* Fundo enquanto a fotografia não chega. Era `--carta`, quase preto, e num
+     fundo claro cada azulejo aparecia como um buraco antes de carregar. */
+  background: rgb(0 0 0 / .05);
+}
+@media (hover: hover) and (pointer: fine) {
+  .claro .montra__peca > button:hover,
+  .claro .montra__peca > a:hover { border-color: var(--ouro-sombra); }
+}
+.claro .montra__peca > button:focus-visible,
+.claro .montra__peca > a:focus-visible { border-color: var(--ouro-sombra); }
+/* O azulejo do Instagram fica ESCURO de propósito. É o único sem fotografia e
+   o único que leva a fora do site: sobre o claro passa a ler-se como peça à
+   parte em vez de mais um quadrado. E como continua escuro por dentro, o
+   dourado claro que já tinha continua a servir.
+   ARMADILHA que caí aqui: a regra `.claro .montra__peca > a` acima tem
+   especificidade 0,3,0 e o gradiente original em `.montra__ig > a` tem 0,2,0 —
+   anulava-o, o azulejo saía claro e «Mais no Instagram» em #CBAD4F ficava a
+   1,90:1. Medido no navegador depois de o ver na captura. Daí este selector
+   repetir o `.claro` para empatar em especificidade e ganhar por ordem. */
+.claro .montra__ig > a {
+  background-image: linear-gradient(158deg, var(--elevado), var(--carta) 68%);
+  background-color: var(--carta);
+  border-color: transparent;
+}
+
 .garantias { list-style: none; display: grid; gap: var(--e-5); counter-reset: g; }
 @media (min-width: 42rem) { .garantias { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-6) var(--e-7); } }
 @media (min-width: 64rem) { .garantias { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -1774,7 +1812,10 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   color: var(--ouro-alto); text-align: center; text-wrap: balance;
 }
 .montra__conta-ig {
-  font-size: var(--t--2); color: var(--osso-fraco); letter-spacing: .06em;
+  /* `--osso-fraco` dava 3,98:1 contra o extremo mais claro do gradiente deste
+     azulejo (#2B2626) — abaixo dos 4,5 que texto deste tamanho exige. Medido
+     ao verificar o fundo claro; já estava assim antes. */
+  font-size: var(--t--2); color: var(--osso-meio); letter-spacing: .06em;
 }
 
 /* E É ISTO QUE FAZ A GRELHA NUNCA TER BURACOS.

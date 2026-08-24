@@ -468,6 +468,21 @@ function blocoAvaliacoes({ claro = false } = {}) {
  *  é o que o 404 e os dados estruturados precisam.
  *  `role="list"` é obrigatório: o `list-style: none` remove a semântica de
  *  lista no Safari com VoiceOver, e isso é intencional da Apple, não defeito. */
+/** O título da capa, uma <span> por linha.
+ *  O gradiente dourado é `background-clip: text` e tem de ser aplicado LINHA A
+ *  LINHA: num bloco de várias linhas o degradé ladrilha e parte os diacríticos
+ *  portugueses ao meio — foi verificado. Daí uma <span> por linha.
+ *  Antes eram dois campos fixos (heroi_linha1/2). Passou a UM campo com
+ *  quebras de linha: «Studio de Customização Premium» não cabe em duas linhas
+ *  (medido: «Customização Premium» dá 864 px numa coluna de 608), e assim o
+ *  título muda de duas para três linhas sem se acrescentar campos ao
+ *  backoffice de cada vez. */
+function tituloCapa() {
+  return String(D.textos.heroi_titulo || "")
+    .split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+    .map((l) => `<span>${esc(l)}</span>`).join("");
+}
+
 function tiraServicos() {
   return `<ul class="rol-servicos" role="list">${LISTA_SERVICOS.map((sv) =>
     `<li${sv.imagem ? "" : ` id="s-${esc(sv.slug)}"`}><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</li>`
@@ -671,7 +686,7 @@ function inicio() {
  <div class="caixa heroi__interior">
   <div class="heroi__texto">
    <p class="sobrescrito">${esc(D.marca.reclamo)}</p>
-   <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
+   <h1 class="ouro">${tituloCapa()}</h1>
    <p class="heroi__sub">${esc(D.textos.heroi_sub)}</p>
    <div class="accoes">
     <!-- Só «Ver trabalhos», a pedido. O «Pedir orçamento» não desaparece do
@@ -688,7 +703,7 @@ function inicio() {
  </div>
 </section>
 
-<section class="seccao alto" id="servicos">
+<section class="seccao claro" id="servicos">
  <div class="caixa">
   <p class="sobrescrito">Serviços</p>
   <h2>O que fazemos</h2>
@@ -704,14 +719,14 @@ function inicio() {
    <h2>Arraste para ver a diferença</h2>
    <p>O mesmo carro, o mesmo enquadramento. Só muda o que fizemos.</p>
   </div>
-  <div class="pares">${PARES.slice(0, 2).map(comparador).join("")}</div>
+  <div class="pares">${PARES.map(comparador).join("")}</div>
  </div>
  <div class="caixa">
   <div class="painel-ig">
    <p>O portefólio completo vive no Instagram, com trabalho novo quase todos os dias.</p>
    ${ig("Ver tudo no Instagram <span class=\"seta\">→</span>")}
    <p class="painel-ig__conta">@perfectfinish.pt</p>
-   <p class="fecho-seccao">…ou ver os ${TRABALHOS.length} trabalhos aqui no site → <a href="${u("/trabalhos/")}">Trabalhos</a></p>
+   <p class="fecho-seccao">Aqui no site ficam os ${LISTA_SERVICOS.filter((sv) => sv.imagem).length} serviços com fotografia, e cada um abre a galeria do trabalho.</p>
   </div>
  </div>
 </section>
@@ -848,43 +863,6 @@ ${CTA(`Precisa de ${s.nome.toLowerCase()}?`, "Mande-nos uma mensagem com uma fot
   });
 }
 
-function trabalhos() {
-  const corpo = `<section class="seccao" style="padding-top:var(--e-7)">
- <div class="caixa">
-  <div class="cabeca-seccao">
-   <p class="sobrescrito">Portefólio</p>
-   <h1 class="titulo-pagina">Trabalhos</h1>
-   <p>Carros que passaram pelo estúdio. As matrículas foram desfocadas por respeito pela privacidade dos clientes.</p>
-  </div>
- </div>
- <div class="caixa"><div class="grelha">${TRABALHOS.map(cartaoObra).join("")}</div></div>
-</section>
-
-<section class="seccao alto">
- <div class="caixa">
-  <div class="cabeca-seccao"><p class="sobrescrito">Antes e depois</p><h2>Arraste para comparar</h2></div>
-  <div class="pares">${PARES.map(comparador).join("")}</div>
- </div>
-</section>
-
-<section class="seccao claro">
- <div class="caixa" style="text-align:center;display:grid;justify-items:center;gap:var(--e-5)">
-  <p class="sobrescrito">Instagram</p>
-  <h2>Há mais, e é actualizado quase todos os dias</h2>
-  <p class="medida">Estes são os trabalhos que escolhemos para aqui. O portefólio completo está no Instagram.</p>
-  ${ig("Ver tudo no Instagram <span class=\"seta\">→</span>", "botao botao--claro")}
- </div>
-</section>
-${CTA("O próximo pode ser o seu", "Traga o carro ou mande-nos uma fotografia. Respondemos com o que dá para fazer e quanto custa.")}`;
-
-  return pagina({
-    url: "/trabalhos/",
-    titulo: "Trabalhos — Envelopamento e Detail | Perfect Finish Leiria",
-    descricao: "Portefólio do Perfect Finish Studio em Leiria: Ferrari, Porsche, Rolls-Royce, Audi e Mercedes. Envelopamento, correção de pintura, PPF e películas.",
-    corpo,
-    migalhas: [{ nome: "Trabalhos", url: "/trabalhos/" }],
-  });
-}
 
 function loja() {
   const cartao = (p) => `<article class="produto revelar">
@@ -1165,7 +1143,7 @@ function naoEncontrada() {
       </ul>
       <div class="accoes" style="justify-content:center">
        <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Falar por WhatsApp</a>
-       <a class="botao botao--linha" href="${u("/trabalhos/")}">Ver trabalhos <span class="seta">→</span></a>
+       <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
        <a class="botao botao--linha" href="${u("/loja/")}">Loja <span class="seta">→</span></a>
       </div>
      </div></section>`,
@@ -1193,7 +1171,6 @@ const PAGINAS = [
     ...SERVICOS.map((s) => [`servicos/${s.slug}/index.html`, paginaServico(s), `/servicos/${s.slug}/`]),
   ] : []),
 
-  ["trabalhos/index.html", trabalhos(), "/trabalhos/"],
   ["loja/index.html", loja(), "/loja/"],
   ["informacao-legal/index.html", informacaoLegal(), "/informacao-legal/"],
   ["politica-de-privacidade/index.html", politicaPrivacidade(), "/politica-de-privacidade/"],
