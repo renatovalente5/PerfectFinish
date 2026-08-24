@@ -1580,7 +1580,55 @@ body[data-menu="aberto"] { overflow: hidden; }
     transition: block-size .32s var(--curva), content-visibility .32s allow-discrete;
   }
   .faq details[open]::details-content { block-size: auto; }
+
+  /* O mesmo para o «Ver mais» dos comparadores. `allow-discrete` é o que faz o
+     `content-visibility` participar da transição — sem isso abre a seco. */
+  .mais::details-content {
+    block-size: 0; overflow: clip;
+    transition: block-size .4s var(--curva), content-visibility .4s allow-discrete;
+  }
+  .mais[open]::details-content { block-size: auto; }
+
+  /* O mesmo para o «Ver mais» dos comparadores. `allow-discrete` é o que faz o
+     `content-visibility` participar da transição — sem isso abre a seco. */
+  .mais::details-content {
+    block-size: 0; overflow: clip;
+    transition: block-size .4s var(--curva), content-visibility .4s allow-discrete;
+  }
+  .mais[open]::details-content { block-size: auto; }
 }
+
+/* -------------------------------------------- «Ver mais» dos comparadores */
+/* Sem JavaScript, com <details>. O <summary> é o controlo nativo e traz o
+   aria-expanded de graça; e ao contrário de um botão em JS, isto não esconde
+   conteúdo a quem não tenha JavaScript. */
+.mais { margin-top: clamp(2.5rem, 5vw, 4.5rem); text-align: center; }
+.mais__botao {
+  /* `list-style: none` mais o pseudo-elemento do WebKit tiram o triângulo por
+     omissão nos dois motores. */
+  list-style: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--e-3);
+  inline-size: fit-content; margin-inline: auto;
+  padding: .85rem 1.6rem;
+  border: 1px solid var(--filete); border-radius: 2px;
+  font-family: var(--letra-titulo);
+  font-size: var(--t--1); font-weight: 600; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--osso);
+  transition: border-color .25s var(--curva), color .25s var(--curva);
+}
+.mais__botao::-webkit-details-marker { display: none; }
+.mais__botao:hover { border-color: var(--ouro); color: var(--ouro-alto); }
+.mais__botao:focus-visible { outline: 2px solid var(--ouro-alto); outline-offset: 3px; }
+/* `display` explícito nos dois, e não o atributo `hidden`: neste projecto já se
+   perdeu tempo com `hidden` a ser derrotado por um `display` de autor. */
+.mais__abrir, .mais__fechar { align-items: center; gap: .5rem; }
+.mais__abrir { display: inline-flex; }
+.mais__fechar { display: none; }
+.mais[open] .mais__abrir { display: none; }
+.mais[open] .mais__fechar { display: inline-flex; }
+/* O bloco herdaria o `text-align: center` do botão. */
+.mais .pares { text-align: start; margin-top: clamp(2.5rem, 5vw, 4.5rem); }
+
 
 /* --------------------------------------------------------- 17 movimento */
 /* Tudo o que se mexe está DENTRO desta consulta. Assim o estado reduzido não

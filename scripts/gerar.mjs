@@ -749,7 +749,27 @@ function inicio() {
    <h2>Arraste para ver a diferença</h2>
    <p>O mesmo carro, o mesmo enquadramento. Só muda o que fizemos.</p>
   </div>
-  <div class="pares">${PARES.map(comparador).join("")}</div>
+  <div class="pares">${PARES.slice(0, 2).map(comparador).join("")}</div>
+  <!-- Os restantes atrás de um <details>, e NÃO atrás de um botão em
+       JavaScript: o comparador foi feito para degradar sem JS, e um botão só em
+       JS esconderia estes três para sempre a quem não o tenha. O <summary> é um
+       controlo nativo e traz o estado de expansão para leitores de ecrã sem
+       uma linha de código.
+       O QUE ISTO POUPA, medido: a secção passa de 3376 para 1863 px e a página
+       de 7276 para 5763 (-1513 px, -21%). NÃO afirmo que poupe bytes: tentei
+       medir e não consegui em frio, porque as imagens já estavam em cache dos
+       testes anteriores (encodedBodySize a zero em todas). Se o carregamento
+       diferido das seis fotografias escondidas funciona ou não com
+       content-visibility: hidden fica por verificar.
+       O índice continua de 03: o comparador numera pelo argumento, portanto
+       soma-se o desvio dos dois que ficaram de fora. -->
+  ${PARES.length > 2 ? `<details class="mais">
+   <summary class="mais__botao">
+    <span class="mais__abrir">Ver mais<span class="seta" aria-hidden="true">↓</span></span>
+    <span class="mais__fechar">Ver menos<span class="seta" aria-hidden="true">↑</span></span>
+   </summary>
+   <div class="pares">${PARES.slice(2).map((p, i) => comparador(p, i + 2)).join("")}</div>
+  </details>` : ""}
  </div>
  <div class="caixa">
   <div class="painel-ig">

@@ -727,3 +727,52 @@ Duas coisas que precisaram de número e não de gosto:
   texto 7,71 · selo 14,48 · estrelas 5,20.
 
 O botão da capa voltou ao contorno, a pedido.
+
+
+---
+
+## «Ver mais» nos comparadores (24-08-2026)
+
+Dois pares à vista e os outros três atrás de um `<details>`, no computador e no
+telemóvel. Como a página /trabalhos/ já não existe, o botão tem de revelar ali
+mesmo — não há para onde ir.
+
+**`<details>`/`<summary>` e não um botão em JavaScript.** O comparador foi
+refeito para degradar sem JS; um botão só em JS esconderia três pares para
+sempre a quem não o tenha. O `<summary>` é um controlo nativo e traz o estado de
+expansão para leitores de ecrã sem uma linha de código.
+
+Medido: a secção passa de 3376 para **1863 px** e a página de 7276 para
+**5763 px** (−1513, −21%).
+
+**Não afirmar que poupa bytes.** Tentei medir e não consigo em frio: as imagens
+já estavam em cache dos testes anteriores (`encodedBodySize` a zero em todas as
+dez). Fica por verificar se o carregamento diferido das seis fotografias
+escondidas é travado por `content-visibility: hidden`.
+
+**A numeração continua de 03.** O `comparador(par, i)` numera pelo argumento,
+portanto o segundo lote leva `i + 2`. E a alternância dos lados continua certa
+por acidente favorável: no segundo contentor o par 3 volta a ser
+`:nth-child(1)`, logo ímpar, logo fotografia à esquerda — que é a sequência que
+se esperava depois de par 1 à esquerda e par 2 à direita.
+
+### Duas medições minhas que estavam erradas
+
+**`offsetParent !== null` não serve para saber se algo está escondido** dentro de
+um `<details>` fechado: com `content-visibility: hidden` os elementos continuam
+a ter `offsetParent`, e a primeira medição disse-me que os cinco pares estavam
+visíveis com o bloco fechado. O que serve é a altura do `::details-content` —
+0 px fechado, 1441 aberto.
+
+**O `display` no `<summary>` não era a causa.** Uma tecla Enter real não abria o
+bloco, e a minha hipótese foi o `display: inline-flex` (que é armadilha
+conhecida). Testei com `display: block` e também não abriu, com o foco
+confirmado no elemento e o `click()` a funcionar. Conclusão: **as teclas
+injectadas não chegam ao elemento focado neste painel** — não é defeito da
+página, e a activação por teclado do `<summary>` fica sem verificação aqui.
+
+### E terceira vez na mesma armadilha
+
+Acentos graves dentro de comentários HTML escritos em `template literals` fecham
+a string e dão erro de sintaxe. Aconteceu três vezes num dia. **Nos comentários
+HTML do gerador não se usam acentos graves.**
