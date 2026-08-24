@@ -716,7 +716,7 @@ function inicio() {
  </div>
 </section>
 
-<section class="seccao claro" id="servicos">
+<section class="seccao alto" id="servicos">
  <div class="caixa">
   <p class="sobrescrito">Serviços</p>
   <h2>O que fazemos</h2>

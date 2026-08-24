@@ -776,3 +776,27 @@ página, e a activação por teclado do `<summary>` fica sem verificação aqui.
 Acentos graves dentro de comentários HTML escritos em `template literals` fecham
 a string e dão erro de sintaxe. Aconteceu três vezes num dia. **Nos comentários
 HTML do gerador não se usam acentos graves.**
+
+
+## Serviços: de claro para «preto claro» (24-08-2026)
+
+O cliente pediu a secção clara e depois pediu-a «preto claro». É o
+`--tinta-alto` #2A2526, o tom que já existia para superfícies levantadas: dá
+1,18:1 contra o fundo da página #1A1717, que é o mínimo para se ler como plano
+distinto (o `--carta`, a 1,093, não se vê).
+
+Contrastes medidos sobre a superfície nova: sobrescrito dourado 4,64 · título
+12,37 · nomes da tira 6,86. O `--ouro` #AC8A39 a 4,64 é o que fixa o limite:
+um tom acima (#302A2B) punha-o a 4,32 e chumbava. Se algum dia for preciso mais
+claro, o sobrescrito tem de passar a `--ouro-alto`.
+
+**O azulejo do Instagram teve de RECUAR e não subir.** Usava `--elevado`
+#2B2626, que contra a secção #2A2526 dá **1,012:1** — invisível, medido. Passou
+a `--carta` → `--tinta`: fica mais escuro do que a superfície, lê-se como
+encaixe (que é o inverso correcto num plano já levantado) e o dourado lá dentro
+sobe de 6,84 para 7,47.
+
+As regras `.claro .rol-servicos` e `.claro .montra*` foram removidas por
+deixarem de ter alvo. Se a secção voltar a clara, estão no histórico do git —
+mas a lição fica: nessa versão o dourado tem de ser `--ouro-sombra` (5,70:1),
+porque `--ouro` sobre claro dá 2,84 e chumba.

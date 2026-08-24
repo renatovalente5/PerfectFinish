@@ -1177,43 +1177,6 @@ body[data-menu="aberto"] { overflow: hidden; }
 .claro .sobrescrito::before { background: linear-gradient(90deg, transparent, var(--ouro-sombra)); }
 .claro .filete { background: linear-gradient(90deg, transparent, rgb(0 0 0 / .14) 18%, rgb(0 0 0 / .14) 82%, transparent); }
 
-/* A SECÇÃO DOS SERVIÇOS EM CLARO.
-   O que muda não é o fundo, é o dourado: `--ouro` #AC8A39 sobre o claro dá
-   2,84:1 e reprova. `--ouro-sombra` #7A571D dá 5,70:1 e já existe na paleta —
-   não é cor nova, é a mesma família mais escura. Medido, não escolhido a olho.
-   O `--filete-fraco` é ouro a 11% de opacidade: sobre escuro lê-se, sobre
-   claro desaparece. Aqui a moldura passa a preto a 12%. */
-.claro .rol-servicos li { color: var(--claro-meio); }
-.claro .rol-servicos .risco { background: var(--ouro-sombra); opacity: .7; }
-.claro .rol-servicos a { color: var(--claro-meio); }
-.claro .rol-servicos a:hover { color: var(--ouro-sombra); }
-.claro .montra__peca > button,
-.claro .montra__peca > a {
-  border-color: rgb(0 0 0 / .12);
-  /* Fundo enquanto a fotografia não chega. Era `--carta`, quase preto, e num
-     fundo claro cada azulejo aparecia como um buraco antes de carregar. */
-  background: rgb(0 0 0 / .05);
-}
-@media (hover: hover) and (pointer: fine) {
-  .claro .montra__peca > button:hover,
-  .claro .montra__peca > a:hover { border-color: var(--ouro-sombra); }
-}
-.claro .montra__peca > button:focus-visible,
-.claro .montra__peca > a:focus-visible { border-color: var(--ouro-sombra); }
-/* O azulejo do Instagram fica ESCURO de propósito. É o único sem fotografia e
-   o único que leva a fora do site: sobre o claro passa a ler-se como peça à
-   parte em vez de mais um quadrado. E como continua escuro por dentro, o
-   dourado claro que já tinha continua a servir.
-   ARMADILHA que caí aqui: a regra `.claro .montra__peca > a` acima tem
-   especificidade 0,3,0 e o gradiente original em `.montra__ig > a` tem 0,2,0 —
-   anulava-o, o azulejo saía claro e «Mais no Instagram» em #CBAD4F ficava a
-   1,90:1. Medido no navegador depois de o ver na captura. Daí este selector
-   repetir o `.claro` para empatar em especificidade e ganhar por ordem. */
-.claro .montra__ig > a {
-  background-image: linear-gradient(158deg, var(--elevado), var(--carta) 68%);
-  background-color: var(--carta);
-  border-color: transparent;
-}
 
 .garantias { list-style: none; display: grid; gap: var(--e-5); counter-reset: g; }
 @media (min-width: 42rem) { .garantias { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-6) var(--e-7); } }
@@ -1875,7 +1838,12 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   display: grid; place-content: center; justify-items: center;
   gap: var(--e-4); padding: var(--e-5); cursor: pointer;
   aspect-ratio: auto; min-block-size: min(11rem, 46vw);
-  background: linear-gradient(158deg, var(--elevado), var(--carta) 68%);
+  /* RECUA, não sobe. A secção é `--tinta-alto` #2A2526 e o `--elevado` #2B2626
+     que aqui estava dá 1,012:1 contra ela — invisível, medido. Um painel mais
+     escuro do que a superfície lê-se como encaixe, que é o inverso correcto
+     numa superfície já levantada; e o dourado lá dentro fica a 8,17:1 em vez
+     dos 6,84 que tinha. */
+  background: linear-gradient(158deg, var(--carta), var(--tinta) 68%);
   border-color: var(--filete);
 }
 .montra__ig svg {
