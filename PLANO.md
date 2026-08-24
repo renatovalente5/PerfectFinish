@@ -926,3 +926,50 @@ Cortei o cabeçalho do ficheiro em `s.index("content:")` e apanhei o PRIMEIRO
 de commit e o bloco `media:`. Recuperei do git e passei a ancorar na coluna zero
 (`l == "content:"`). Num ficheiro com chaves repetidas a níveis diferentes,
 procurar por texto não basta.
+
+
+## As imagens não apareciam no backoffice (24-08-2026)
+
+O cliente mandou uma captura: os campos «Fotografia ANTES» e «Fotografia DEPOIS»
+mostravam um ícone de imagem partida com o nome «par-amg-cla-antes».
+
+**Causa:** os dados guardavam o RADICAL e em disco só existem as variantes.
+`par-amg-cla-antes` não é ficheiro nenhum — `par-amg-cla-antes-828.webp` é. O
+site funcionava porque `figura()` e `foto()` acrescentam o sufixo; o backoffice
+é que não tinha o que mostrar. Afectava TODOS os campos de imagem: pares,
+fotografias dos trabalhos e fotografias dos serviços.
+
+**Correcção em duas metades.** Os dados passam a guardar um ficheiro real
+(`assets/img/obras/x-828.webp`, e não o AVIF, porque o WebP é mostrado por mais
+ferramentas), e o gerador ganhou `radicalFoto()`, que volta ao radical para
+continuar a servir o conjunto responsivo. Aceita as três formas que podem
+aparecer: caminho com variante, radical solto (a forma antiga, para nada quebrar)
+e ficheiro solto carregado à mão.
+
+**Verificado que o site não mudou:** guardei as 71 referências de imagem do HTML
+antes, e depois da mudança do gerador E depois da migração dos dados o ficheiro
+é idêntico byte a byte. Uma correcção de backoffice não devia mexer no site, e
+não mexeu.
+
+**Rede nova na auditoria:** todo o valor em `data/` que aponte para
+`assets/img/` tem de existir em disco. Confirmei que dispara com um caminho
+inventado e que continua a aceitar a forma antiga.
+
+`capa.fotos` foi removido: não era lido por nada — o `capa.py` tem a sua própria
+lista de peças.
+
+## Menu do backoffice agrupado (24-08-2026)
+
+Seis entradas soltas passaram a três, pela ordem do site: um grupo «Página
+inicial» com Serviços, Trabalhos, Antes e depois e Avaliações, depois «Loja» e
+depois «Dados do estúdio». É assim que o cliente procura — «onde é que isto está
+na minha página?» — e não por tipo de dados. `group` é um tipo real de entrada
+(`z.literal("group")` com `items`), confirmado no esquema.
+
+### Erro meu, duas vezes, no mesmo ficheiro
+Cortar YAML por texto voltou a falhar. Primeiro a detecção de fim de bloco
+apanhou os comentários da entrada seguinte e as gamas sobrepuseram-se, perdendo
+cinco das seis entradas. A forma que funciona: encontrar as âncoras
+`^  - name: ` com indentação EXACTA, e cortar do início dos comentários de uma
+até ao início dos comentários da seguinte. E validar sempre o resultado com
+`yaml.safe_load` antes de acreditar nele.

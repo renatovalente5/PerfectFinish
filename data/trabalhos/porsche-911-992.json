@@ -4,9 +4,9 @@
   "servico": "Proteção e correção",
   "ordem": 5,
   "fotos": [
-    "porsche-911-992-1",
-    "porsche-911-992-2",
-    "porsche-911-992-3"
+    "assets/img/obras/porsche-911-992-1-828.webp",
+    "assets/img/obras/porsche-911-992-2-828.webp",
+    "assets/img/obras/porsche-911-992-3-828.webp"
   ],
   "destaque": false,
   "publicado": true

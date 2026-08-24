@@ -4,10 +4,10 @@
   "servico": "Envelopamento",
   "ordem": 2,
   "fotos": [
-    "audi-q7-camaleao-1",
-    "audi-q7-camaleao-2",
-    "audi-q7-camaleao-3",
-    "audi-q7-camaleao-4"
+    "assets/img/obras/audi-q7-camaleao-1-828.webp",
+    "assets/img/obras/audi-q7-camaleao-2-828.webp",
+    "assets/img/obras/audi-q7-camaleao-3-828.webp",
+    "assets/img/obras/audi-q7-camaleao-4-828.webp"
   ],
   "destaque": true,
   "publicado": true

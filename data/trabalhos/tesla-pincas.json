@@ -4,8 +4,8 @@
   "servico": "Pintura de travão",
   "ordem": 17,
   "fotos": [
-    "tesla-pincas-1",
-    "tesla-pincas-2"
+    "assets/img/obras/tesla-pincas-1-828.webp",
+    "assets/img/obras/tesla-pincas-2-828.webp"
   ],
   "destaque": true,
   "publicado": true

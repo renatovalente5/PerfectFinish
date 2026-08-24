@@ -4,8 +4,8 @@
   "servico": "Película solar",
   "ordem": 12,
   "fotos": [
-    "ford-mustang-dark-horse-1",
-    "ford-mustang-dark-horse-2"
+    "assets/img/obras/ford-mustang-dark-horse-1-828.webp",
+    "assets/img/obras/ford-mustang-dark-horse-2-828.webp"
   ],
   "destaque": false,
   "publicado": true

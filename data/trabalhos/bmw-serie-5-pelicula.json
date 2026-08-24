@@ -4,9 +4,9 @@
   "servico": "Película solar",
   "ordem": 11,
   "fotos": [
-    "bmw-serie-5-pelicula-1",
-    "bmw-serie-5-pelicula-2",
-    "bmw-serie-5-pelicula-3"
+    "assets/img/obras/bmw-serie-5-pelicula-1-828.webp",
+    "assets/img/obras/bmw-serie-5-pelicula-2-828.webp",
+    "assets/img/obras/bmw-serie-5-pelicula-3-828.webp"
   ],
   "destaque": true,
   "publicado": true

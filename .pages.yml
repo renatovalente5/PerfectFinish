@@ -16,6 +16,20 @@
 #  3. Os campos numéricos precisam de `step` explícito. Sem ele o passo é 1 e
 #     o formulário recusa 79,90.
 #
+#  4. Os campos de imagem guardam o caminho de um ficheiro que EXISTE, e não o
+#     radical. Guardavam «par-amg-cla-antes», mas em disco só há as variantes
+#     «-414.avif», «-828.avif», «-414.webp» e «-828.webp» — não havia ficheiro
+#     nenhum nesse caminho e o backoffice mostrava a pré-visualização partida em
+#     TODOS os campos de imagem. Guarda-se o «-828.webp», que é o que mais
+#     ferramentas conseguem mostrar, e o gerador volta ao radical sozinho para
+#     continuar a servir o conjunto responsivo (ver `radicalFoto` em gerar.mjs).
+#     A auditoria trava a publicação se algum caminho guardado não existir.
+#
+#  5. Campos que o cliente não deve mexer levam `hidden: true` — continuam no
+#     ficheiro e editam-se no repositório, mas ele não os vê. `hidden` e
+#     `readonly` são opções REAIS (lib/config-schema.ts). Não se inventa nada
+#     aqui: uma opção que não exista é ignorada em silêncio.
+#
 # O carregamento de fotografias falha acima de ~3,3 MB por ficheiro (limite do
 # alojamento do Pages CMS) e ficheiros HEIC do iPhone não são aceites — está
 # escrito nas ajudas dos campos onde isso interessa.
@@ -48,192 +62,244 @@ media:
 
 content:
 
-  # ══════════════════════════════════════════════════════════ 1. TRABALHOS
-  # Primeiro porque é o que se mexe mais: um carro novo, umas fotografias.
-  - name: trabalhos
-    label: Trabalhos
-    type: collection
-    path: data/trabalhos
-    filename: '{fields.slug}.json'
-    format: json
-    view:
-      fields: [veiculo, servico, publicado, ordem]
-      primary: veiculo
-    fields:
-      - name: veiculo
-        label: Carro
-        type: string
-        required: true
-        description: 'Marca e modelo. Exemplo: Mercedes-AMG CLA 45 S.'
-      - name: servico
-        label: O que se fez
-        type: string
-        required: true
-        description: 'Em duas ou três palavras. Exemplo: Envelopamento.'
-      - name: fotos
-        label: Fotografias
-        type: image
-        list: true
-        options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
-        description: >-
-          Estas são as fotografias que abrem quando alguém carrega no azulejo do
-          serviço. Limites: falha acima de cerca de 3,3 MB por ficheiro, e o
-          HEIC do iPhone não é aceite (no iPhone, Definições › Câmara ›
-          Formatos › Mais compatível, ou exportar como JPEG).
-      - name: publicado
-        label: Mostrar no site
-        type: boolean
-        default: true
-        description: 'Desligue para guardar sem publicar.'
-      - name: destaque
-        label: Destacar
-        type: boolean
-        default: false
-        description: 'Sem efeito neste momento. Fica para quando houver uma zona de destaques.'
-      - name: ordem
-        label: Ordem
-        type: number
-        options: { step: 1, min: 1 }
-        description: 'Número mais baixo aparece primeiro.'
-      - name: slug
-        label: Nome do ficheiro
-        type: string
-        required: true
-        pattern: '^[a-z0-9-]+$'
-        description: >-
-          Só minúsculas, números e hífenes. Dá o nome ao ficheiro e liga este
-          trabalho às galerias dos serviços. NÃO mude depois de publicado.
+  # ═══════════════════════════════════════════ 1. O QUE ESTÁ NA PÁGINA INICIAL
+  # Agrupado e pela ordem em que as secções aparecem no site. É assim que o
+  # cliente procura — «onde é que isto está na minha página?» — e não por tipo
+  # de dados. Seis entradas soltas passam a três, e as quatro que se mexem todas
+  # as semanas ficam juntas.
+  - name: pagina_inicial
+    label: Página inicial
+    type: group
+    items:
 
-  # ══════════════════════════════════════════════════════ 2. ANTES E DEPOIS
-  - name: pares
-    label: Antes e depois
-    type: file
-    path: data/pares.json
-    format: json
-    fields:
-      - name: pares
-        label: Comparadores
-        type: object
-        list: { collapsible: true, min: 1 }
-        description: >-
-          Os dois primeiros aparecem logo na página inicial; os restantes ficam
-          atrás do botão «Ver mais». As duas fotografias de cada par têm de ser
-          do MESMO ângulo e com a MESMA luz — é isso que faz a comparação valer.
-        fields:
-          - name: veiculo
-            label: Carro
-            type: string
-            required: true
-          - name: servico
-            label: O que se fez
-            type: string
-            required: true
-          - name: antes
-            label: Fotografia ANTES
-            type: image
-            required: true
-            options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
-          - name: depois
-            label: Fotografia DEPOIS
-            type: image
-            required: true
-            options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
-          - name: legenda
-            label: Explicação
-            type: text
-            description: 'Uma ou duas frases sobre o que mudou.'
-          - name: ordem
-            label: Ordem
-            type: number
-            options: { step: 1, min: 1 }
-            description: 'Os dois com número mais baixo é que ficam à vista.'
-          - name: alt_antes
-            label: Descrição da fotografia ANTES
-            type: string
-            description: >-
-              Para quem não vê a imagem e para o Google. Descreva o que está na
-              fotografia, não o serviço.
-          - name: alt_depois
-            label: Descrição da fotografia DEPOIS
-            type: string
-          - name: slug
-            label: Identificador
-            type: string
-            pattern: '^[a-z0-9-]+$'
-            hidden: true
+    # ══════════════════════════════════════════════════════════ 3. SERVIÇOS
+    - name: lista_servicos
+      label: Serviços
+      type: file
+      path: data/lista-servicos.json
+      format: json
+      fields:
+        - name: servicos
+          label: Serviços
+          type: object
+          list: { collapsible: true, min: 1 }
+          description: >-
+            Todos os serviços do estúdio. Quem TEM fotografia aparece como azulejo
+            na montra da página inicial; quem NÃO tem aparece só como nome na
+            lista acima dela. Basta carregar uma fotografia para o serviço passar
+            de nome a azulejo — não é preciso mexer em mais nada.
+          fields:
+            - name: nome
+              label: Nome do serviço
+              type: string
+              required: true
+              description: 'Como o cliente lhe chama. Exemplo: Pintura de Travão.'
+            - name: imagem
+              label: Fotografia
+              type: image
+              options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
+              description: >-
+                Deixe vazio se ainda não houver fotografia deste serviço — o nome
+                continua na lista e não fica um buraco na grelha. Limites: cerca
+                de 3,3 MB por ficheiro, e o HEIC do iPhone não é aceite.
+            - name: obras
+              label: Trabalhos que a galeria mostra
+              type: select
+              list: true
+              description: >-
+                Quais os trabalhos que abrem quando alguém carrega neste azulejo.
+                Em branco, usa o trabalho a que a fotografia de cima pertence.
+              options:
+                values:
+                  - { name: amg-cla-45s, label: Mercedes-AMG CLA 45 S }
+                  - { name: audi-etron-gt, label: Audi e-tron GT }
+                  - { name: audi-q4-etron, label: Audi Q4 e-tron }
+                  - { name: audi-q7-camaleao, label: Audi Q7 S line }
+                  - { name: bmw-serie-5-pelicula, label: BMW Série 5 }
+                  - { name: bmw-serie-5-touring, label: BMW Série 5 Touring M Sport }
+                  - { name: ferrari-roma, label: Ferrari Roma }
+                  - { name: ford-mustang-dark-horse, label: Ford Mustang Dark Horse }
+                  - { name: lotus-emeya-ppf, label: Lotus Emeya }
+                  - { name: maserati-ghibli, label: Maserati Ghibli }
+                  - { name: mercedes-classe-a, label: Mercedes-Benz Classe A }
+                  - { name: porsche-911-992, label: Porsche 911 (992) }
+                  - { name: porsche-911-targa-gts, label: Porsche 911 Targa 4 GTS }
+                  - { name: rolls-royce-wraith, label: Rolls-Royce Wraith }
+                  - { name: smart-fortwo, label: Smart Fortwo }
+                  - { name: tesla-model-y, label: Tesla Model Y }
+                  - { name: tesla-pincas, label: Tesla — pinças de travão }
+                  - { name: vw-scirocco-r, label: VW Scirocco R }
+            - name: curto
+              label: Nome curto
+              type: string
+              description: >-
+                Só se o nome completo não couber no azulejo. Exemplo: «Jantes»
+                para «Reparação e Pintura de Jantes».
+            - name: slug
+              label: Identificador
+              type: string
+              required: true
+              pattern: '^[a-z0-9-]+$'
+              description: >-
+                Só minúsculas, números e hífenes. É o endereço do bloco. NÃO mude
+                depois de publicado: as ligações que já existirem deixam de
+                funcionar.
 
-  # ══════════════════════════════════════════════════════════ 3. SERVIÇOS
-  - name: lista_servicos
-    label: Serviços
-    type: file
-    path: data/lista-servicos.json
-    format: json
-    fields:
-      - name: servicos
-        label: Serviços
-        type: object
-        list: { collapsible: true, min: 1 }
-        description: >-
-          Todos os serviços do estúdio. Quem TEM fotografia aparece como azulejo
-          na montra da página inicial; quem NÃO tem aparece só como nome na
-          lista acima dela. Basta carregar uma fotografia para o serviço passar
-          de nome a azulejo — não é preciso mexer em mais nada.
-        fields:
-          - name: nome
-            label: Nome do serviço
-            type: string
-            required: true
-            description: 'Como o cliente lhe chama. Exemplo: Pintura de Travão.'
-          - name: imagem
-            label: Fotografia
-            type: image
-            options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
-            description: >-
-              Deixe vazio se ainda não houver fotografia deste serviço — o nome
-              continua na lista e não fica um buraco na grelha. Limites: cerca
-              de 3,3 MB por ficheiro, e o HEIC do iPhone não é aceite.
-          - name: obras
-            label: Trabalhos que a galeria mostra
-            type: select
-            list: true
-            description: >-
-              Quais os trabalhos que abrem quando alguém carrega neste azulejo.
-              Em branco, usa o trabalho a que a fotografia de cima pertence.
-            options:
-              values:
-                - { name: amg-cla-45s, label: Mercedes-AMG CLA 45 S }
-                - { name: audi-etron-gt, label: Audi e-tron GT }
-                - { name: audi-q4-etron, label: Audi Q4 e-tron }
-                - { name: audi-q7-camaleao, label: Audi Q7 S line }
-                - { name: bmw-serie-5-pelicula, label: BMW Série 5 }
-                - { name: bmw-serie-5-touring, label: BMW Série 5 Touring M Sport }
-                - { name: ferrari-roma, label: Ferrari Roma }
-                - { name: ford-mustang-dark-horse, label: Ford Mustang Dark Horse }
-                - { name: lotus-emeya-ppf, label: Lotus Emeya }
-                - { name: maserati-ghibli, label: Maserati Ghibli }
-                - { name: mercedes-classe-a, label: Mercedes-Benz Classe A }
-                - { name: porsche-911-992, label: Porsche 911 (992) }
-                - { name: porsche-911-targa-gts, label: Porsche 911 Targa 4 GTS }
-                - { name: rolls-royce-wraith, label: Rolls-Royce Wraith }
-                - { name: smart-fortwo, label: Smart Fortwo }
-                - { name: tesla-model-y, label: Tesla Model Y }
-                - { name: tesla-pincas, label: Tesla — pinças de travão }
-                - { name: vw-scirocco-r, label: VW Scirocco R }
-          - name: curto
-            label: Nome curto
-            type: string
-            description: >-
-              Só se o nome completo não couber no azulejo. Exemplo: «Jantes»
-              para «Reparação e Pintura de Jantes».
-          - name: slug
-            label: Identificador
-            type: string
-            required: true
-            pattern: '^[a-z0-9-]+$'
-            description: >-
-              Só minúsculas, números e hífenes. É o endereço do bloco. NÃO mude
-              depois de publicado: as ligações que já existirem deixam de
-              funcionar.
+    # ══════════════════════════════════════════════════════════ 1. TRABALHOS
+    # Primeiro porque é o que se mexe mais: um carro novo, umas fotografias.
+    - name: trabalhos
+      label: Trabalhos
+      type: collection
+      path: data/trabalhos
+      filename: '{fields.slug}.json'
+      format: json
+      view:
+        fields: [veiculo, servico, publicado, ordem]
+        primary: veiculo
+      fields:
+        - name: veiculo
+          label: Carro
+          type: string
+          required: true
+          description: 'Marca e modelo. Exemplo: Mercedes-AMG CLA 45 S.'
+        - name: servico
+          label: O que se fez
+          type: string
+          required: true
+          description: 'Em duas ou três palavras. Exemplo: Envelopamento.'
+        - name: fotos
+          label: Fotografias
+          type: image
+          list: true
+          options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
+          description: >-
+            Estas são as fotografias que abrem quando alguém carrega no azulejo do
+            serviço. Limites: falha acima de cerca de 3,3 MB por ficheiro, e o
+            HEIC do iPhone não é aceite (no iPhone, Definições › Câmara ›
+            Formatos › Mais compatível, ou exportar como JPEG).
+        - name: publicado
+          label: Mostrar no site
+          type: boolean
+          default: true
+          description: 'Desligue para guardar sem publicar.'
+        - name: destaque
+          label: Destacar
+          type: boolean
+          default: false
+          description: 'Sem efeito neste momento. Fica para quando houver uma zona de destaques.'
+        - name: ordem
+          label: Ordem
+          type: number
+          options: { step: 1, min: 1 }
+          description: 'Número mais baixo aparece primeiro.'
+        - name: slug
+          label: Nome do ficheiro
+          type: string
+          required: true
+          pattern: '^[a-z0-9-]+$'
+          description: >-
+            Só minúsculas, números e hífenes. Dá o nome ao ficheiro e liga este
+            trabalho às galerias dos serviços. NÃO mude depois de publicado.
+
+    # ══════════════════════════════════════════════════════ 2. ANTES E DEPOIS
+    - name: pares
+      label: Antes e depois
+      type: file
+      path: data/pares.json
+      format: json
+      fields:
+        - name: pares
+          label: Comparadores
+          type: object
+          list: { collapsible: true, min: 1 }
+          description: >-
+            Os dois primeiros aparecem logo na página inicial; os restantes ficam
+            atrás do botão «Ver mais». As duas fotografias de cada par têm de ser
+            do MESMO ângulo e com a MESMA luz — é isso que faz a comparação valer.
+          fields:
+            - name: veiculo
+              label: Carro
+              type: string
+              required: true
+            - name: servico
+              label: O que se fez
+              type: string
+              required: true
+            - name: antes
+              label: Fotografia ANTES
+              type: image
+              required: true
+              options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
+            - name: depois
+              label: Fotografia DEPOIS
+              type: image
+              required: true
+              options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
+            - name: legenda
+              label: Explicação
+              type: text
+              description: 'Uma ou duas frases sobre o que mudou.'
+            - name: ordem
+              label: Ordem
+              type: number
+              options: { step: 1, min: 1 }
+              description: 'Os dois com número mais baixo é que ficam à vista.'
+            - name: alt_antes
+              label: Descrição da fotografia ANTES
+              type: string
+              description: >-
+                Para quem não vê a imagem e para o Google. Descreva o que está na
+                fotografia, não o serviço.
+            - name: alt_depois
+              label: Descrição da fotografia DEPOIS
+              type: string
+            - name: slug
+              label: Identificador
+              type: string
+              pattern: '^[a-z0-9-]+$'
+              hidden: true
+
+    # ═══════════════════════════════════════════════════════ 5. AVALIAÇÕES
+    - name: avaliacoes
+      label: Avaliações do Google
+      type: file
+      path: data/avaliacoes.json
+      format: json
+      fields:
+        - name: criticas
+          label: Avaliações mostradas no site
+          type: object
+          list: { collapsible: true }
+          description: >-
+            Copie do perfil do Google do estúdio. Escreva o primeiro nome e a
+            inicial do apelido (exemplo: «Nelson P.») e NÃO copie a fotografia da
+            pessoa — é o que mantém isto conforme com a protecção de dados.
+            A nota e o número total de avaliações mudam-se em «Dados do estúdio ›
+            Google».
+          fields:
+            - name: autor
+              label: Quem escreveu
+              type: string
+              required: true
+              description: 'Primeiro nome e inicial. Exemplo: Nelson P.'
+            - name: texto
+              label: O que escreveu
+              type: text
+              required: true
+            - name: estrelas
+              label: Estrelas
+              type: number
+              options: { step: 1, min: 1, max: 5 }
+            - name: quando
+              label: Quando
+              type: string
+              description: 'Como aparece no Google. Exemplo: há um mês.'
+            - name: nota_traducao
+              label: Nota de tradução
+              type: string
+              description: 'Só se a avaliação estiver noutra língua. Exemplo: traduzido do inglês.'
+
+  # ═══════════════════════════════════════════════════════════════ 2. A LOJA
 
   # ══════════════════════════════════════════════════════════════ 4. LOJA
   - name: loja
@@ -296,45 +362,7 @@ content:
         pattern: '^[a-z0-9-]+$'
         description: 'Só minúsculas, números e hífenes. NÃO mude depois de publicado.'
 
-  # ═══════════════════════════════════════════════════════ 5. AVALIAÇÕES
-  - name: avaliacoes
-    label: Avaliações do Google
-    type: file
-    path: data/avaliacoes.json
-    format: json
-    fields:
-      - name: criticas
-        label: Avaliações mostradas no site
-        type: object
-        list: { collapsible: true }
-        description: >-
-          Copie do perfil do Google do estúdio. Escreva o primeiro nome e a
-          inicial do apelido (exemplo: «Nelson P.») e NÃO copie a fotografia da
-          pessoa — é o que mantém isto conforme com a protecção de dados.
-          A nota e o número total de avaliações mudam-se em «Dados do estúdio ›
-          Google».
-        fields:
-          - name: autor
-            label: Quem escreveu
-            type: string
-            required: true
-            description: 'Primeiro nome e inicial. Exemplo: Nelson P.'
-          - name: texto
-            label: O que escreveu
-            type: text
-            required: true
-          - name: estrelas
-            label: Estrelas
-            type: number
-            options: { step: 1, min: 1, max: 5 }
-          - name: quando
-            label: Quando
-            type: string
-            description: 'Como aparece no Google. Exemplo: há um mês.'
-          - name: nota_traducao
-            label: Nota de tradução
-            type: string
-            description: 'Só se a avaliação estiver noutra língua. Exemplo: traduzido do inglês.'
+  # ══════════════════════════════════════════════════════════ 3. DEFINIÇÕES
 
   # ══════════════════════════════════════════════════ 6. DADOS DO ESTÚDIO
   # Último porque quase nunca muda. Os campos que o cliente não deve mexer

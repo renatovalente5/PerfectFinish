@@ -4,9 +4,9 @@
   "servico": "Envelopamento",
   "ordem": 7,
   "fotos": [
-    "audi-etron-gt-1",
-    "audi-etron-gt-2",
-    "audi-etron-gt-3"
+    "assets/img/obras/audi-etron-gt-1-828.webp",
+    "assets/img/obras/audi-etron-gt-2-828.webp",
+    "assets/img/obras/audi-etron-gt-3-828.webp"
   ],
   "destaque": false,
   "publicado": true

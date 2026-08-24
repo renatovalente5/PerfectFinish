@@ -1,59 +1,59 @@
 {
- "pares": [
-  {
-   "slug": "tesla-pincas",
-   "veiculo": "Tesla",
-   "servico": "Pintura de travão",
-   "antes": "par-tesla-pincas-antes",
-   "depois": "par-tesla-pincas-depois",
-   "ordem": 1,
-   "legenda": "Pinça de origem oxidada, pinça acabada em vermelho de alta temperatura. Mesmo ângulo, mesma luz.",
-   "alt_antes": "Pinça de travão de origem, com a tinta gasta e sinais de oxidação",
-   "alt_depois": "A mesma pinça de travão pintada de vermelho, com o lettering destacado a branco"
-  },
-  {
-   "slug": "brembo",
-   "veiculo": "Pinça Brembo",
-   "servico": "Pintura de travão",
-   "antes": "par-brembo-antes",
-   "depois": "par-brembo-depois",
-   "ordem": 4,
-   "legenda": "Desmontagem, preparação e esmalte de alta temperatura numa pinça Brembo.",
-   "alt_antes": "Pinça de travão Brembo desgastada, antes da intervenção",
-   "alt_depois": "A mesma pinça Brembo pintada de vermelho, montada na jante"
-  },
-  {
-   "slug": "amg-cla-45s",
-   "veiculo": "Mercedes-AMG CLA 45 S",
-   "servico": "Envelopamento",
-   "antes": "par-amg-cla-antes",
-   "depois": "par-amg-cla-depois",
-   "ordem": 2,
-   "legenda": "Do branco de origem ao grafite acetinado, em película. A pintura original ficou intacta por baixo.",
-   "alt_antes": "Mercedes-AMG CLA 45 S Shooting Brake branco de fábrica, dentro do estúdio",
-   "alt_depois": "O mesmo Mercedes-AMG CLA 45 S envolvido em vinil grafite acetinado"
-  },
-  {
-   "slug": "audi-q7",
-   "veiculo": "Audi Q7 S line",
-   "servico": "Envelopamento",
-   "antes": "par-audi-q7-antes",
-   "depois": "par-audi-q7-depois",
-   "ordem": 3,
-   "legenda": "Cinzento de série a camaleão: a cor muda com a luz e a pintura fica protegida.",
-   "alt_antes": "Audi Q7 S line no cinzento metalizado de fábrica",
-   "alt_depois": "O mesmo Audi Q7 com película camaleão, em tons de lilás e turquesa"
-  },
-  {
-   "slug": "mercedes-classe-a",
-   "veiculo": "Mercedes-Benz Classe A",
-   "servico": "Envelopamento",
-   "antes": "par-classe-a-antes",
-   "depois": "par-classe-a-depois",
-   "ordem": 5,
-   "legenda": "Prateado metalizado de fábrica, branco acetinado à saída.",
-   "alt_antes": "Mercedes-Benz Classe A prateado metalizado, antes do envelopamento",
-   "alt_depois": "O mesmo Mercedes-Benz Classe A envolvido em branco acetinado"
-  }
- ]
+  "pares": [
+    {
+      "slug": "tesla-pincas",
+      "veiculo": "Tesla",
+      "servico": "Pintura de travão",
+      "antes": "assets/img/obras/par-tesla-pincas-antes-828.webp",
+      "depois": "assets/img/obras/par-tesla-pincas-depois-828.webp",
+      "ordem": 1,
+      "legenda": "Pinça de origem oxidada, pinça acabada em vermelho de alta temperatura. Mesmo ângulo, mesma luz.",
+      "alt_antes": "Pinça de travão de origem, com a tinta gasta e sinais de oxidação",
+      "alt_depois": "A mesma pinça de travão pintada de vermelho, com o lettering destacado a branco"
+    },
+    {
+      "slug": "brembo",
+      "veiculo": "Pinça Brembo",
+      "servico": "Pintura de travão",
+      "antes": "assets/img/obras/par-brembo-antes-828.webp",
+      "depois": "assets/img/obras/par-brembo-depois-828.webp",
+      "ordem": 4,
+      "legenda": "Desmontagem, preparação e esmalte de alta temperatura numa pinça Brembo.",
+      "alt_antes": "Pinça de travão Brembo desgastada, antes da intervenção",
+      "alt_depois": "A mesma pinça Brembo pintada de vermelho, montada na jante"
+    },
+    {
+      "slug": "amg-cla-45s",
+      "veiculo": "Mercedes-AMG CLA 45 S",
+      "servico": "Envelopamento",
+      "antes": "assets/img/obras/par-amg-cla-antes-828.webp",
+      "depois": "assets/img/obras/par-amg-cla-depois-828.webp",
+      "ordem": 2,
+      "legenda": "Do branco de origem ao grafite acetinado, em película. A pintura original ficou intacta por baixo.",
+      "alt_antes": "Mercedes-AMG CLA 45 S Shooting Brake branco de fábrica, dentro do estúdio",
+      "alt_depois": "O mesmo Mercedes-AMG CLA 45 S envolvido em vinil grafite acetinado"
+    },
+    {
+      "slug": "audi-q7",
+      "veiculo": "Audi Q7 S line",
+      "servico": "Envelopamento",
+      "antes": "assets/img/obras/par-audi-q7-antes-828.webp",
+      "depois": "assets/img/obras/par-audi-q7-depois-828.webp",
+      "ordem": 3,
+      "legenda": "Cinzento de série a camaleão: a cor muda com a luz e a pintura fica protegida.",
+      "alt_antes": "Audi Q7 S line no cinzento metalizado de fábrica",
+      "alt_depois": "O mesmo Audi Q7 com película camaleão, em tons de lilás e turquesa"
+    },
+    {
+      "slug": "mercedes-classe-a",
+      "veiculo": "Mercedes-Benz Classe A",
+      "servico": "Envelopamento",
+      "antes": "assets/img/obras/par-classe-a-antes-828.webp",
+      "depois": "assets/img/obras/par-classe-a-depois-828.webp",
+      "ordem": 5,
+      "legenda": "Prateado metalizado de fábrica, branco acetinado à saída.",
+      "alt_antes": "Mercedes-Benz Classe A prateado metalizado, antes do envelopamento",
+      "alt_depois": "O mesmo Mercedes-Benz Classe A envolvido em branco acetinado"
+    }
+  ]
 }

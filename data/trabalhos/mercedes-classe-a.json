@@ -4,9 +4,9 @@
   "servico": "Envelopamento",
   "ordem": 14,
   "fotos": [
-    "mercedes-classe-a-1",
-    "mercedes-classe-a-2",
-    "mercedes-classe-a-3"
+    "assets/img/obras/mercedes-classe-a-1-828.webp",
+    "assets/img/obras/mercedes-classe-a-2-828.webp",
+    "assets/img/obras/mercedes-classe-a-3-828.webp"
   ],
   "destaque": false,
   "publicado": true

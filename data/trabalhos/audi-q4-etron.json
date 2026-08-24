@@ -4,9 +4,9 @@
   "servico": "Polimento e proteção",
   "ordem": 10,
   "fotos": [
-    "audi-q4-etron-1",
-    "audi-q4-etron-2",
-    "audi-q4-etron-3"
+    "assets/img/obras/audi-q4-etron-1-828.webp",
+    "assets/img/obras/audi-q4-etron-2-828.webp",
+    "assets/img/obras/audi-q4-etron-3-828.webp"
   ],
   "destaque": true,
   "publicado": true

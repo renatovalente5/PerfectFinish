@@ -4,8 +4,8 @@
   "servico": "Polimento",
   "ordem": 4,
   "fotos": [
-    "rolls-royce-wraith-1",
-    "rolls-royce-wraith-2"
+    "assets/img/obras/rolls-royce-wraith-1-828.webp",
+    "assets/img/obras/rolls-royce-wraith-2-828.webp"
   ],
   "destaque": true,
   "publicado": true

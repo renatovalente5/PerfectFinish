@@ -4,9 +4,9 @@
   "servico": "Jantes e acabamento",
   "ordem": 18,
   "fotos": [
-    "smart-fortwo-1",
-    "smart-fortwo-2",
-    "smart-fortwo-3"
+    "assets/img/obras/smart-fortwo-1-828.webp",
+    "assets/img/obras/smart-fortwo-2-828.webp",
+    "assets/img/obras/smart-fortwo-3-828.webp"
   ],
   "destaque": false,
   "publicado": true

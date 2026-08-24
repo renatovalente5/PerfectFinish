@@ -4,10 +4,10 @@
   "servico": "Envelopamento",
   "ordem": 13,
   "fotos": [
-    "vw-scirocco-r-1",
-    "vw-scirocco-r-2",
-    "vw-scirocco-r-3",
-    "vw-scirocco-r-4"
+    "assets/img/obras/vw-scirocco-r-1-828.webp",
+    "assets/img/obras/vw-scirocco-r-2-828.webp",
+    "assets/img/obras/vw-scirocco-r-3-828.webp",
+    "assets/img/obras/vw-scirocco-r-4-828.webp"
   ],
   "destaque": false,
   "publicado": true

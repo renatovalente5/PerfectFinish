@@ -351,6 +351,30 @@ for (const [caminho, colecao] of paraVerificar) {
   }
 }
 
+/* --------------------------------------- as imagens guardadas nos dados */
+/* Todo o valor em data/ que aponte para assets/img/ tem de existir em disco.
+   Sem isto, o backoffice mostra a pré-visualização PARTIDA e o cliente não sabe
+   se a fotografia está lá ou não — foi o que aconteceu com todos os campos de
+   imagem: os dados guardavam o radical («par-amg-cla-antes») e em disco só há
+   as variantes «-414»/«-828». O site funcionava, porque o gerador acrescenta o
+   sufixo; o backoffice é que não tinha o que mostrar. */
+for (const [caminho] of paraVerificar) {
+  const ficheiros = caminho.endsWith(".json")
+    ? [caminho]
+    : readdirSync(join(RAIZ, caminho)).filter((f) => f.endsWith(".json")).map((f) => join(caminho, f));
+  for (const f of ficheiros) {
+    const anda = (v) => {
+      if (typeof v === "string") {
+        if (v.startsWith("assets/img/") && !existsSync(join(RAIZ, v))) {
+          falha(`${f}: a fotografia «${v}» não existe em disco (o backoffice mostra-a partida)`);
+        }
+      } else if (Array.isArray(v)) v.forEach(anda);
+      else if (v && typeof v === "object") Object.values(v).forEach(anda);
+    };
+    anda(JSON.parse(readFileSync(join(RAIZ, f), "utf8")));
+  }
+}
+
 /* ------------------------------------------------------------- relatório */
 for (const a of avisos) console.log(`  aviso   ${a}`);
 if (avisos.length) console.log("");

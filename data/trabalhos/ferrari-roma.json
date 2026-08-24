@@ -4,9 +4,9 @@
   "servico": "Correção de pintura",
   "ordem": 1,
   "fotos": [
-    "ferrari-roma-1",
-    "ferrari-roma-2",
-    "ferrari-roma-3"
+    "assets/img/obras/ferrari-roma-1-828.webp",
+    "assets/img/obras/ferrari-roma-2-828.webp",
+    "assets/img/obras/ferrari-roma-3-828.webp"
   ],
   "destaque": true,
   "publicado": true

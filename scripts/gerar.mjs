@@ -110,6 +110,34 @@ const zap = (texto) =>
  * Distinguem-se pela extensão. Sem isto, a primeira fotografia que o cliente
  * carregasse aparecia partida — e ele não teria como perceber porquê.
  */
+/** Recupera o RADICAL de uma fotografia a partir do que vier nos dados.
+ *
+ *  Existe porque os campos de imagem do backoffice mostravam a pré-visualização
+ *  partida em TODOS os casos: os dados guardavam só o radical
+ *  («par-amg-cla-antes») e em disco existem apenas as variantes
+ *  «par-amg-cla-antes-414.avif», «-828.avif», «-414.webp» e «-828.webp». Não
+ *  havia ficheiro nenhum no caminho guardado, portanto o Pages CMS não tinha o
+ *  que mostrar — e um campo de imagem sem imagem é um campo em que o cliente
+ *  não confia.
+ *  Agora os dados guardam um ficheiro REAL e é aqui que se volta ao radical,
+ *  para o site continuar a servir o conjunto responsivo.
+ *
+ *  Aceita as três formas que podem aparecer:
+ *    «assets/img/obras/x-828.webp» → radical «x», com variantes
+ *    «x»                          → radical «x», com variantes (forma antiga)
+ *    «assets/img/obras/foto.jpg»   → ficheiro solto, sem variantes
+ *                                    (é o que sai de um carregamento à mão) */
+function radicalFoto(pasta, nome) {
+  const limpo = String(nome).replace(/^\/+/, "")
+    .replace(new RegExp(`^assets/img/${pasta}/`), "");
+  const temVariantes = (r) => existsSync(join(RAIZ, `assets/img/${pasta}/${r}-828.webp`));
+
+  const semVariante = limpo.replace(/-(?:414|828)\.(?:avif|webp)$/i, "");
+  if (semVariante !== limpo && temVariantes(semVariante)) return { raiz: semVariante, responsivo: true };
+  if (!/\.[a-z0-9]+$/i.test(limpo) && temVariantes(limpo)) return { raiz: limpo, responsivo: true };
+  return { raiz: limpo, responsivo: false };
+}
+
 function figura(pasta, nome, alt, { classe = "", prioridade = false, carga = "tarde", medidas = "100vw" } = {}) {
   /* Três modos, e não dois:
        "alta"  → fetchpriority="high". Só UMA por página; três anulam-se.
@@ -122,14 +150,12 @@ function figura(pasta, nome, alt, { classe = "", prioridade = false, carga = "ta
     : 'loading="lazy" decoding="async"';
   const atributos = `alt="${esc(alt)}" width="828" height="828"${classe ? ` class="${classe}"` : ""} ${carregamento}`;
 
-  if (/\.(jpe?g|png|webp|avif|gif)$/i.test(nome)) {
-    const caminho = nome.startsWith("assets/") || nome.startsWith("/")
-      ? u("/" + nome.replace(/^\/+/, ""))
-      : `${u("/assets/img")}/${pasta}/${nome}`;
-    return `<img src="${caminho}" ${atributos}>`;
+  const { raiz, responsivo } = radicalFoto(pasta, nome);
+  if (!responsivo) {
+    return `<img src="${u("/assets/img")}/${pasta}/${raiz}" ${atributos}>`;
   }
 
-  const c = `${u("/assets/img")}/${pasta}/${nome}`;
+  const c = `${u("/assets/img")}/${pasta}/${raiz}`;
   return `<picture>
 <source type="image/avif" srcset="${c}-414.avif 414w, ${c}-828.avif 828w" sizes="${medidas}">
 <source type="image/webp" srcset="${c}-414.webp 414w, ${c}-828.webp 828w" sizes="${medidas}">
@@ -138,12 +164,8 @@ function figura(pasta, nome, alt, { classe = "", prioridade = false, carga = "ta
 
 /** Endereço da versão grande de uma fotografia (para a lupa). */
 function foto(pasta, nome) {
-  if (/\.(jpe?g|png|webp|avif|gif)$/i.test(nome)) {
-    return nome.startsWith("assets/") || nome.startsWith("/")
-      ? u("/" + nome.replace(/^\/+/, ""))
-      : `${u("/assets/img")}/${pasta}/${nome}`;
-  }
-  return `${u("/assets/img")}/${pasta}/${nome}-828.webp`;
+  const { raiz, responsivo } = radicalFoto(pasta, nome);
+  return `${u("/assets/img")}/${pasta}/${raiz}${responsivo ? "-828.webp" : ""}`;
 }
 
 /* ------------------------------------------------------------------ ícones */

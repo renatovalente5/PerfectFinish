@@ -4,9 +4,9 @@
   "servico": "Envelopamento",
   "ordem": 15,
   "fotos": [
-    "bmw-serie-5-touring-1",
-    "bmw-serie-5-touring-2",
-    "bmw-serie-5-touring-3"
+    "assets/img/obras/bmw-serie-5-touring-1-828.webp",
+    "assets/img/obras/bmw-serie-5-touring-2-828.webp",
+    "assets/img/obras/bmw-serie-5-touring-3-828.webp"
   ],
   "destaque": false,
   "publicado": true

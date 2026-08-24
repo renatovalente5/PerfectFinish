@@ -4,8 +4,8 @@
   "servico": "Película solar",
   "ordem": 16,
   "fotos": [
-    "maserati-ghibli-1",
-    "maserati-ghibli-2"
+    "assets/img/obras/maserati-ghibli-1-828.webp",
+    "assets/img/obras/maserati-ghibli-2-828.webp"
   ],
   "destaque": false,
   "publicado": true

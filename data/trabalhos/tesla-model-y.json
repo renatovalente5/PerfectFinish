@@ -4,9 +4,9 @@
   "servico": "Envelopamento",
   "ordem": 8,
   "fotos": [
-    "tesla-model-y-1",
-    "tesla-model-y-2",
-    "tesla-model-y-3"
+    "assets/img/obras/tesla-model-y-1-828.webp",
+    "assets/img/obras/tesla-model-y-2-828.webp",
+    "assets/img/obras/tesla-model-y-3-828.webp"
   ],
   "destaque": false,
   "publicado": true

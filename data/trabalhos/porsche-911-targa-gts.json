@@ -4,9 +4,9 @@
   "servico": "Proteção de pintura",
   "ordem": 9,
   "fotos": [
-    "porsche-911-targa-gts-1",
-    "porsche-911-targa-gts-2",
-    "porsche-911-targa-gts-3"
+    "assets/img/obras/porsche-911-targa-gts-1-828.webp",
+    "assets/img/obras/porsche-911-targa-gts-2-828.webp",
+    "assets/img/obras/porsche-911-targa-gts-3-828.webp"
   ],
   "destaque": false,
   "publicado": true
