@@ -102,6 +102,16 @@
    assim que um filtro deixa de esconder o que devia sem dar erro nenhum. */
 [hidden] { display: none !important; }
 
+/* Texto que só existe para quem ouve a página. `clip-path: inset(50%)` e NÃO
+   `position: absolute; left: -9999px`: as políticas de spam do Google admitem
+   texto destinado a leitores de ecrã mas listam expressamente «usar CSS para
+   posicionar texto fora do ecrã» como abuso. Isto recorta em vez de afastar. */
+.so-leitor {
+  position: absolute; clip-path: inset(50%);
+  inline-size: 1px; block-size: 1px; overflow: hidden;
+  white-space: nowrap;
+}
+
 /* A indentação das listas vem de `padding-inline-start: 40px` na folha do
    NAVEGADOR. O reset acima é `* { margin: 0 }` — zera margens e não paddings —
    e `list-style: none` tira o marcador mas NÃO tira o recuo. Resultado medido
@@ -1406,6 +1416,19 @@ body[data-menu="aberto"] { overflow: hidden; }
   margin-bottom: var(--e-4); font-weight: 600;
 }
 .rodape ul { list-style: none; display: grid; gap: var(--e-3); padding: 0; }
+
+/* A morada, na secção dos contactos, é a própria ligação para o mapa. Leva
+   sublinhado discreto para se ler como ligação — sem ele ninguém adivinha que
+   duas linhas de endereço são clicáveis.
+   O selector repete o `a` de propósito: `.dado a { text-decoration: none }`
+   acima é (0,1,1) e uma classe sozinha é (0,1,0), portanto perdia por
+   especificidade e não por ordem — o sublinhado não aparecia. Medido. */
+.dado a.dado__morada {
+  text-decoration: underline; text-decoration-color: var(--filete);
+  text-decoration-thickness: 1px; text-underline-offset: .2em;
+  transition: color .2s var(--curva), text-decoration-color .2s var(--curva);
+}
+.dado a.dado__morada:hover { color: var(--ouro-alto); text-decoration-color: var(--ouro); }
 .rodape a { text-decoration: none; color: var(--osso-meio); transition: color .2s var(--curva); }
 .rodape a:hover { color: var(--ouro-alto); }
 

@@ -948,11 +948,21 @@ function blocoContactos() {
      <dt>WhatsApp</dt>
      <dd><a href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Abrir conversa</a></dd>
     </div></div>
-    ${D.contactos.email ? `<div class="dado">${svg("email")}<div><dt>E-mail</dt><dd><a href="mailto:${esc(D.contactos.email)}">${esc(D.contactos.email)}</a></dd></div></div>` : ""}
     <div class="dado">${svg("local")}<div>
      <dt>Morada</dt>
-     <dd>${esc(D.morada.rua)}<br>${esc(D.morada.codigo_postal)} ${esc(D.morada.localidade)}<br>
-     <a href="${esc(D.morada.mapa)}" target="_blank" rel="noopener">Abrir no Google Maps →</a></dd>
+     <!-- A morada É a ligação, e a linha «Abrir no Google Maps» desapareceu.
+          O «abrir no Google Maps» fica num span oculto DENTRO da ligação, e não
+          num aria-label. Com aria-label o nome acessível deixava de conter
+          exactamente o texto visível — o <br> não gera espaço no texto, e a
+          vírgula que era preciso pôr para o label se ler bem quebrava o
+          WCAG 2.5.3 (medido: a verificação de containment falhava). Assim o
+          nome acessível é construído do próprio DOM e a regra fica satisfeita
+          por construção, dizendo ainda assim a quem não vê o ícone que aquilo
+          abre um mapa.
+          Não precisa de consentimento: é uma ligação que o utilizador escolhe
+          seguir, não um pedido a um servidor da Google feito pela página. -->
+     <dd><a class="dado__morada" href="${esc(D.morada.mapa)}" target="_blank" rel="noopener"
+      >${esc(D.morada.rua)}<br>${esc(D.morada.codigo_postal)} ${esc(D.morada.localidade)}<span class="so-leitor"> (abrir no Google Maps)</span></a></dd>
     </div></div>
     <div class="dado">${svg("relogio")}<div>
      <dt>Horário</dt>
@@ -961,11 +971,6 @@ function blocoContactos() {
     <div class="dado">${svg("instagram")}<div>
      <dt>Instagram</dt>
      <dd><a href="${esc(IG)}" target="_blank" rel="noopener">@perfectfinish.pt</a></dd>
-    </div></div>
-    <div class="dado">${svg("local")}<div>
-     <dt>Zona de serviço</dt>
-     <dd>Leiria, Marinha Grande, Batalha, Pombal, Porto de Mós, Ourém, Fátima,
-     Alcobaça, Nazaré e Caldas da Rainha.</dd>
     </div></div>
    </dl>
 
