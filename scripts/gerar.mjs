@@ -232,24 +232,23 @@ function rodape() {
     </ul>
    </div>
 
-   <div>
-    <h4>Legal</h4>
-    <ul class="rodape__legais">
-     <li><a href="${u("/politica-de-privacidade/")}">Política de Privacidade</a></li>
-     <li><a href="${u("/politica-de-cookies/")}">Cookies</a></li>
-     <li><a href="${u("/informacao-legal/")}">Informação legal</a></li>
-     <li><a class="rodape__gestao" href="https://app.pagescms.org/renatovalente5/PerfectFinish" target="_blank" rel="noopener">Gestão</a></li>
-    </ul>
-   </div>
   </div>
 
   <div class="rodape__fundo">
-   <a class="livro" href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer"><img src="${u("/assets/img/ui/livro-reclamacoes.svg")}" alt="Livro de Reclamações Eletrónico" width="132" height="42" loading="lazy"></a>
    <p class="rodape__copyright">© ${new Date().getFullYear()} ${esc(D.marca.nome)}</p>
+   <ul class="rodape__legais" role="list">
+    <li><a href="${u("/politica-de-privacidade/")}">Política de Privacidade</a></li>
+    <li><a href="${u("/politica-de-cookies/")}">Cookies</a></li>
+    <li><a href="${u("/informacao-legal/")}">Informação legal</a></li>
+    <li><a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer">Livro de Reclamações</a></li>
+    <li><button type="button" class="rodape__botao" data-preferencias>Preferências</button></li>
+    <li><a class="rodape__gestao" href="https://app.pagescms.org/renatovalente5/PerfectFinish" target="_blank" rel="noopener">Gestão</a></li>
+   </ul>
   </div>
  </div>
 </footer>`;
 }
+
 
 const AVISO_COOKIES = `<aside class="cookies" role="dialog" aria-live="polite" aria-label="Aviso de privacidade">
  <p><strong>Este site não usa cookies.</strong> Não há publicidade, não há seguimento, não há estatísticas. Só precisamos da sua autorização para carregar o <strong>mapa do Google</strong> no fim desta página, porque isso é um pedido a um servidor da Google. <a href="${u("/politica-de-cookies/")}">Saber mais</a></p>
@@ -675,8 +674,10 @@ function inicio() {
    <h1 class="ouro"><span>${esc(D.textos.heroi_linha1)}</span><span>${esc(D.textos.heroi_linha2)}</span></h1>
    <p class="heroi__sub">${esc(D.textos.heroi_sub)}</p>
    <div class="accoes">
-    <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Pedir orçamento</a>
-    <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
+    <!-- Só «Ver trabalhos», a pedido. O «Pedir orçamento» não desaparece do
+         site: continua na navbar, no menu de telemóvel, no botão flutuante do
+         WhatsApp e no fecho dos Contactos. -->
+    <a class="botao botao--cheio" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
    </div>
   </div>
 

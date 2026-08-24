@@ -1283,8 +1283,8 @@ html[data-js] .comparador:has(.comparador__regua:focus-visible) .comparador__peg
 @media (min-width: 48rem) { .rodape__topo { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-8) var(--e-7); } }
 @media (min-width: 64rem) {
   .rodape__topo {
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, .9fr) minmax(0, 1.15fr) minmax(0, .9fr);
-    gap: var(--e-7);
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--e-8);
   }
 }
 
@@ -1314,17 +1314,53 @@ html[data-js] .comparador:has(.comparador__regua:focus-visible) .comparador__peg
 .redes a:hover { border-color: var(--ouro); color: var(--ouro-alto); translate: 0 -2px; }
 .redes svg { inline-size: 1.05rem; block-size: 1.05rem; }
 
-/* Só o Livro de Reclamações e o ©. A identificação legal (nome, NIF, morada)
-   passou para /informacao-legal/, ligada em todas as páginas — é o que o
-   artigo 10.º do DL 7/2004 exige («fácil e direta»), sem repetir o bloco no
-   fundo de cada página. O distintivo do Livro fica, e fica na página inicial,
-   porque isso é uma exigência à parte (DL 156/2005, art. 5.º-B/2). */
+/* A linha de baixo: o © à esquerda e as ligações de serviço numa fila à
+   direita. A identificação legal (nome, NIF, morada) vive em
+   /informacao-legal/, ligada aqui de todas as páginas — é o que o artigo 10.º
+   do DL 7/2004 exige («fácil e direta»), sem repetir o bloco em cada rodapé.
+   O Livro de Reclamações é uma ligação de texto: o artigo 5.º-B/2 do
+   DL 156/2005 exige o ACESSO à plataforma na página principal, e o distintivo
+   é convenção, não exigência. */
 .rodape__fundo {
   border-top: 1px solid var(--filete-fraco); padding-top: var(--e-5);
   display: flex; flex-wrap: wrap; align-items: center;
-  justify-content: space-between; gap: var(--e-4) var(--e-5);
+  justify-content: space-between; gap: var(--e-4) var(--e-6);
 }
-.rodape__copyright { color: var(--osso-fraco); font-size: var(--t--2); }
+.rodape__copyright { color: var(--osso-fraco); font-size: var(--t--2); flex: none; }
+
+/* `.rodape ul` acima declara `display: grid`, e com a mesma especificidade
+   mais um elemento ganhava a esta regra — as ligações saíam empilhadas, uma
+   por linha. Daí o selector repetir o `ul`. Já aconteceu neste ficheiro. */
+.rodape ul.rodape__legais {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--e-3) var(--e-5); padding: 0;
+}
+/* Uma <a> em linha e um <button> não têm a mesma caixa, e tentar acertá-las
+   por `padding` não resulta: o botão ficava 29 px de alto contra 24 e 3 px
+   desalinhado dos vizinhos (medido). Dá-se aos dois a MESMA caixa explícita.
+   O `min-block-size` de 1.75rem = 28 px põe o alvo de toque acima dos 24 px do
+   WCAG 2.5.8, em vez de depender da excepção de espaçamento — que passava, mas
+   por pouco, com as filas a 34 px e a regra a pedir 24. */
+.rodape__legais li { display: flex; align-items: center; }
+.rodape__legais a, .rodape__botao {
+  font-size: var(--t--2);
+  display: inline-flex; align-items: center;
+  min-block-size: 1.75rem;
+}
+/* O «Preferências» é um <button> e não um <a>, porque não navega para nenhum
+   sítio: reabre o aviso. Tem de parecer igual aos vizinhos, e um botão traz
+   tipografia, fundo e moldura próprios do navegador. */
+.rodape__botao {
+  font-family: inherit; font-weight: inherit; letter-spacing: inherit;
+  /* `padding: 0` aqui zerava o `padding-block` da regra acima, que tem a mesma
+     especificidade e vem antes. Agora a altura vem do `min-block-size` e o
+     atalho já não faz mal — mas fica `padding-inline` por clareza. */
+  padding-inline: 0;
+  background: none; border: 0; cursor: pointer;
+  line-height: inherit;
+  color: var(--osso-meio); transition: color .2s var(--curva);
+}
+.rodape__botao:hover { color: var(--ouro-alto); }
 
 
 /* Coluna legal. Um degrau abaixo dos restantes textos do rodapé: são
@@ -1337,9 +1373,6 @@ html[data-js] .comparador:has(.comparador__regua:focus-visible) .comparador__peg
    opacidade deixa de se ver de todo num ecrã com brilho baixo. */
 .rodape__gestao { color: var(--osso-fraco) !important; opacity: .7; }
 .rodape__gestao:hover { opacity: 1; }
-/* O distintivo do Livro de Reclamações precisa de fundo próprio: é arte a
-   cores sobre branco e encostado ao rodapé escuro ficava a flutuar. */
-.livro { display: inline-flex; }
 .livro img { display: block; border-radius: 3px; }
 
 .livro img { block-size: 2.6rem; inline-size: auto; }

@@ -228,19 +228,52 @@
     alvo.append(marco);
   };
 
+  /* Descarregar o mapa outra vez. Guarda-se o conteúdo original do sítio do
+     mapa (o convite com o botão) ANTES de o substituir pelo iframe, porque
+     retirar a autorização tem de ter efeito real: sem isto o iframe da Google
+     ficava lá, e «retirei» era mentira. */
+  const sitioMapa = $(".mapa[data-incorporar]");
+  const convite = sitioMapa ? sitioMapa.innerHTML : null;
+  const descarregarMapa = () => {
+    if (!sitioMapa || convite === null) return;
+    sitioMapa.innerHTML = convite;
+    ligarBotaoMapa();
+  };
+
+  function ligarBotaoMapa() {
+    $("[data-carregar-mapa]")?.addEventListener("click", () => { guardar("sim"); carregarMapa(); });
+  }
+
+  /* O aviso deixa de ser removido do DOM e passa a ser escondido: é o que
+     permite reabri-lo pelo «Preferências». O `hidden` só funciona aqui porque
+     a folha declara `[hidden] { display: none !important }` — sem o
+     `!important`, o `display: grid` do autor ganhava-lhe. */
   const aviso = $(".cookies");
   if (aviso) {
     const decidir = (valor) => {
       guardar(valor);
-      aviso.remove();
-      if (valor === "sim") carregarMapa();
+      aviso.hidden = true;
+      if (valor === "sim") carregarMapa(); else descarregarMapa();
     };
     $(".cookies [data-aceitar]", document)?.addEventListener("click", () => decidir("sim"));
     $(".cookies [data-recusar]", document)?.addEventListener("click", () => decidir("nao"));
-    if (guardado()) aviso.remove();
+    if (guardado()) aviso.hidden = true;
   }
   if (guardado() === "sim") carregarMapa();
-  $("[data-carregar-mapa]")?.addEventListener("click", () => { guardar("sim"); carregarMapa(); });
+  ligarBotaoMapa();
+
+  /* RETIRAR A AUTORIZAÇÃO. O artigo 7.º/3 do RGPD exige que retirar seja tão
+     fácil como dar, e até aqui não havia forma nenhuma: a decisão ficava em
+     localStorage para sempre. Esta ligação existe em todas as páginas. */
+  $$("[data-preferencias]").forEach((b) => b.addEventListener("click", () => {
+    try { localStorage.removeItem(CHAVE); } catch { /* modo privado */ }
+    descarregarMapa();
+    if (aviso) {
+      aviso.hidden = false;
+      aviso.scrollIntoView({ block: "nearest" });
+      $(".cookies [data-aceitar]", document)?.focus();
+    }
+  }));
 
   /* ----------------------------------------------- avaliações em directo */
   /* Se houver um endereço configurado (o Cloudflare Worker), vai buscar a
