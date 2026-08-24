@@ -12,7 +12,7 @@
   { "nome": "Car Wrapping", "slug": "envelopamento", "imagem": "audi-q7-camaleao-3",
     "obras": ["audi-q7-camaleao", "amg-cla-45s", "audi-etron-gt", "tesla-model-y",
               "vw-scirocco-r", "mercedes-classe-a", "bmw-serie-5-touring"] },
-  { "nome": "PPF", "slug": "ppf", "imagem": "lotus-emeya-ppf-1", "obras": ["lotus-emeya-ppf"] },
+  { "nome": "PPF", "slug": "ppf", "imagem": "lotus-emeya-ppf-2", "obras": ["lotus-emeya-ppf"] },
   { "nome": "Chrome Delete", "slug": "chrome-delete", "imagem": "" },
   { "nome": "Pintura de Travão", "slug": "pintura-de-travao", "imagem": "tesla-pincas-1",
     "obras": ["tesla-pincas"] },
