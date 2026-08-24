@@ -621,3 +621,60 @@ campos novos no backoffice de cada vez que o título muda de forma.
 A medição certa é um elemento SOLTO com `white-space: nowrap` e a mesma fonte.
 Ler a largura do `<span>` dá a largura da CAIXA e não da linha — foi assim que
 uma vez concluí que cabia uma frase que já estava quebrada.
+
+
+---
+
+## O comparador degradava PIOR do que sem JavaScript (24-08-2026)
+
+Achado por verificação adversarial e confirmado por reprodução. O estado
+interactivo estava atrás de `html[data-js]`, escrito por uma linha no `<head>`
+antes da primeira pintura. Se o `site.js` não corresse, o CSS interactivo ficava
+aplicado **sem régua, sem filete e sem pega**: uma caixa de 414 px com meia
+fotografia «antes» e meia «depois», sem controlo nenhum. Medido com o `src`
+trocado por um ficheiro inexistente: `display: block`, 414x414,
+`clip-path: inset(0 0 0 96%)`. Sem JavaScript nenhum dava o díptico correcto —
+ou seja, **ter o script a meio era pior do que não o ter**.
+
+O gatilho mais provável não era o 404: o `site.js` era um IIFE único sem
+`try/catch`, portanto qualquer excepção num bloco anterior impedia o
+`regua.disabled = false` de correr com o ficheiro bem carregado.
+
+Duas correcções:
+1. **O portão mudou de sítio.** Passou a `.comparador[data-vivo]`, e o atributo é
+   posto pelo `site.js` DEPOIS de ligar a régua daquele comparador. Assim o
+   díptico é o estado por omissão e a falha degrada sozinha.
+   O salto de layout que o script inline evitava **não existia**: o primeiro
+   comparador está a 2653 px do topo, 2,2 ecrãs abaixo da dobra, e o CLS só mede
+   o que acontece dentro da janela.
+2. **Os blocos do `site.js` passaram a ser independentes**, como o cabeçalho do
+   ficheiro já prometia (e não era verdade). Sete blocos, sete `try/catch`.
+
+De caminho, e pela mesma verificação:
+· **A pega era cortada nos extremos.** Tem 44 px e fica em `left: var(--p)` com
+  `translate: -50%`; aos 0% e aos 100% ficavam 21 px fora da caixa, comidos pelo
+  `overflow: clip` — e com eles o anel de foco, que é um `box-shadow` na pega.
+  Quem carregava em Home ou End perdia a pega E o foco. Resolvido com
+  `overflow-clip-margin`, que alarga a região de corte sem desligar o corte; as
+  fotografias passaram a `border-radius: inherit` para os cantos não voltarem a
+  ser quadrados dentro da moldura redonda. Confirmado por RENDER, não por
+  medição: `getBoundingClientRect` reporta a caixa mesmo quando está recortada.
+· **O anel de foco deixou de usar `:has()`.** A régua subiu no DOM para antes do
+  filete e da pega, e o selector passou a irmão (`~`), que tem suporte
+  universal. Sem `:has()` o anel desaparecia — e a régua tem opacidade zero,
+  logo não havia foco visível a substituí-lo.
+· **O bloco de impressão desapareceu.** Repetia declaração por declaração a
+  reversão do estado base — duas cópias para manter em sincronia. Agora o estado
+  interactivo vive dentro de `@media not print` e há uma só fonte de verdade.
+· **O `site.js` passou a levar selo de conteúdo no endereço** (`?v=<hash>`). Sem
+  isso o endereço nunca mudava e quem já tinha visitado o site podia ficar com a
+  versão antiga depois de publicar. Apanhei-o a testar: o navegador servia-me um
+  `site.js` em cache e eu procurava o erro no código.
+· **A auditoria não descascava a query** ao verificar se um ficheiro existe, e
+  dava «ficheiro em falta» para o próprio selo. Corrigido, e confirmado que
+  continua a apanhar ficheiros que faltam a sério.
+
+**A verificação ficou incompleta:** 48 dos 75 agentes morreram no limite de
+sessão, portanto há achados que nunca foram julgados. Ficam por adjudicar, entre
+outros: o botão flutuante do WhatsApp a tapar conteúdo, sair da régua com Tab, o
+`onerror` das imagens, e a escolha de ficheiro em DPR 2.

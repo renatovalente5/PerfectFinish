@@ -737,212 +737,240 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 .comparador__linha, .comparador__pega, .comparador__regua { display: none; }
 
-/* ESTADO INTERACTIVO. O `data-js` é posto por uma linha no <head>, antes da
-   primeira pintura: o site.js é `defer` e corre depois de pintar, portanto
-   deixá-lo fazer a troca era fabricar um salto de layout de 828 px para 414. */
-html[data-js] .comparador {
-  display: block; position: relative;
-  aspect-ratio: 1; overflow: clip; isolation: isolate; gap: 0;
-  border: 1px solid var(--filete-fraco); border-radius: 4px;
-  background: var(--carta);
-  box-shadow: 0 1rem 2.5rem -1.25rem rgb(0 0 0 / .65);
-}
-html[data-js] .comparador:hover { border-color: var(--filete); }
-html[data-js] .comparador > img {
-  position: absolute; inset: 0;
-  inline-size: 100%; block-size: 100%;
-  border: 0; border-radius: 0;
-}
-/* `inset()` e não `polygon()`: quatro lados em vez de oito números, e
-   interpola igual. */
-html[data-js] .comparador > img.depois { clip-path: inset(0 0 0 var(--p)); }
+/* Tudo o que segue é o ESTADO INTERACTIVO, e vive dentro de `@media not
+   print` por uma razão de arquitectura: assim o díptico é o estado base em
+   papel SEM precisar de um bloco de impressão que repita, declaração por
+   declaração, a reversão de tudo isto. Havia esse bloco, e eram duas cópias
+   da mesma coisa para manter em sincronia — exactamente o que o achado
+   avisou que ia divergir. Com o envelope há uma só fonte de verdade. */
+@media not print {
+  /* ESTADO INTERACTIVO, atrás de `[data-vivo]` — um atributo que o site.js põe
+     em cada comparador DEPOIS de ligar a régua daquele comparador.
+     Esteve atrás de `html[data-js]`, posto por uma linha no <head> antes da
+     primeira pintura, para evitar um salto de layout de 836 px para 414. Estava
+     errado por duas razões:
+       1. Se o site.js não corresse — 404, bloqueador, ou uma excepção em
+          qualquer bloco anterior do mesmo IIFE — o estado interactivo ficava
+          aplicado sem régua, sem filete e sem pega: uma caixa de 414 px com
+          meia fotografia «antes» e meia «depois», sem controlo nenhum e sem
+          forma de a mexer. PIOR do que não ter JavaScript, que dava o díptico.
+          Foi medido: com o src do site.js trocado por um ficheiro inexistente,
+          `display: block`, 414x414, `clip-path: inset(0 0 0 96%)`.
+       2. O salto que se estava a evitar não existe. O primeiro comparador está
+          a 2653 px do topo — 2,2 ecrãs abaixo da dobra. Uma mudança de layout
+          ali não se vê e não conta para o CLS, que só mede o que acontece
+          dentro da janela.
+     Com o portão no atributo, o díptico é o estado por omissão e a falha
+     degrada sozinha, em vez de precisar de uma regra de reversão que tinha de
+     ser mantida em sincronia com a da impressão. */
+  .comparador[data-vivo] {
+    display: block; position: relative;
+    aspect-ratio: 1; overflow: clip; isolation: isolate; gap: 0;
+    /* A pega tem 44 px e fica em `left: var(--p)` com `translate: -50%`, logo
+       nos extremos metade dela cai fora da caixa. Medido: aos 0% e aos 100%
+       ficavam 21 px cortados pelo `overflow: clip` — e com eles o anel de foco,
+       que é um box-shadow na pega. Quem navega por teclado e carrega em Home ou
+       End perdia a pega E o foco ao mesmo tempo.
+       `overflow-clip-margin` existe exactamente para isto: alarga a região de
+       corte sem desligar o corte. Onde não houver suporte, a pega volta a ser
+       cortada nos extremos — igual a hoje, portanto não é regressão. */
+    overflow-clip-margin: 1.75rem;
+    border: 1px solid var(--filete-fraco); border-radius: 4px;
+    background: var(--carta);
+    box-shadow: 0 1rem 2.5rem -1.25rem rgb(0 0 0 / .65);
+  }
+  .comparador[data-vivo]:hover { border-color: var(--filete); }
+  .comparador[data-vivo] > img {
+    position: absolute; inset: 0;
+    inline-size: 100%; block-size: 100%;
+    border: 0;
+    /* Arredondam-se por si, e não pelo corte da caixa. Com a região de corte
+       alargada acima, os cantos das fotografias deixariam de ser cortados e
+       apareceriam quadrados dentro de uma moldura redonda. */
+    border-radius: inherit;
+  }
+  /* `inset()` e não `polygon()`: quatro lados em vez de oito números, e
+     interpola igual. */
+  .comparador[data-vivo] > img.depois { clip-path: inset(0 0 0 var(--p)); }
 
-html[data-js] .comparador__etiqueta {
-  position: absolute; inset-block-start: var(--e-3); margin: 0;
-}
-/* Os selos ficam SEMPRE no topo, nunca em baixo: em baixo o dedo tapa-os
-   quando se arrasta. */
-html[data-js] .comparador__etiqueta.antes {
-  inset-inline-start: var(--e-3);
-  /* Apaga-se só nos últimos 10%, quando o seu lado já quase não existe. Antes
-     disso ficava-se a olhar para dois selos a piscar. */
-  opacity: clamp(0, calc((var(--n) - .1) * 7), 1);
-}
-html[data-js] .comparador__etiqueta.depois {
-  inset-inline-end: var(--e-3); inset-inline-start: auto;
-  opacity: clamp(0, calc((.9 - var(--n)) * 7), 1);
-}
+  .comparador[data-vivo] .comparador__etiqueta {
+    position: absolute; inset-block-start: var(--e-3); margin: 0;
+  }
+  /* Os selos ficam SEMPRE no topo, nunca em baixo: em baixo o dedo tapa-os
+     quando se arrasta. */
+  .comparador[data-vivo] .comparador__etiqueta.antes {
+    inset-inline-start: var(--e-3);
+    /* Apaga-se só nos últimos 10%, quando o seu lado já quase não existe. Antes
+       disso ficava-se a olhar para dois selos a piscar. */
+    opacity: clamp(0, calc((var(--n) - .1) * 7), 1);
+  }
+  .comparador[data-vivo] .comparador__etiqueta.depois {
+    inset-inline-end: var(--e-3); inset-inline-start: auto;
+    opacity: clamp(0, calc((.9 - var(--n)) * 7), 1);
+  }
 
-html[data-js] .comparador__linha {
-  display: block;
-  position: absolute; inset-block: 0; left: var(--p);
-  translate: -50% 0; inline-size: 1px; pointer-events: none; z-index: 3;
-  background: linear-gradient(180deg, transparent, var(--ouro-brilho) 16%,
-                              var(--ouro-brilho) 84%, transparent);
-  /* O derrame de luz vem de uma sombra e não de um `filter`: um filtro aqui
-     criava contexto de empilhamento e obrigava a rasterizar a fotografia toda
-     a cada quadro do arrastar. */
-  box-shadow: 0 0 14px 1px color-mix(in oklab, var(--ouro-brilho) 45%, transparent);
-}
+  .comparador[data-vivo] .comparador__linha {
+    display: block;
+    position: absolute; inset-block: 0; left: var(--p);
+    translate: -50% 0; inline-size: 1px; pointer-events: none; z-index: 3;
+    background: linear-gradient(180deg, transparent, var(--ouro-brilho) 16%,
+                                var(--ouro-brilho) 84%, transparent);
+    /* O derrame de luz vem de uma sombra e não de um `filter`: um filtro aqui
+       criava contexto de empilhamento e obrigava a rasterizar a fotografia toda
+       a cada quadro do arrastar. */
+    box-shadow: 0 0 14px 1px color-mix(in oklab, var(--ouro-brilho) 45%, transparent);
+  }
 
-html[data-js] .comparador__pega {
-  display: grid; grid-auto-flow: column; place-items: center; gap: .05rem;
-  position: absolute; top: 50%; left: var(--p);
-  translate: -50% -50%; pointer-events: none; z-index: 4;
-  inline-size: 2.75rem; block-size: 2.75rem; border-radius: 50%;
-  background: color-mix(in oklab, var(--tinta) 62%, transparent);
-  backdrop-filter: blur(10px) saturate(130%);
-  border: 1px solid var(--ouro);
-  box-shadow: 0 .4rem 1.1rem rgb(0 0 0 / .5),
-              inset 0 1px 0 color-mix(in oklab, var(--ouro-brilho) 40%, transparent);
-  color: var(--ouro-alto);
-}
-html[data-js] .comparador__pega svg {
-  inline-size: .62rem; block-size: .62rem; fill: currentColor; stroke: none;
-}
+  .comparador[data-vivo] .comparador__pega {
+    display: grid; grid-auto-flow: column; place-items: center; gap: .05rem;
+    position: absolute; top: 50%; left: var(--p);
+    translate: -50% -50%; pointer-events: none; z-index: 4;
+    inline-size: 2.75rem; block-size: 2.75rem; border-radius: 50%;
+    background: color-mix(in oklab, var(--tinta) 62%, transparent);
+    backdrop-filter: blur(10px) saturate(130%);
+    border: 1px solid var(--ouro);
+    box-shadow: 0 .4rem 1.1rem rgb(0 0 0 / .5),
+                inset 0 1px 0 color-mix(in oklab, var(--ouro-brilho) 40%, transparent);
+    color: var(--ouro-alto);
+  }
+  .comparador[data-vivo] .comparador__pega svg {
+    inline-size: .62rem; block-size: .62rem; fill: currentColor; stroke: none;
+  }
 
-/* A régua: invisível, do tamanho da fotografia toda. Herda de graça as setas,
-   Home/End, PageUp, o toque, a caneta, a semântica de leitor de ecrã — e o
-   «clicar em qualquer ponto leva a cortina até ali», que é o comportamento
-   nativo do carril de um range. Um <div> com escutadores não herda nada. */
-html[data-js] .comparador__regua {
-  display: block;
-  position: absolute; inset: 0; z-index: 5;
-  margin: 0; inline-size: 100%; block-size: 100%;
-  appearance: none; background: none; border: 0;
-  opacity: 0; cursor: ew-resize;
-  /* A armadilha nº 1 dos comparadores em telemóvel. `none` rouba o scroll
-     vertical da página a quem começar o gesto sobre a fotografia — e a
-     fotografia ocupa quase o ecrã todo. `pan-y` devolve o vertical ao browser
-     e fica só com o horizontal, que é o que a cortina precisa. */
-  touch-action: pan-y;
-}
-/* A régua nasce `disabled` no HTML e é o site.js que a liga. Se esse ficheiro
-   não carregar, fica um controlo que apanha foco e não faz nada — pior do que
-   não existir. Assim desaparece, e com ela o filete e a pega. */
-html[data-js] .comparador__regua:disabled { display: none; }
-html[data-js] .comparador:has(.comparador__regua:disabled)
-  :is(.comparador__linha, .comparador__pega) { display: none; }
+  /* A régua: invisível, do tamanho da fotografia toda. Herda de graça as setas,
+     Home/End, PageUp, o toque, a caneta, a semântica de leitor de ecrã — e o
+     «clicar em qualquer ponto leva a cortina até ali», que é o comportamento
+     nativo do carril de um range. Um <div> com escutadores não herda nada. */
+  .comparador[data-vivo] .comparador__regua {
+    display: block;
+    position: absolute; inset: 0; z-index: 5;
+    margin: 0; inline-size: 100%; block-size: 100%;
+    appearance: none; background: none; border: 0;
+    opacity: 0; cursor: ew-resize;
+    /* A armadilha nº 1 dos comparadores em telemóvel. `none` rouba o scroll
+       vertical da página a quem começar o gesto sobre a fotografia — e a
+       fotografia ocupa quase o ecrã todo. `pan-y` devolve o vertical ao browser
+       e fica só com o horizontal, que é o que a cortina precisa. */
+    touch-action: pan-y;
+  }
+  /* As regras de reversão que aqui estavam (`:has(.comparador__regua:disabled)`)
+     desapareceram: com o portão em `[data-vivo]`, um comparador sem régua ligada
+     nunca chega ao estado interactivo, logo não há nada para reverter.
 
-html[data-js] .comparador:has(.comparador__regua:focus-visible) .comparador__pega {
-  box-shadow: 0 0 0 3px var(--ouro-alto), 0 .4rem 1.1rem rgb(0 0 0 / .5);
-}
+     O anel de foco passa a irmão em vez de `:has()`. Para isso a régua foi
+     movida no HTML para ANTES do filete e da pega: `~` tem suporte universal e
+     `:has()` não, e sem ele o anel de foco desaparecia num navegador antigo —
+     e a régua é `opacity: 0`, portanto não há foco visível nenhum a substituí-lo.
+     Mover não mexe no empilhamento, que é dado por z-index explícito. */
+  .comparador[data-vivo] .comparador__regua:focus-visible ~ .comparador__pega {
+    box-shadow: 0 0 0 3px var(--ouro-alto), 0 .4rem 1.1rem rgb(0 0 0 / .5);
+  }
 
-/* --------------------------------------------------- os pares, em coluna */
-/* Empilhados, e já não em carrossel horizontal. Os dois queriam o mesmo gesto
-   — arrastar na horizontal, no mesmo sítio — e a régua ganhava sempre: o
-   carrossel só se movia agarrando a legenda. Além disso nunca fechava a conta
-   a desktop: três cartões de 414 px mais duas goteiras dão 1290 px numa caixa
-   de 1216, e ficava sempre um cortado. */
-.pares { display: grid; gap: var(--e-8); justify-items: center; }
-.par {
-  display: grid; gap: var(--e-5); margin: 0;
-  inline-size: 100%; max-inline-size: 25.875rem;
-}
-.par figcaption { display: grid; gap: .25rem; align-content: center; }
-
-/* O número vem do HTML e não de um contador de CSS: o conteúdo de um
-   pseudo-elemento é lido por parte dos leitores de ecrã, e «01» não diz nada
-   a ninguém. No HTML leva aria-hidden e fica resolvido. */
-.par__indice {
-  font-family: var(--letra-titulo);
-  font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 700;
-  line-height: .8; letter-spacing: -.03em;
-  color: color-mix(in oklab, var(--ouro) 42%, transparent);
-  margin-block-end: var(--e-2);
-}
-.par .servico {
-  font-size: var(--t--2); letter-spacing: .12em; text-transform: uppercase;
-  color: var(--ouro); font-weight: 600;
-}
-.par .veiculo {
-  font-family: var(--letra-titulo);
-  font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
-  letter-spacing: .03em;
-}
-.par .legenda {
-  color: var(--osso-fraco); font-size: var(--t--1);
-  max-inline-size: 46ch; margin-block-start: var(--e-2);
-}
-
-/* Editorial a partir dos 992 px: a fotografia ao lado do texto, e os lados
-   trocam de linha para linha. É aqui que a restrição dos 414 px deixa de ser
-   um problema e passa a ser a composição.
-   TODAS as colunas em minmax(0, ...): um `1fr` é `minmax(auto, 1fr)` e o
-   `auto` não deixa encolher abaixo do conteúdo — foi assim que este projecto
-   transbordou na horizontal seis vezes. */
-@media (min-width: 62rem) {
-  .pares { gap: clamp(4rem, 7vw, 8rem); justify-items: stretch; }
+  /* --------------------------------------------------- os pares, em coluna */
+  /* Empilhados, e já não em carrossel horizontal. Os dois queriam o mesmo gesto
+     — arrastar na horizontal, no mesmo sítio — e a régua ganhava sempre: o
+     carrossel só se movia agarrando a legenda. Além disso nunca fechava a conta
+     a desktop: três cartões de 414 px mais duas goteiras dão 1290 px numa caixa
+     de 1216, e ficava sempre um cortado. */
+  .pares { display: grid; gap: var(--e-8); justify-items: center; }
   .par {
-    max-inline-size: none;
-    grid-template-columns: minmax(0, 25.875rem) minmax(0, 1fr);
-    align-items: center; gap: clamp(2.5rem, 6vw, 6rem);
+    display: grid; gap: var(--e-5); margin: 0;
+    inline-size: 100%; max-inline-size: 25.875rem;
   }
-  /* `inline-size` e não `max-inline-size`: com justify-self: end nas linhas
-     pares o bloco encolhia para o tamanho do conteúdo e a legenda quebrava em
-     sítios diferentes de linha para linha. */
-  .par figcaption { inline-size: min(100%, 34rem); }
-  .par:nth-child(even) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 25.875rem);
-  }
-  /* Duas colunas declaradas e dois filhos: mandar o comparador para segundo
-     basta para cair na coluna da direita. */
-  .par:nth-child(even) > .comparador { order: 2; }
-  .par:nth-child(even) > figcaption { justify-self: end; }
-}
+  .par figcaption { display: grid; gap: .25rem; align-content: center; }
 
-/* ------------------------------------------------------------- movimento */
-/* Tudo o que se mexe vive aqui dentro, como no resto da folha: o estado
-   reduzido é o estado por omissão e não há nada para desfazer. Nada disto é
-   infinito, de propósito — o remendo comum `animation-duration:.01ms` não
-   pára uma animação infinita, acelera-a até piscar. */
-@media (prefers-reduced-motion: no-preference) {
-  /* A cortina desliza quando o valor muda por teclado ou por clique no
-     carril. Enquanto o ponteiro está a arrastar, não: aí tem de colar ao
-     dedo, e é o `data-arrastar` que corta a transição. */
-  html[data-js] .comparador {
-    transition: --p .4s var(--curva), --n .4s var(--curva),
-                border-color .3s var(--curva);
+  /* O número vem do HTML e não de um contador de CSS: o conteúdo de um
+     pseudo-elemento é lido por parte dos leitores de ecrã, e «01» não diz nada
+     a ninguém. No HTML leva aria-hidden e fica resolvido. */
+  .par__indice {
+    font-family: var(--letra-titulo);
+    font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 700;
+    line-height: .8; letter-spacing: -.03em;
+    color: color-mix(in oklab, var(--ouro) 42%, transparent);
+    margin-block-end: var(--e-2);
   }
-  html[data-js] .comparador[data-arrastar] { transition: none; }
-  html[data-js] .comparador__pega {
-    transition: scale .25s var(--curva), box-shadow .25s var(--curva);
+  .par .servico {
+    font-size: var(--t--2); letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ouro); font-weight: 600;
   }
-  html[data-js] .comparador:hover .comparador__pega { scale: 1.08; }
-  html[data-js] .comparador[data-arrastar] .comparador__pega { scale: .96; }
+  .par .veiculo {
+    font-family: var(--letra-titulo);
+    font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .par .legenda {
+    color: var(--osso-fraco); font-size: var(--t--1);
+    max-inline-size: 46ch; margin-block-start: var(--e-2);
+  }
 
-  /* A demonstração. À entrada no ecrã a cortina abre do «antes» até ao meio,
-     ao ritmo do scroll. É o que ensina que aquilo se arrasta, e resolve o
-     único problema verdadeiro deste padrão, que é a descoberta.
-     Termina exactamente em 50%, o valor de repouso, e é por isso que passar
-     ao controlo manual não dá salto: a animação estava a segurar o mesmo
-     valor que a folha em linha vai passar a impor.
-     O Firefox não tem animações ligadas ao scroll e fica com o estado final
-     estático — igual ao que sempre teve. Não é regressão. */
-  @supports (animation-timeline: view()) {
-    html[data-js] .comparador:not([data-manual]) {
-      animation: ensinar linear both;
-      animation-timeline: view();
-      animation-range: entry 30% cover 42%;
+  /* Editorial a partir dos 992 px: a fotografia ao lado do texto, e os lados
+     trocam de linha para linha. É aqui que a restrição dos 414 px deixa de ser
+     um problema e passa a ser a composição.
+     TODAS as colunas em minmax(0, ...): um `1fr` é `minmax(auto, 1fr)` e o
+     `auto` não deixa encolher abaixo do conteúdo — foi assim que este projecto
+     transbordou na horizontal seis vezes. */
+  @media (min-width: 62rem) {
+    .pares { gap: clamp(4rem, 7vw, 8rem); justify-items: stretch; }
+    .par {
+      max-inline-size: none;
+      grid-template-columns: minmax(0, 25.875rem) minmax(0, 1fr);
+      align-items: center; gap: clamp(2.5rem, 6vw, 6rem);
     }
-    @keyframes ensinar {
-      from { --p: 96%; --n: .96; }
-      to   { --p: 50%; --n: .5; }
+    /* `inline-size` e não `max-inline-size`: com justify-self: end nas linhas
+       pares o bloco encolhia para o tamanho do conteúdo e a legenda quebrava em
+       sítios diferentes de linha para linha. */
+    .par figcaption { inline-size: min(100%, 34rem); }
+    .par:nth-child(even) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 25.875rem);
+    }
+    /* Duas colunas declaradas e dois filhos: mandar o comparador para segundo
+       basta para cair na coluna da direita. */
+    .par:nth-child(even) > .comparador { order: 2; }
+    .par:nth-child(even) > figcaption { justify-self: end; }
+  }
+
+  /* ------------------------------------------------------------- movimento */
+  /* Tudo o que se mexe vive aqui dentro, como no resto da folha: o estado
+     reduzido é o estado por omissão e não há nada para desfazer. Nada disto é
+     infinito, de propósito — o remendo comum `animation-duration:.01ms` não
+     pára uma animação infinita, acelera-a até piscar. */
+  @media (prefers-reduced-motion: no-preference) {
+    /* A cortina desliza quando o valor muda por teclado ou por clique no
+       carril. Enquanto o ponteiro está a arrastar, não: aí tem de colar ao
+       dedo, e é o `data-arrastar` que corta a transição. */
+    .comparador[data-vivo] {
+      transition: --p .4s var(--curva), --n .4s var(--curva),
+                  border-color .3s var(--curva);
+    }
+    .comparador[data-vivo][data-arrastar] { transition: none; }
+    .comparador[data-vivo] .comparador__pega {
+      transition: scale .25s var(--curva), box-shadow .25s var(--curva);
+    }
+    .comparador[data-vivo]:hover .comparador__pega { scale: 1.08; }
+    .comparador[data-vivo][data-arrastar] .comparador__pega { scale: .96; }
+
+    /* A demonstração. À entrada no ecrã a cortina abre do «antes» até ao meio,
+       ao ritmo do scroll. É o que ensina que aquilo se arrasta, e resolve o
+       único problema verdadeiro deste padrão, que é a descoberta.
+       Termina exactamente em 50%, o valor de repouso, e é por isso que passar
+       ao controlo manual não dá salto: a animação estava a segurar o mesmo
+       valor que a folha em linha vai passar a impor.
+       O Firefox não tem animações ligadas ao scroll e fica com o estado final
+       estático — igual ao que sempre teve. Não é regressão. */
+    @supports (animation-timeline: view()) {
+      .comparador[data-vivo]:not([data-manual]) {
+        animation: ensinar linear both;
+        animation-timeline: view();
+        animation-range: entry 30% cover 42%;
+      }
+      @keyframes ensinar {
+        from { --p: 96%; --n: .96; }
+        to   { --p: 50%; --n: .5; }
+      }
     }
   }
 }
 
-/* Em papel volta ao díptico, que é a forma que existe impressa. */
-@media print {
-  html[data-js] .comparador {
-    display: grid; aspect-ratio: auto; block-size: auto;
-    box-shadow: none; gap: var(--e-2);
-  }
-  html[data-js] .comparador > img { position: static; block-size: auto; }
-  html[data-js] .comparador > img.depois { clip-path: none; }
-  html[data-js] .comparador__etiqueta { position: static; margin: var(--e-3); opacity: 1; }
-  html[data-js] :is(.comparador__linha, .comparador__pega, .comparador__regua) { display: none; }
-}
 
 /* ---------------------------------------------------------- 09 trabalhos */
 /* Colunas fixas por medida, e não `auto-fill`, para o número de colunas ser

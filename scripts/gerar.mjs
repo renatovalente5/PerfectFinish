@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SAIDA = join(RAIZ, "_site");
@@ -33,6 +34,18 @@ const TRABALHOS = lerPasta("data/trabalhos").filter((t) => t.publicado !== false
 const PRODUTOS = lerPasta("data/loja").filter((p) => p.publicado !== false);
 const AVALIACOES = ler("data/avaliacoes.json");
 const LISTA_SERVICOS = ler("data/lista-servicos.json").servicos;
+
+/* Selo do site.js, derivado do próprio conteúdo. Sem isto o endereço do script
+   nunca muda e quem já visitou o site pode ficar com a versão antiga depois de
+   uma publicação — o GitHub Pages serve os ficheiros com cache. Isso passou a
+   importar mais do que antes: o estado interactivo do comparador depende de o
+   site.js correr e pôr `data-vivo`, portanto um script velho deixa os
+   comparadores em díptico. Degrada bem, mas degrada sem razão.
+   Apanhei isto a testar: o navegador estava a servir-me um site.js em cache e
+   eu andava a procurar o erro no código. */
+const SELO_JS = createHash("sha256")
+  .update(readFileSync(new URL("../assets/js/site.js", import.meta.url)))
+  .digest("hex").slice(0, 8);
 /* O ficheiro vem do backoffice como objecto (`{ pares: [...] }`); aceita-se
    também o array solto, que é como estava antes de existir o backoffice. */
 const _pares = ler("data/pares.json");
@@ -379,7 +392,6 @@ function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, 
 @font-face{font-family:"Inter Tight";src:url("${u("/assets/fonts/inter-tight-latin.woff2")}") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 ${CSS}
 </style>
-<script>document.documentElement.dataset.js="1"</script>
 <script type="application/ld+json">${dadosEstruturados({ url, titulo, descricao, migalhas, servico })}</script>
 </head>
 <body${classe ? ` class="${classe}"` : ""}>
@@ -408,7 +420,7 @@ ${AVISO_COOKIES}
  </div>
  <p class="lupa__nota"></p>
 </dialog>
-<script src="${u("/assets/js/site.js")}" defer></script>
+<script src="${u("/assets/js/site.js")}?v=${SELO_JS}" defer></script>
 </body>
 </html>`;
 }
@@ -590,10 +602,15 @@ function comparador(par, i) {
   ${imagem(par.depois, par.alt_depois, "depois")}
   <span class="comparador__etiqueta antes">Antes</span>
   <span class="comparador__etiqueta depois">Depois</span>
-  <span class="comparador__linha" aria-hidden="true"></span>
-  <span class="comparador__pega" aria-hidden="true">${SETA_ESQ}${SETA_DIR}</span>
+  <!-- A régua vem ANTES do filete e da pega, de propósito: o anel de foco da
+       pega é feito com um selector de irmão, que precisa da régua antes dela.
+       Antes usava :has(), e num navegador sem suporte o anel desaparecia — e a
+       régua tem opacidade zero, portanto não sobrava foco visível nenhum.
+       O empilhamento não muda: é dado por z-index explícito. -->
   <input class="comparador__regua" type="range" min="0" max="100" value="50" step="1" disabled
    aria-label="Comparar antes e depois — ${esc(par.veiculo)}, ${esc(par.servico)}">
+  <span class="comparador__linha" aria-hidden="true"></span>
+  <span class="comparador__pega" aria-hidden="true">${SETA_ESQ}${SETA_DIR}</span>
  </div>
  <figcaption>
   <span class="par__indice" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>

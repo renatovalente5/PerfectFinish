@@ -128,8 +128,12 @@ for (const caminho of paginas) {
         falha(`${nome}: caminho sem o prefixo «${BASE}» → ${item}`);
         continue;
       }
-      const relativo = BASE ? item.slice(BASE.length) : item;
-      if (!existe.has(relativo)) falha(`${nome}: ficheiro em falta → ${item}`);
+      /* Descascar a query e a âncora antes de procurar em disco: um `?v=`
+         de invalidação de cache não faz parte do caminho do ficheiro, e sem
+         isto a auditoria dava «ficheiro em falta» para um ficheiro que existe.
+         (Foi o que aconteceu ao selar o site.js.) */
+      const caminho = (BASE ? item.slice(BASE.length) : item).split(/[?#]/)[0];
+      if (!existe.has(caminho)) falha(`${nome}: ficheiro em falta → ${item}`);
     }
   }
 
