@@ -747,10 +747,7 @@ function inicio() {
        O índice continua de 03: o comparador numera pelo argumento, portanto
        soma-se o desvio dos dois que ficaram de fora. -->
   ${PARES.length > 2 ? `<details class="mais">
-   <summary class="mais__botao">
-    <span class="mais__abrir">Ver mais<span class="seta" aria-hidden="true">↓</span></span>
-    <span class="mais__fechar">Ver menos<span class="seta" aria-hidden="true">↑</span></span>
-   </summary>
+   <summary class="mais__botao">Ver mais<span class="seta" aria-hidden="true">↓</span></summary>
    <div class="pares">${PARES.slice(2).map((p, i) => comparador(p, i + 2)).join("")}</div>
   </details>` : ""}
  </div>
@@ -759,7 +756,6 @@ function inicio() {
    <p>O portefólio completo vive no Instagram, com trabalho novo quase todos os dias.</p>
    ${ig("Ver tudo no Instagram <span class=\"seta\">→</span>")}
    <p class="painel-ig__conta">@perfectfinish.pt</p>
-   <p class="fecho-seccao">Aqui no site ficam os ${LISTA_SERVICOS.filter((sv) => sv.imagem).length} serviços com fotografia, e cada um abre a galeria do trabalho.</p>
   </div>
  </div>
 </section>

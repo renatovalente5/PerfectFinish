@@ -1525,13 +1525,12 @@ body[data-menu="aberto"] { overflow: hidden; }
 .mais__botao::-webkit-details-marker { display: none; }
 .mais__botao:hover { border-color: var(--ouro); color: var(--ouro-alto); }
 .mais__botao:focus-visible { outline: 2px solid var(--ouro-alto); outline-offset: 3px; }
-/* `display` explícito nos dois, e não o atributo `hidden`: neste projecto já se
-   perdeu tempo com `hidden` a ser derrotado por um `display` de autor. */
-.mais__abrir, .mais__fechar { align-items: center; gap: .5rem; }
-.mais__abrir { display: inline-flex; }
-.mais__fechar { display: none; }
-.mais[open] .mais__abrir { display: none; }
-.mais[open] .mais__fechar { display: inline-flex; }
+/* Depois de aberto o botão desaparece, a pedido — não há «Ver menos».
+   CUSTO A REGISTAR: quem chegar ao botão pelo teclado perde o foco quando ele
+   se esconde (passa para o <body>, e o Tab seguinte recomeça no topo do
+   documento). É o preço de não haver controlo de fecho, e é o padrão corrente
+   dos botões «ver mais», que também desaparecem depois de usados. */
+.mais[open] > summary { display: none; }
 /* O bloco herdaria o `text-align: center` do botão. */
 .mais .pares { text-align: start; margin-top: clamp(2.5rem, 5vw, 4.5rem); }
 
@@ -1676,9 +1675,6 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   display: flex; flex-wrap: wrap; gap: var(--e-4) var(--e-5);
   align-items: center; margin-top: var(--e-3);
 }
-.ligacao-ig, .fecho-seccao { font-size: var(--t--1); color: var(--osso-fraco); }
-.fecho-seccao { margin-top: var(--e-5); }
-.ligacao-ig:hover, .fecho-seccao a { color: var(--ouro-alto); }
 
 /* ---------------------------------------------------- 20 painel do Instagram */
 /* O portefólio completo vive no Instagram. Este é o ponto de saída principal,
@@ -1696,7 +1692,6 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   font-family: var(--letra-titulo); font-size: var(--t--1);
   letter-spacing: .04em; color: var(--ouro);
 }
-.painel-ig .fecho-seccao { margin-top: 0; }
 
 /* ------------------------------------------------------- 21 navbar: Loja */
 /* Dois destaques lado a lado resolvem-se por MATÉRIA, não por cor:
