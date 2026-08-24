@@ -124,22 +124,21 @@ com o email dele.
 
 ## Por preencher (depende do cliente)
 
-Estão assinalados como aviso pela auditoria, e não travam a publicação:
+A auditoria assinala-os como aviso e não travam a publicação. **A 24-08-2026 os
+dois obrigatórios por lei estão preenchidos** — o e-mail e o nome civil do
+titular (Welington de Oliveira Galhardo, Empresário em Nome Individual) — e a
+auditoria passa a zero erros e zero avisos.
 
-1. **E-mail.** Obrigatório pelo artigo 10.º do Decreto-Lei n.º 7/2004. O
-   WhatsApp não substitui. Preencher em *Dados do estúdio › Contactos*.
-2. **Nome civil completo do titular.** Também exigido pelo mesmo artigo — o
-   nome comercial não chega. Preencher em *Dados do estúdio › Dados legais*.
-3. **Código postal.** O `2420-125` foi tirado do perfil do Google do próprio
+1. **Código postal.** O `2420-125` foi tirado do perfil do Google do próprio
    cliente, mas os registos dos CTT associam esse código a Pereiras,
    Caranguejeira. Confirmar nos CTT antes de o fixar no Google Business
    Profile e nos dados estruturados.
-4. **Preços da loja.** Estão todos como «Sob consulta». Os produtos foram
+2. **Preços da loja.** Estão todos como «Sob consulta». Os produtos foram
    propostos por nós; confirmar quais existem mesmo e a que preço (por lei,
    preço final com IVA).
-5. **Fotografias em falta:** interiores (não existe nenhuma em todo o acervo) e
+3. **Fotografias em falta:** interiores (não existe nenhuma em todo o acervo) e
    tira mossas (as que há não aguentam publicação, e é o serviço que dá nome à
    casa). Um close-up com tábua de leitura, antes e depois, no mesmo
    enquadramento, resolvia.
-6. **Telefone.** Um roll-up numa das fotografias lê `968 828 910`; em todo o
+4. **Telefone.** Um roll-up numa das fotografias lê `968 828 910`; em todo o
    resto lê-se `968 828 510`. Confirmar qual está errado.
