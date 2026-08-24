@@ -538,7 +538,13 @@ body[data-menu="aberto"] { overflow: hidden; }
   .heroi {
     min-block-size: 100svh;
     padding-block: calc(var(--cabecalho-alto) + var(--e-5)) var(--e-9);
-    align-items: start;
+    /* `center` e não `start`. O `start` fazia sentido quando a capa tinha
+       título, subtítulo, dois botões e a régua de provas: enchia de cima para
+       baixo. Sem a régua o conteúdo tem 277 px numa capa de 844, e ao topo
+       deixava 455 px de vazio debaixo do botão — mais de metade do ecrã, com
+       tudo empilhado no terço de cima. Centrado, o vazio reparte-se e a capa
+       lê-se como composição em vez de conteúdo cortado. */
+    align-items: center;
   }
   .heroi__fundo::before {
     content: ""; position: absolute; inset: 0; z-index: 1;
@@ -550,19 +556,6 @@ body[data-menu="aberto"] { overflow: hidden; }
       rgb(15 13 13 / .58) 100%);
   }
 
-  /* A régua de provas cai na zona clara do véu — que é justamente onde se
-     querem ver os carros. Medida ali, dava 3,66:1, abaixo do mínimo.
-     Em vez de escurecer o véu todo (e apagar as fotografias outra vez), a
-     régua leva um painel próprio. Lê-se como uma barra de números, que é o
-     que é. */
-  .provas {
-    padding: var(--e-4) var(--e-5);
-    border: 1px solid var(--filete-fraco);
-    border-radius: 3px;
-    background: color-mix(in oklab, var(--tinta) 88%, transparent);
-    backdrop-filter: blur(8px);
-    gap: var(--e-4) var(--e-6);
-  }
 }
 
 /* A coluna do texto só é limitada onde existe o painel gravado — a partir de
@@ -574,13 +567,6 @@ body[data-menu="aberto"] { overflow: hidden; }
    corta na horizontal, isso dá bem mais do que 42% da caixa. Medido. */
 @media (min-width: 64rem) {
   .heroi__texto { max-inline-size: min(38rem, 52%); }
-  /* A régua de provas leva mais largura do que o texto: não é prosa, é uma
-     tira compacta, e com a largura de leitura do texto (608 px a 1440) o selo
-     da localidade caía para segunda linha — 342 + 221 + 56 de intervalo dão
-     620, medido. Mais largura não custa contraste porque tudo isto continua
-     dentro da zona onde o véu é forte (até 50% da janela), e o selo tem painel
-     próprio por cima disso. */
-  .provas { max-inline-size: min(46rem, 64%); }
 
   /* Véu horizontal, em CSS e não gravado na imagem: assim acompanha o layout
      em vez de acompanhar o recorte do `object-fit: cover`, que muda a cada
@@ -626,45 +612,6 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .heroi .accoes { margin-top: var(--e-6); }
 
-.provas {
-  display: flex; flex-wrap: wrap; gap: var(--e-5) clamp(1.5rem, 5vw, 3.5rem);
-  margin-top: var(--e-7); padding-top: var(--e-5);
-  border-top: 1px solid var(--filete-fraco);
-  list-style: none;
-}
-.provas li { display: flex; align-items: center; gap: .55rem; min-inline-size: 0; }
-.provas b {
-  font-family: var(--letra-titulo);
-  font-size: var(--t-2); font-weight: 700; color: var(--ouro-alto);
-  line-height: 1; letter-spacing: -.02em;
-}
-/* As cinco estrelas antes da nota, como no exemplo. O corpo é o MESMO do
-   número, para escalarem juntos quando a tipografia muda de tamanho.
-   O .88em não é arbitrário: a estrela desenhada só ocupa cerca de dois terços
-   da sua moldura de 24x24, portanto uma caixa igual ao corpo do número daria
-   uma estrela visivelmente mais pequena do que os dígitos. Medido: com .88em a
-   estrela fica a ~0,83 da altura das maiúsculas, que é a proporção do
-   exemplo. */
-.provas .estrelas { display: inline-flex; gap: .1em; color: var(--ouro); }
-.provas .estrelas svg { font-size: var(--t-2); inline-size: .88em; block-size: .88em; }
-
-/* A localidade num selo com contorno, e não como segundo bloco de texto. */
-.provas__selo {
-  display: inline-flex; align-items: center; gap: .5rem;
-  padding: .5rem 1rem .5rem .85rem;
-  border: 1px solid var(--filete); border-radius: 999px;
-  background: color-mix(in oklab, var(--tinta) 55%, transparent);
-  backdrop-filter: blur(6px);
-  font-size: var(--t--1); color: var(--osso); letter-spacing: .01em;
-}
-.provas__selo svg {
-  inline-size: 1rem; block-size: 1rem; flex: none; color: var(--ouro);
-  fill: none; stroke: currentColor; stroke-width: 1.6;
-}
-/* `--osso-meio` e não `--osso-fraco`: medido por cima do fundo da capa, o
-   fraco dava 4,04:1 no pior ponto — abaixo do mínimo de 4,5:1 para texto
-   pequeno. Sobre o preto chapado passava; sobre a fotografia não. */
-.provas span { font-size: var(--t--1); color: var(--osso-meio); letter-spacing: .02em; }
 
 /* Telemóvel: o espaçamento tem de encolher, senão o painel fica abaixo da
    dobra e o primeiro ecrã não mostra fotografia nenhuma. */
@@ -673,7 +620,6 @@ body[data-menu="aberto"] { overflow: hidden; }
   .heroi h1 { margin-block: var(--e-4) var(--e-2); }
   .heroi__sub { margin-bottom: var(--e-4); }
   .heroi .accoes { margin-top: var(--e-5); }
-  .provas { margin-top: var(--e-6); }
 }
 /* O sobrescrito esteve escondido abaixo de 40rem para poupar altura. Voltou:
    é a linha que diz o nome do estúdio e a cidade, e num telemóvel é
