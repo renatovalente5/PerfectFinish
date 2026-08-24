@@ -462,7 +462,7 @@ function listaCompleta() {
   ).join("")}</ul>`;
 }
 
-const CTA = (titulo, texto) => `<section class="seccao">
+const CTA = (titulo, texto) => `<section class="seccao alto">
  <div class="caixa" style="text-align:center;display:grid;justify-items:center;gap:var(--e-5)">
   <h2 class="ouro"><span>${esc(titulo)}</span></h2>
   <p class="medida" style="color:var(--osso-meio)">${esc(texto)}</p>
@@ -642,7 +642,7 @@ function inicio() {
  </div>
 </section>
 
-<section class="seccao" id="servicos">
+<section class="seccao alto" id="servicos">
  <div class="caixa">
   <div class="cabeca-seccao">
    <p class="sobrescrito">Serviços</p>
@@ -682,7 +682,7 @@ function inicio() {
 
 ${blocoAvaliacoes({ claro: true })}
 
-<section class="seccao" id="contactos">
+<section class="seccao alto" id="contactos">
  <div class="caixa">
   <div class="cabeca-seccao">
    <p class="sobrescrito">Contactos</p>
@@ -822,7 +822,7 @@ function trabalhos() {
  <div class="caixa"><div class="grelha">${TRABALHOS.map(cartaoObra).join("")}</div></div>
 </section>
 
-<section class="seccao">
+<section class="seccao alto">
  <div class="caixa"><div class="cabeca-seccao"><p class="sobrescrito">Antes e depois</p><h2>Arraste para comparar</h2></div></div>
  <div class="pares">${PARES.map(comparador).join("")}</div>
 </section>

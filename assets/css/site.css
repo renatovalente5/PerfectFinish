@@ -40,6 +40,15 @@
      próprio preto do logótipo. */
   --tinta:    #1A1717;
   --carta:    #231F20;
+  /* Superfície levantada, para as secções se lerem como planos distintos.
+     Porque não CLAREAR as secções, que era a pergunta: o ouro #AC8A39 sobre o
+     claro #F2EFE9 dá 2,84:1 — reprova para texto e para interface, e é por
+     isso que na única secção clara do site o ouro só aparece em filetes. Mais
+     claro = menos marca. A alternativa é variar o TOM dentro do escuro.
+     Medido: tinta↔carta dá 1,093:1, que não se vê. Este dá 1,18:1, que se vê,
+     e mantém o osso a 12,4:1 e o ouro a 4,64:1 (acima dos 4,5 de corpo de
+     texto). Um passo acima — #302A2B — já punha o ouro a 4,32 e chumbava. */
+  --tinta-alto: #2A2526;
   --elevado:  #2B2626;
   --filete:   color-mix(in oklab, var(--ouro) 22%, transparent);
   --filete-fraco: color-mix(in oklab, var(--ouro) 11%, transparent);
@@ -187,6 +196,9 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.02
 /* -------------------------------------------------- 03 utilitários de composição */
 .caixa { width: var(--caixa); margin-inline: auto; }
 .seccao { padding-block: var(--seccao); }
+/* Alterna com o fundo do corpo para dar ritmo à página. Sem filete: a própria
+   diferença de tom desenha a aresta, e um filete a mais seria ruído. */
+.seccao.alto { background: var(--tinta-alto); }
 .medida { max-width: 58ch; }
 
 /* Sobrescrito de secção: as maiúsculas espaçadas a dourado que anunciam cada
