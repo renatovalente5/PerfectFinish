@@ -973,3 +973,33 @@ cinco das seis entradas. A forma que funciona: encontrar as âncoras
 `^  - name: ` com indentação EXACTA, e cortar do início dos comentários de uma
 até ao início dos comentários da seguinte. E validar sempre o resultado com
 `yaml.safe_load` antes de acreditar nele.
+
+
+## A lista de serviços em colunas (25-08-2026)
+
+O cliente disse que estava «bagunçado» e pediu «um em baixo do outro certinho».
+Tinha razão e a causa era o `flex-wrap`: os nomes enchiam a linha e quebravam
+onde calhava — três, depois dois, depois três. Uma fila que quebra em sítios
+irregulares lê-se como desarrumação, por mais correcto que seja o espaçamento.
+
+**`columns` e não `grid`.** Com colunas os treze distribuem-se equilibrados e
+lêem-se de cima para baixo, que é literalmente o que foi pedido. Numa grelha com
+`grid-auto-flow: row` a leitura é horizontal e volta-se ao mesmo problema.
+
+**Três colunas no máximo, e não quatro.** Com quatro, os treze dão 4+4+4+1 e a
+última fica com um item sozinho: o vazio à direita lê-se tão mal como a
+desarrumação que se estava a corrigir. Com três dá 5+5+3. Medido, não estimado.
+
+**A lista leva largura própria (48rem).** À largura toda da caixa as colunas
+ficavam com 316 px para texto de 198, e os nomes ficavam a boiar longe uns dos
+outros — alinhados, mas soltos.
+
+Os cortes são ditados pelo nome mais comprido, «Proteção e Correção de Pintura»,
+que ocupa 198 px: cada coluna tem de o aguentar sem quebrar, ou a desarrumação
+volta por outra via. Verificado a 320 (uma coluna, 13 itens), 480 (duas, 7+6) e
+1440 (três, 5+5+3): zero nomes quebrados e zero transbordo.
+
+Nota: `break-inside: avoid` nos itens, senão um nome de duas linhas pode ser
+partido entre colunas. E o risco dourado leva `translate: 0 -.3em` — com
+`align-items: baseline` um filho de 1 px de altura alinha pelo fundo da própria
+caixa e ficava caído.

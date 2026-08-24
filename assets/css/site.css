@@ -1771,21 +1771,42 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
    Flex e não grelha, de propósito: com `flex-wrap` a linha enche-se sozinha de
    320 a 1920 px, não há colunas para acertar e não há `minmax(0, 1fr)` para
    esquecer — que é o erro que já custou seis transbordos a este site. */
+/* Em COLUNAS e não em fluxo. Estava em `flex-wrap`, e os nomes enchiam a linha
+   e quebravam onde calhava — três, depois dois, depois três. O cliente disse
+   que estava «bagunçado» e quis «um em baixo do outro certinho», e tem razão:
+   uma fila que quebra em sítios irregulares lê-se como desarrumação.
+   `columns` e não `grid`: com colunas, os treze nomes distribuem-se
+   EQUILIBRADOS (5+4+4 em vez de 4+4+4+1) e lêem-se de cima para baixo, que é
+   literalmente o que foi pedido. Numa grelha o último ficava sozinho na linha.
+   Os cortes são ditados pelo nome mais comprido, «Proteção e Correção de
+   Pintura», que ocupa 198 px: cada coluna precisa de o aguentar sem quebrar, ou
+   volta-se ao problema por outra via.
+   TRÊS colunas no máximo, e não quatro. Com quatro, os treze distribuem-se
+   4+4+4+1 e a última fica com um item sozinho — o vazio à direita lê-se tão mal
+   como a desarrumação que se estava a corrigir. Com três dá 5+5+3, medido.
+   E a lista leva largura própria: à largura toda da caixa as colunas ficavam
+   com 316 px para texto de 198, e os nomes ficavam a boiar longe uns dos
+   outros. */
 .rol-servicos {
-  display: flex; flex-wrap: wrap;
-  column-gap: clamp(.9rem, 2.2vw, 1.75rem); row-gap: .1rem;
+  columns: 1;
+  column-gap: clamp(1.25rem, 4vw, 3rem);
+  max-inline-size: 48rem;
   margin-block: var(--e-5) var(--e-7);
   list-style: none;
 }
-/* O `max-inline-size` é o travão do backoffice: se o cliente escrever um nome
-   muito comprido, o item quebra por dentro em vez de empurrar a página. */
+@media (min-width: 30rem) { .rol-servicos { columns: 2; } }
+@media (min-width: 52rem) { .rol-servicos { columns: 3; } }
+
 .rol-servicos li {
-  display: flex; align-items: center; gap: .5rem;
-  max-inline-size: 100%;
-  font-size: var(--t--1); line-height: 1.7; color: var(--osso-meio);
+  /* Sem isto um nome de duas linhas pode ser partido entre duas colunas. */
+  break-inside: avoid;
+  display: flex; align-items: baseline; gap: .5rem;
+  font-size: var(--t--1); line-height: 1.9; color: var(--osso-meio);
 }
 .rol-servicos .risco {
-  flex: none; inline-size: .7rem; block-size: 1px;
+  /* `translate` para o risco assentar na linha do texto: com `align-items:
+     baseline` um filho de 1px de altura alinha pelo fundo da própria caixa. */
+  flex: none; inline-size: .7rem; block-size: 1px; translate: 0 -.3em;
   background: var(--ouro); opacity: .55;
 }
 /* No 404 os nomes são ligações, porque ali servem de navegação. */
