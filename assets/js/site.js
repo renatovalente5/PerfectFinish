@@ -70,15 +70,59 @@
   }
 
   /* ------------------------------------------------ comparador antes/depois */
-  /* O <input type="range"> faz o trabalho todo de acessibilidade; aqui só se
-     copia o valor para uma variável de CSS. */
-  $$(".comparador").forEach((cmp) => {
-    const controlo = $("input", cmp);
-    if (!controlo) return;
-    const pintar = () => cmp.style.setProperty("--p", controlo.value + "%");
-    controlo.addEventListener("input", pintar, { passive: true });
+  /* O <input type="range"> faz o trabalho todo: setas, Home/End, PageUp, o
+     toque, a caneta, o clique no carril, e o nome e o valor para leitores de
+     ecrã. Aqui só se copia o valor para duas variáveis de CSS. */
+  const comparadores = $$(".comparador");
+  /* Qual o comparador com o ponteiro em baixo. Um só, sempre — e assim bastam
+     dois escutadores na página em vez de dois por comparador. */
+  let activo = null;
+
+  comparadores.forEach((cmp) => {
+    const regua = $(".comparador__regua", cmp);
+    if (!regua) return;
+
+    /* Nasce `disabled` no HTML: sem este ficheiro não teria como funcionar, e
+       um controlo que apanha foco e não faz nada é pior do que não existir. */
+    regua.disabled = false;
+
+    const pintar = () => {
+      const v = Number(regua.value);
+      cmp.style.setProperty("--p", v + "%");
+      cmp.style.setProperty("--n", String(v / 100));
+    };
+
+    /* Primeiro gesto humano: desliga a demonstração ligada ao scroll. A
+       animação estava a segurar 50%, que é o valor com que a régua nasce, por
+       isso a passagem ao controlo manual não dá salto. */
+    const assumir = () => { cmp.dataset.manual = "sim"; };
+    regua.addEventListener("keydown", assumir, { passive: true });
+    regua.addEventListener("pointerdown", () => { assumir(); activo = cmp; },
+                           { capture: true, passive: true });
+
+    /* A transição sai da frente só quando o ponteiro MEXE, e não já no
+       pointerdown. Assim um clique no carril desliza até ao ponto (fica bem) e
+       um arrastar cola ao dedo (fica certo) — o mesmo controlo dá as duas
+       coisas sem as confundir. */
+    regua.addEventListener("pointermove", () => {
+      if (activo === cmp) cmp.dataset.arrastar = "sim";
+    }, { passive: true });
+
+    regua.addEventListener("input", () => { assumir(); pintar(); }, { passive: true });
     pintar();
   });
+
+  /* Na página toda, e não em cada comparador: o pointerup pode cair fora da
+     fotografia se o dedo sair dela a arrastar. */
+  if (comparadores.length) {
+    const largar = () => {
+      if (!activo) return;
+      delete activo.dataset.arrastar;
+      activo = null;
+    };
+    addEventListener("pointerup", largar, { passive: true });
+    addEventListener("pointercancel", largar, { passive: true });
+  }
 
   /* ---------------------------------------------------------------- lupa */
   /* O `popover` trata da camada de topo, do Esc e do fecho ao tocar fora.

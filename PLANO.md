@@ -451,3 +451,115 @@ pesquisa cabem.
 
 Contraste no pior pixel debaixo de cada bloco, a 1425 px: sobrescrito 5,20:1 ·
 título 7,63:1 · subtítulo 7,63:1 · régua 7,65:1. No telemóvel, ≥7,5:1 em tudo.
+
+
+---
+
+## Antes e depois, refeito (24-08-2026)
+
+O cliente pediu «mais moderno, quer na web quer para o telemóvel». O mecanismo
+já era o certo — a cortina sobre um `<input type="range">` continua a ser a
+convenção em 2026 — o que estava velho era o enquadramento. E havia quatro
+defeitos reais:
+
+1. **Não funcionava sem JavaScript.** O `--p` só era escrito em `site.js`;
+   ficava um quadrado partido a 50/50 para sempre com uma régua invisível que
+   apanhava foco e não movia nada. Agora o estado base é um **díptico** (as duas
+   fotografias empilhadas, cada uma com o seu selo) e a régua nasce `disabled`.
+2. **O carrossel horizontal e a cortina disputavam o mesmo gesto.** A régua
+   cobre o quadrado todo; num telemóvel o arrastar horizontal ia sempre para a
+   cortina e o carrossel só se movia agarrando a legenda. Os pares passam a
+   empilhar. Acrescentado `touch-action: pan-y`, que é a correcção documentada
+   para o conflito de scroll — nunca `none`.
+3. **A desktop o carrossel nunca fechava a conta**: três cartões de 414 px mais
+   duas goteiras dão 1290 px numa caixa de 1216. Ficava sempre um cortado.
+4. **Servia sempre o ficheiro de 828 px**, com as variantes `-414` a existirem
+   em disco sem uso. Passou a `srcset` 1x/2x: metade do peso num ecrã 1x.
+
+O desenho novo: a partir de 62rem cada par é uma linha editorial, fotografia de
+414 px de um lado e tipografia do outro, com os lados a alternar. A cortina
+**abre-se sozinha ao entrar no ecrã**, ao ritmo do scroll — é o que ensina o
+gesto, que é o único problema verdadeiro deste padrão.
+
+**`@property` é o que torna isto possível.** Sem registo, uma variável
+personalizada é só texto: não interpola, e portanto nem transição nem
+fotograma-chave lhe tocam. `inherits: true` é obrigatório, porque quem lê o
+valor são os descendentes.
+
+**Dois pares na inicial, não três.** Empilhados, três levavam a secção de ~400
+para ~1430 px no telemóvel, contra o «simples» que o cliente pediu.
+
+Descartado: máscara com gesto (o dedo tapa o que revela, e obriga a reconstruir
+teclado e nome acessível à mão), alternância temporizada (infinita cai na
+armadilha do `animation-duration:.01ms`, que acelera em vez de parar; e uma
+pausa a sério exige botão visível pelo SC 2.2.2), e dois cartões lado a lado
+como principal (a 320 px são dois quadrados de 132 px — fica como estado sem JS
+e para impressão).
+
+## Serviços: tira de nomes + montra (24-08-2026)
+
+O cliente pediu a secção «mais simples» e «sem textos». Tinha quatro blocos
+(cabeça com parágrafo, cinco cartões, caixa «Todos os serviços», linha de
+fecho). Passou a ter dois: a **tira** dos treze nomes e a **montra** de
+fotografias. A tira faz o trabalho do parágrafo E da caixa; o azulejo do
+Instagram faz o da linha de fecho.
+
+**São SETE serviços com fotografia, não cinco.** Os cinco cartões eram indexados
+pelas cinco *páginas* de serviço e não pelos treze *serviços*, e por isso
+desperdiçavam os dois melhores planos aproximados da casa: a pinça de travão
+(`tesla-pincas-1`) e a jante (`smart-fortwo-2`). São mais legíveis a 172 px do
+que qualquer carro inteiro.
+
+**A forma da grelha é derivada dos dados**, e é isso que elimina os buracos: um
+serviço com fotografia é um azulejo, um sem fotografia é um nome na tira. Não há
+lugares vazios porque não há lugares reservados. Carregar uma fotografia no
+backoffice promove o nome a azulejo sem se tocar em CSS.
+
+**Contraste por aritmética, não por medição.** O nome fica sobre uma placa de
+`--tinta` a 90%, portanto o pior fundo concebível é uma fotografia branca: o
+composto dá `#313131` e o `--osso` em cima mede 10,68:1. Isto importa porque a
+fotografia é editável no backoffice — com um degradé, «Proteção e Correção de
+Pintura» a 320 px caía a 2,34:1. O degradé anterior só passava porque os
+azulejos usavam etiquetas curtas em vez dos nomes verdadeiros.
+
+**Não se pode usar `repeat(auto-fit, minmax(min(100%, 18rem), 1fr))`**, que é
+hoje o idioma corrente: o `auto-fit` limita o mínimo da coluna e nunca o máximo.
+Com 18rem dá duas colunas de 415 px por volta dos 920 px de janela, acima do
+original de 414. Baixar o mínimo a 8,5rem (o necessário para duas colunas a
+320 px) dá cinco colunas de 154 px aos 900. Não existe valor que sirva os dois
+extremos — têm de ser cortes explícitos.
+
+**`role="list"` é obrigatório** nas duas listas: `list-style: none` remove a
+semântica de lista no Safari com VoiceOver, e é intencional da Apple.
+
+**O `:hover` vai fechado em `@media (hover: hover) and (pointer: fine)`.** Sem
+isso, num telemóvel o estado cola depois do toque e o azulejo fica subido e com
+a fotografia ampliada até se tocar noutro sítio.
+
+## Armadilhas de verificação apanhadas neste dia
+
+**O recuo das listas era um erro em todo o site.** A indentação de 40 px vem da
+folha do NAVEGADOR; o reset do projecto é `* { margin: 0 }`, que zera margens e
+não paddings, e `list-style: none` tira o marcador mas não o recuo. Medido:
+`.cartoes-servico`, `.horario` e `.lista-servicos` estavam empurradas 40 px para
+a direita e transbordavam 40 px. Todo o cuidado com `minmax(0, 1fr)` não servia
+de nada, porque o problema está ANTES das colunas. `scripts/responsivo.mjs`
+passa a exigir que o reset exista.
+
+**Uma verificação que compara os dados com a página não vale nada.** Escrevi na
+auditoria um teste que confirmava a morada da página legal contra
+`data/definicoes.json` — mas a página é gerada a partir desse ficheiro, portanto
+os dois lados mudam juntos e nunca falha. Sabotei o campo e passou. Passou a
+procurar a FORMA (nove dígitos, um código postal), que é o que se perde quando
+alguém mexe no molde.
+
+**`git checkout <ficheiro>` para desfazer uma sabotagem apaga o trabalho não
+commitado desse ficheiro.** Perdi as edições do rodapé assim. Copiar para
+`/tmp` antes, e restaurar de lá.
+
+**Chrome headless não é caminho de captura fiável neste projecto.** A janela tem
+largura mínima: pedindo `--window-size=390`, o layout sai mais largo e o PNG é
+cortado — parece transbordo horizontal onde não há nenhum. A medição no painel
+real deu `scrollWidth - clientWidth = 0` e os azulejos a x=18 e x=200 dentro de
+uma caixa de 353 px. Confirmar sempre com medição antes de acreditar numa
+captura que mostra conteúdo cortado.

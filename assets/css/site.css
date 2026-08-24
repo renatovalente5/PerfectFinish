@@ -632,45 +632,8 @@ body[data-menu="aberto"] { overflow: hidden; }
 /* A lista completa dos 13 serviços. Os cartões acima são as áreas; isto é
    para quem procura o nome exacto — «pintura de travão», «polimento de farol»
    — e quer confirmar num relance que a casa faz aquilo. */
-.lista-servicos__caixa {
-  margin-top: var(--e-7);
-  padding: clamp(1.25rem, 3.5vw, 2.25rem);
-  border: 1px solid var(--filete-fraco); border-radius: 4px;
-  background: color-mix(in oklab, var(--ouro) 3%, var(--carta));
-}
-.lista-servicos__caixa h3 {
-  font-size: var(--t--2); letter-spacing: .1em; color: var(--ouro);
-  margin-bottom: var(--e-5); font-weight: 600;
-}
-.lista-servicos {
-  display: grid; gap: .1rem clamp(1rem, 3vw, 2.5rem);
-  grid-template-columns: minmax(0, 1fr);
-  list-style: none;
-}
-@media (min-width: 30rem) { .lista-servicos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 56rem) { .lista-servicos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 76rem) { .lista-servicos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-.lista-servicos a {
-  display: flex; align-items: center; gap: .7rem;
-  padding-block: .55rem;
-  font-size: var(--t--1); text-decoration: none; color: var(--osso-meio);
-  transition: color .2s var(--curva);
-}
-.lista-servicos a:hover { color: var(--ouro-alto); }
-.lista-servicos .risco {
-  flex: none; inline-size: .85rem; block-size: 1px;
-  background: var(--ouro); opacity: .6;
-  transition: inline-size .24s var(--curva), opacity .24s var(--curva);
-}
-.lista-servicos a:hover .risco { inline-size: 1.5rem; opacity: 1; }
-
-.claro .lista-servicos__caixa {
-  background: rgb(0 0 0 / .03); border-color: rgb(0 0 0 / .1);
-}
 .claro .lista-servicos__caixa h3 { color: var(--ouro-sombra); }
-.claro .lista-servicos a { color: var(--claro-meio); }
-.claro .lista-servicos a:hover { color: var(--claro-tinta); }
 
 /* -------------------------------------------------- 07b índice de serviços */
 .indice { list-style: none; counter-reset: servico; }
@@ -723,87 +686,263 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 
 /* -------------------------------------------- 08 comparador antes/depois */
-/* Construído à volta de um <input type="range">: herda o teclado (setas,
-   Home, End), o toque, a caneta e a semântica para leitores de ecrã, de
-   graça. Um <div> com listeners de rato não herda nada disso. */
-.comparador {
-  position: relative; aspect-ratio: 1; overflow: clip;
-  border-radius: 3px; border: 1px solid var(--filete-fraco);
-  background: var(--carta);
-  --p: 50%;
-}
-.comparador img {
-  position: absolute; inset: 0;
-  inline-size: 100%; block-size: 100%; object-fit: cover;
-}
-.comparador img.depois { clip-path: inset(0 0 0 var(--p)); }
+/* Duas propriedades REGISTADAS. Sem `@property` uma variável personalizada é
+   só texto: não interpola, e portanto nem transição nem fotograma-chave lhe
+   tocam. Registada, a cortina passa a ser animável — e é isso que permite
+   ensinar o gesto sem uma linha de JavaScript a mexer pixeis.
+   `inherits: true` é obrigatório: quem lê o valor são os descendentes (a
+   fotografia «depois», o filete, a pega, os selos). Com `false` cada um veria
+   o valor inicial e a cortina ficava presa a 50%. */
+@property --p { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --n { syntax: "<number>"; inherits: true; initial-value: .5; }
 
-.comparador__linha {
-  position: absolute; inset-block: 0; left: var(--p);
-  translate: -50% 0; inline-size: 2px; pointer-events: none;
-  background: linear-gradient(180deg, transparent, var(--ouro-brilho) 22%,
-                              var(--ouro-brilho) 78%, transparent);
+/* ESTADO BASE — é o que se vê SEM JavaScript.
+   Antes daqui, sem JS ficava um quadrado partido a 50/50 para sempre, com uma
+   régua invisível que apanhava foco e não movia nada. Agora não há cortina
+   nenhuma: há as duas fotografias, uma debaixo da outra, cada uma com o seu
+   selo. Não é um comparador estragado, é um díptico — dá a informação toda e
+   não pede interacção. É também o que sai em papel. */
+.comparador {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "antes" "depois";
+  gap: var(--e-2);
+  /* 25.875rem = 414 px, o lado do original. Regra dura do projecto. */
+  max-inline-size: 25.875rem;
 }
-.comparador__pega {
-  position: absolute; top: 50%; left: var(--p);
-  translate: -50% -50%; pointer-events: none;
-  inline-size: 2.75rem; block-size: 2.75rem; border-radius: 50%;
-  display: grid; place-items: center;
-  background: color-mix(in oklab, var(--tinta) 74%, transparent);
-  backdrop-filter: blur(6px);
-  border: 1px solid var(--ouro);
-  color: var(--ouro-alto); font-size: .8rem; letter-spacing: -.1em;
+.comparador > img {
+  grid-area: antes;
+  inline-size: 100%; block-size: auto; aspect-ratio: 1; object-fit: cover;
+  border: 1px solid var(--filete-fraco); border-radius: 3px;
+  background: var(--carta);
+  /* Sem isto o arrastar nativo da imagem compete com o da cortina. */
+  pointer-events: none;
 }
-.comparador input {
-  position: absolute; inset: 0; margin: 0;
-  inline-size: 100%; block-size: 100%;
-  opacity: 0; cursor: ew-resize;
-}
-.comparador:has(input:focus-visible) .comparador__pega {
-  box-shadow: 0 0 0 3px var(--ouro-alto);
-}
+.comparador > img.depois { grid-area: depois; }
 
 .comparador__etiqueta {
-  position: absolute; top: var(--e-4); z-index: 2;
-  padding: .3em .7em; pointer-events: none;
+  grid-area: antes; place-self: start start; margin: var(--e-3);
+  /* Um item de grelha aceita z-index sem `position`. */
+  z-index: 2;
+  padding: .38em .8em; pointer-events: none;
   font-family: var(--letra-titulo);
-  font-size: var(--t--2); font-weight: 600; letter-spacing: .1em;
+  font-size: var(--t--2); font-weight: 600; letter-spacing: .12em;
   text-transform: uppercase;
-  background: color-mix(in oklab, var(--tinta) 78%, transparent);
+  background: color-mix(in oklab, var(--tinta) 72%, transparent);
   backdrop-filter: blur(6px);
-  border: 1px solid var(--filete-fraco); border-radius: 2px;
+  border: 1px solid var(--filete-fraco); border-radius: 999px;
   color: var(--osso-meio);
 }
-.comparador__etiqueta.antes  { inset-inline-start: var(--e-4); }
-.comparador__etiqueta.depois { inset-inline-end: var(--e-4); color: var(--ouro-alto); }
+.comparador__etiqueta.depois { grid-area: depois; color: var(--ouro-alto); }
 
-.par { display: grid; gap: var(--e-5); }
-.par figcaption { display: grid; gap: .2rem; }
+.comparador__linha, .comparador__pega, .comparador__regua { display: none; }
+
+/* ESTADO INTERACTIVO. O `data-js` é posto por uma linha no <head>, antes da
+   primeira pintura: o site.js é `defer` e corre depois de pintar, portanto
+   deixá-lo fazer a troca era fabricar um salto de layout de 828 px para 414. */
+html[data-js] .comparador {
+  display: block; position: relative;
+  aspect-ratio: 1; overflow: clip; isolation: isolate; gap: 0;
+  border: 1px solid var(--filete-fraco); border-radius: 4px;
+  background: var(--carta);
+  box-shadow: 0 1rem 2.5rem -1.25rem rgb(0 0 0 / .65);
+}
+html[data-js] .comparador:hover { border-color: var(--filete); }
+html[data-js] .comparador > img {
+  position: absolute; inset: 0;
+  inline-size: 100%; block-size: 100%;
+  border: 0; border-radius: 0;
+}
+/* `inset()` e não `polygon()`: quatro lados em vez de oito números, e
+   interpola igual. */
+html[data-js] .comparador > img.depois { clip-path: inset(0 0 0 var(--p)); }
+
+html[data-js] .comparador__etiqueta {
+  position: absolute; inset-block-start: var(--e-3); margin: 0;
+}
+/* Os selos ficam SEMPRE no topo, nunca em baixo: em baixo o dedo tapa-os
+   quando se arrasta. */
+html[data-js] .comparador__etiqueta.antes {
+  inset-inline-start: var(--e-3);
+  /* Apaga-se só nos últimos 10%, quando o seu lado já quase não existe. Antes
+     disso ficava-se a olhar para dois selos a piscar. */
+  opacity: clamp(0, calc((var(--n) - .1) * 7), 1);
+}
+html[data-js] .comparador__etiqueta.depois {
+  inset-inline-end: var(--e-3); inset-inline-start: auto;
+  opacity: clamp(0, calc((.9 - var(--n)) * 7), 1);
+}
+
+html[data-js] .comparador__linha {
+  display: block;
+  position: absolute; inset-block: 0; left: var(--p);
+  translate: -50% 0; inline-size: 1px; pointer-events: none; z-index: 3;
+  background: linear-gradient(180deg, transparent, var(--ouro-brilho) 16%,
+                              var(--ouro-brilho) 84%, transparent);
+  /* O derrame de luz vem de uma sombra e não de um `filter`: um filtro aqui
+     criava contexto de empilhamento e obrigava a rasterizar a fotografia toda
+     a cada quadro do arrastar. */
+  box-shadow: 0 0 14px 1px color-mix(in oklab, var(--ouro-brilho) 45%, transparent);
+}
+
+html[data-js] .comparador__pega {
+  display: grid; grid-auto-flow: column; place-items: center; gap: .05rem;
+  position: absolute; top: 50%; left: var(--p);
+  translate: -50% -50%; pointer-events: none; z-index: 4;
+  inline-size: 2.75rem; block-size: 2.75rem; border-radius: 50%;
+  background: color-mix(in oklab, var(--tinta) 62%, transparent);
+  backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid var(--ouro);
+  box-shadow: 0 .4rem 1.1rem rgb(0 0 0 / .5),
+              inset 0 1px 0 color-mix(in oklab, var(--ouro-brilho) 40%, transparent);
+  color: var(--ouro-alto);
+}
+html[data-js] .comparador__pega svg {
+  inline-size: .62rem; block-size: .62rem; fill: currentColor; stroke: none;
+}
+
+/* A régua: invisível, do tamanho da fotografia toda. Herda de graça as setas,
+   Home/End, PageUp, o toque, a caneta, a semântica de leitor de ecrã — e o
+   «clicar em qualquer ponto leva a cortina até ali», que é o comportamento
+   nativo do carril de um range. Um <div> com escutadores não herda nada. */
+html[data-js] .comparador__regua {
+  display: block;
+  position: absolute; inset: 0; z-index: 5;
+  margin: 0; inline-size: 100%; block-size: 100%;
+  appearance: none; background: none; border: 0;
+  opacity: 0; cursor: ew-resize;
+  /* A armadilha nº 1 dos comparadores em telemóvel. `none` rouba o scroll
+     vertical da página a quem começar o gesto sobre a fotografia — e a
+     fotografia ocupa quase o ecrã todo. `pan-y` devolve o vertical ao browser
+     e fica só com o horizontal, que é o que a cortina precisa. */
+  touch-action: pan-y;
+}
+/* A régua nasce `disabled` no HTML e é o site.js que a liga. Se esse ficheiro
+   não carregar, fica um controlo que apanha foco e não faz nada — pior do que
+   não existir. Assim desaparece, e com ela o filete e a pega. */
+html[data-js] .comparador__regua:disabled { display: none; }
+html[data-js] .comparador:has(.comparador__regua:disabled)
+  :is(.comparador__linha, .comparador__pega) { display: none; }
+
+html[data-js] .comparador:has(.comparador__regua:focus-visible) .comparador__pega {
+  box-shadow: 0 0 0 3px var(--ouro-alto), 0 .4rem 1.1rem rgb(0 0 0 / .5);
+}
+
+/* --------------------------------------------------- os pares, em coluna */
+/* Empilhados, e já não em carrossel horizontal. Os dois queriam o mesmo gesto
+   — arrastar na horizontal, no mesmo sítio — e a régua ganhava sempre: o
+   carrossel só se movia agarrando a legenda. Além disso nunca fechava a conta
+   a desktop: três cartões de 414 px mais duas goteiras dão 1290 px numa caixa
+   de 1216, e ficava sempre um cortado. */
+.pares { display: grid; gap: var(--e-8); justify-items: center; }
+.par {
+  display: grid; gap: var(--e-5); margin: 0;
+  inline-size: 100%; max-inline-size: 25.875rem;
+}
+.par figcaption { display: grid; gap: .25rem; align-content: center; }
+
+/* O número vem do HTML e não de um contador de CSS: o conteúdo de um
+   pseudo-elemento é lido por parte dos leitores de ecrã, e «01» não diz nada
+   a ninguém. No HTML leva aria-hidden e fica resolvido. */
+.par__indice {
+  font-family: var(--letra-titulo);
+  font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 700;
+  line-height: .8; letter-spacing: -.03em;
+  color: color-mix(in oklab, var(--ouro) 42%, transparent);
+  margin-block-end: var(--e-2);
+}
+.par .servico {
+  font-size: var(--t--2); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ouro); font-weight: 600;
+}
 .par .veiculo {
   font-family: var(--letra-titulo);
   font-size: var(--t-1); font-weight: 600; text-transform: uppercase;
   letter-spacing: .03em;
 }
-.par .servico {
-  font-size: var(--t--2); letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ouro); font-weight: 600;
+.par .legenda {
+  color: var(--osso-fraco); font-size: var(--t--1);
+  max-inline-size: 46ch; margin-block-start: var(--e-2);
 }
-.par .legenda { color: var(--osso-fraco); font-size: var(--t--1); max-width: 46ch; }
 
-/* Carrossel horizontal dos pares */
-.pares {
-  display: flex; gap: var(--e-5);
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  padding-block-end: var(--e-2);
-  /* Sangra até às margens do ecrã e volta a alinhar com a caixa. */
-  margin-inline: calc(50% - 50vw); padding-inline: max(var(--goteira), calc(50vw - var(--caixa) / 2));
+/* Editorial a partir dos 992 px: a fotografia ao lado do texto, e os lados
+   trocam de linha para linha. É aqui que a restrição dos 414 px deixa de ser
+   um problema e passa a ser a composição.
+   TODAS as colunas em minmax(0, ...): um `1fr` é `minmax(auto, 1fr)` e o
+   `auto` não deixa encolher abaixo do conteúdo — foi assim que este projecto
+   transbordou na horizontal seis vezes. */
+@media (min-width: 62rem) {
+  .pares { gap: clamp(4rem, 7vw, 8rem); justify-items: stretch; }
+  .par {
+    max-inline-size: none;
+    grid-template-columns: minmax(0, 25.875rem) minmax(0, 1fr);
+    align-items: center; gap: clamp(2.5rem, 6vw, 6rem);
+  }
+  /* `inline-size` e não `max-inline-size`: com justify-self: end nas linhas
+     pares o bloco encolhia para o tamanho do conteúdo e a legenda quebrava em
+     sítios diferentes de linha para linha. */
+  .par figcaption { inline-size: min(100%, 34rem); }
+  .par:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 25.875rem);
+  }
+  /* Duas colunas declaradas e dois filhos: mandar o comparador para segundo
+     basta para cair na coluna da direita. */
+  .par:nth-child(even) > .comparador { order: 2; }
+  .par:nth-child(even) > figcaption { justify-self: end; }
 }
-.pares::-webkit-scrollbar { display: none; }
-/* 25.875rem = 414 px, o tamanho do original. Era 27rem (432) e era o
-   único ponto do site a ampliar. */
-.pares > .par { flex: 0 0 min(82vw, 25.875rem); scroll-snap-align: center; }
+
+/* ------------------------------------------------------------- movimento */
+/* Tudo o que se mexe vive aqui dentro, como no resto da folha: o estado
+   reduzido é o estado por omissão e não há nada para desfazer. Nada disto é
+   infinito, de propósito — o remendo comum `animation-duration:.01ms` não
+   pára uma animação infinita, acelera-a até piscar. */
+@media (prefers-reduced-motion: no-preference) {
+  /* A cortina desliza quando o valor muda por teclado ou por clique no
+     carril. Enquanto o ponteiro está a arrastar, não: aí tem de colar ao
+     dedo, e é o `data-arrastar` que corta a transição. */
+  html[data-js] .comparador {
+    transition: --p .4s var(--curva), --n .4s var(--curva),
+                border-color .3s var(--curva);
+  }
+  html[data-js] .comparador[data-arrastar] { transition: none; }
+  html[data-js] .comparador__pega {
+    transition: scale .25s var(--curva), box-shadow .25s var(--curva);
+  }
+  html[data-js] .comparador:hover .comparador__pega { scale: 1.08; }
+  html[data-js] .comparador[data-arrastar] .comparador__pega { scale: .96; }
+
+  /* A demonstração. À entrada no ecrã a cortina abre do «antes» até ao meio,
+     ao ritmo do scroll. É o que ensina que aquilo se arrasta, e resolve o
+     único problema verdadeiro deste padrão, que é a descoberta.
+     Termina exactamente em 50%, o valor de repouso, e é por isso que passar
+     ao controlo manual não dá salto: a animação estava a segurar o mesmo
+     valor que a folha em linha vai passar a impor.
+     O Firefox não tem animações ligadas ao scroll e fica com o estado final
+     estático — igual ao que sempre teve. Não é regressão. */
+  @supports (animation-timeline: view()) {
+    html[data-js] .comparador:not([data-manual]) {
+      animation: ensinar linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 42%;
+    }
+    @keyframes ensinar {
+      from { --p: 96%; --n: .96; }
+      to   { --p: 50%; --n: .5; }
+    }
+  }
+}
+
+/* Em papel volta ao díptico, que é a forma que existe impressa. */
+@media print {
+  html[data-js] .comparador {
+    display: grid; aspect-ratio: auto; block-size: auto;
+    box-shadow: none; gap: var(--e-2);
+  }
+  html[data-js] .comparador > img { position: static; block-size: auto; }
+  html[data-js] .comparador > img.depois { clip-path: none; }
+  html[data-js] .comparador__etiqueta { position: static; margin: var(--e-3); opacity: 1; }
+  html[data-js] :is(.comparador__linha, .comparador__pega, .comparador__regua) { display: none; }
+}
 
 /* ---------------------------------------------------------- 09 trabalhos */
 /* Colunas fixas por medida, e não `auto-fill`, para o número de colunas ser
@@ -1467,54 +1606,112 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
 }
 
 
-/* --------------------------------------------- 22 serviços: só imagens */
-/* Uma imagem e o nome. Nada de introdução, argumentos, avisos nem perguntas —
-   o cliente pediu «só imagens, nada de especificações».
-   O texto não foi apagado: continua em data/servicos/*.json e continua
-   editável no backoffice, para o caso de voltar a ser preciso.
-   Carregar abre a galeria daquele serviço, sem sair da página. */
-.cartoes-servico {
+/* ------------------------------------------- 22 serviços: nomes e montra */
+/* A secção tinha QUATRO blocos: cabeça com parágrafo, cinco cartões, uma caixa
+   «Todos os serviços» com os treze nomes, e uma linha de fecho. O cliente
+   pediu-a mais simples e sem textos. Passa a ter DOIS: a tira dos treze nomes
+   e a montra de fotografias. A tira faz o trabalho do parágrafo E da caixa; o
+   azulejo do Instagram faz o da linha de fecho.
+   E a ideia que resolve os buracos de raiz: a FORMA da grelha é derivada dos
+   dados. Um serviço com fotografia é um azulejo; um sem fotografia é um nome
+   na tira. Não há lugares vazios porque não há lugares reservados — no dia em
+   que o cliente carregar uma fotografia de interiores no backoffice, esse
+   serviço passa sozinho de nome a azulejo, sem se tocar em CSS. */
+
+/* A TIRA DOS TREZE NOMES.
+   Flex e não grelha, de propósito: com `flex-wrap` a linha enche-se sozinha de
+   320 a 1920 px, não há colunas para acertar e não há `minmax(0, 1fr)` para
+   esquecer — que é o erro que já custou seis transbordos a este site. */
+.rol-servicos {
+  display: flex; flex-wrap: wrap;
+  column-gap: clamp(.9rem, 2.2vw, 1.75rem); row-gap: .1rem;
+  margin-block: var(--e-5) var(--e-7);
+  list-style: none;
+}
+/* O `max-inline-size` é o travão do backoffice: se o cliente escrever um nome
+   muito comprido, o item quebra por dentro em vez de empurrar a página. */
+.rol-servicos li {
+  display: flex; align-items: center; gap: .5rem;
+  max-inline-size: 100%;
+  font-size: var(--t--1); line-height: 1.7; color: var(--osso-meio);
+}
+.rol-servicos .risco {
+  flex: none; inline-size: .7rem; block-size: 1px;
+  background: var(--ouro); opacity: .55;
+}
+/* No 404 os nomes são ligações, porque ali servem de navegação. */
+.rol-servicos--404 { justify-content: center; }
+.rol-servicos a { color: var(--osso-meio); text-decoration: none; }
+.rol-servicos a:hover { color: var(--ouro-alto); }
+
+/* A MONTRA. Um azulejo por serviço que TEM fotografia, mais o do Instagram. */
+.montra {
   display: grid; gap: clamp(.6rem, 1.8vw, 1.25rem);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   list-style: none;
 }
-@media (min-width: 44rem) { .cartoes-servico { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 68rem) { .cartoes-servico { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+/* Os pontos de corte NÃO são gosto, são a regra dos 414 px.
+   Aqui não se pode usar o `repeat(auto-fit, minmax(min(100%, 18rem), 1fr))`,
+   que é hoje o idioma corrente: o `auto-fit` limita o MÍNIMO da coluna e nunca
+   o máximo. Com 18rem dá duas colunas de 415 px por volta dos 920 px de
+   janela, acima do original. E para o obrigar a três colunas mais cedo é
+   preciso baixar o mínimo a 8,5rem, que é o necessário para haver duas colunas
+   a 320 px, e aí a 900 px dá cinco colunas de 154 px. Não existe valor que dê
+   duas colunas a 320 e nunca passe de 414. Têm de ser cortes explícitos. */
+@media (min-width: 44rem) { .montra { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 76rem) { .montra { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-.cartao-servico { display: flex; }
-.cartao-servico button {
+.montra__peca { display: flex; margin: 0; }
+.montra__peca > button,
+.montra__peca > a {
   position: relative; display: block; inline-size: 100%; padding: 0;
   aspect-ratio: 1; overflow: clip; border-radius: 3px;
   border: 1px solid var(--filete-fraco); background: var(--carta);
-  cursor: zoom-in;
+  text-decoration: none; cursor: zoom-in;
   transition: border-color .28s var(--curva), translate .28s var(--curva);
 }
-.cartao-servico button:hover,
-.cartao-servico button:focus-visible { border-color: var(--ouro); translate: 0 -3px; }
-.cartao-servico picture, .cartao-servico img {
+.montra__peca picture, .montra__peca img {
   inline-size: 100%; block-size: 100%; object-fit: cover; display: block;
   transition: scale .5s var(--curva);
 }
-.cartao-servico button:hover img { scale: 1.05; }
-/* Véu no rodapé para o nome assentar. Só no rodapé: por cima de tudo
-   escondia a fotografia, que é o que se quer mostrar. */
-.cartao-servico button::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
+/* O hover fica FECHADO dentro da consulta de capacidade. Sem isto, num
+   telemóvel o estado cola depois do toque e o azulejo fica subido e com a
+   fotografia ampliada até se tocar noutro sítio. */
+@media (hover: hover) and (pointer: fine) {
+  .montra__peca > button:hover,
+  .montra__peca > a:hover { border-color: var(--ouro); translate: 0 -3px; }
+  .montra__peca > button:hover img { scale: 1.05; }
+}
+.montra__peca > button:focus-visible,
+.montra__peca > a:focus-visible { border-color: var(--ouro); }
+
+/* O NOME, por cima da fotografia, mas sobre uma PLACA com a altura exacta do
+   texto — e não sobre um degradé que cobre dois terços do azulejo e ainda
+   assim não chega onde é preciso.
+   A ARITMÉTICA É O PONTO TODO: a placa é --tinta a 90%, portanto o pior fundo
+   concebível é uma fotografia branca; aí o composto dá #313131 e o --osso em
+   cima mede 10,68:1. O contraste fica garantido para QUALQUER fotografia que o
+   cliente carregue e QUALQUER comprimento de nome — deixa de haver que medir
+   foto a foto, o que importa porque a fotografia é editável no backoffice.
+   O esbatimento vive todo dentro do `padding-block-start`, com as paragens
+   contadas em `calc(100% - .95rem)`: assim a caixa do texto fica sempre na
+   parte opaca, seja de uma ou de três linhas. */
+.montra__nome {
+  position: absolute; z-index: 1; inset-inline: 0; inset-block-end: 0;
+  padding: 1.15rem clamp(.55rem, 2vw, .9rem) clamp(.5rem, 1.6vw, .8rem);
   background: linear-gradient(to top,
-    color-mix(in oklab, var(--tinta) 92%, transparent) 0%,
-    color-mix(in oklab, var(--tinta) 40%, transparent) 38%,
-    transparent 64%);
-}
-.cartao-servico__nome {
-  position: absolute; z-index: 1; inset-inline: 0; bottom: 0;
-  padding: clamp(.6rem, 2.2vw, 1rem);
+    color-mix(in oklab, var(--tinta) 90%, transparent) 0,
+    color-mix(in oklab, var(--tinta) 90%, transparent) calc(100% - .95rem),
+    transparent 100%);
   font-family: var(--letra-titulo); font-weight: 600;
-  font-size: clamp(.8rem, 2.1vw, 1rem); line-height: 1.1;
-  letter-spacing: -.01em; text-transform: uppercase;
-  color: var(--osso); text-align: start;
-  hyphens: auto;
+  font-size: clamp(.6875rem, 1.75vw, .8125rem); line-height: 1.15;
+  letter-spacing: .02em; text-transform: uppercase;
+  color: var(--osso); text-align: start; text-wrap: balance;
 }
-.cartao-servico__conta {
+
+/* Quantas fotografias tem a galeria. Sem isto ninguém adivinha que o azulejo
+   abre uma galeria e não uma imagem só. */
+.montra__conta {
   position: absolute; z-index: 1;
   inset-block-start: .5rem; inset-inline-end: .5rem;
   min-inline-size: 1.55rem; block-size: 1.55rem; padding-inline: .35rem;
@@ -1524,24 +1721,47 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   background: color-mix(in oklab, var(--tinta) 72%, transparent);
   border: 1px solid var(--filete); backdrop-filter: blur(4px);
 }
-.cartao-servico__conta::after { content: " ⛶"; font-size: .8em; opacity: .75; }
 
-/* O cartão sem fotografia (o tira mossas). Mesma caixa, mesmo peso visual,
-   para a grelha não ficar com um buraco. */
-.cartao-servico--sem-foto a {
-  position: relative; display: grid; align-content: end; gap: .25rem;
-  inline-size: 100%; aspect-ratio: 1;
-  padding: clamp(.6rem, 2.2vw, 1rem);
-  border-radius: 3px; text-decoration: none;
-  border: 1px solid var(--filete-fraco);
+/* O AZULEJO DO INSTAGRAM. Sem `aspect-ratio`: estica sozinho à altura da linha
+   e só usa o mínimo quando fica sozinho nela. */
+.montra__ig > a {
+  display: grid; place-content: center; justify-items: center;
+  gap: var(--e-4); padding: var(--e-5); cursor: pointer;
+  aspect-ratio: auto; min-block-size: min(11rem, 46vw);
   background: linear-gradient(158deg, var(--elevado), var(--carta) 68%);
-  transition: border-color .28s var(--curva), translate .28s var(--curva);
+  border-color: var(--filete);
 }
-.cartao-servico--sem-foto a:hover { border-color: var(--ouro); translate: 0 -3px; }
-/* O escudo como marca de água, para o cartão não ficar vazio. */
-.cartao-servico--sem-foto img {
-  position: absolute; inset-block-start: 12%; inset-inline: 22%;
-  inline-size: 56%; block-size: auto; opacity: .3;
+.montra__ig svg {
+  inline-size: clamp(1.6rem, 5vw, 2.4rem); block-size: auto; color: var(--ouro);
 }
-.cartao-servico--sem-foto .cartao-servico__nome { position: static; padding: 0; }
-.cartao-servico__ig { font-size: var(--t--2); color: var(--ouro); }
+.montra__convite {
+  font-family: var(--letra-titulo); font-weight: 600;
+  font-size: clamp(.6875rem, 1.75vw, .8125rem); line-height: 1.15;
+  letter-spacing: .02em; text-transform: uppercase;
+  color: var(--ouro-alto); text-align: center; text-wrap: balance;
+}
+.montra__conta-ig {
+  font-size: var(--t--2); color: var(--osso-fraco); letter-spacing: .06em;
+}
+
+/* E É ISTO QUE FAZ A GRELHA NUNCA TER BURACOS.
+   O azulejo do Instagram é o único sem fotografia, logo é o único a quem a
+   regra dos 414 px não se aplica — e por isso é o único que pode alargar.
+   Alarga exactamente o que sobrar da última linha, seja qual for o número de
+   serviços com fotografia: com os sete de hoje dá 4x2 no telemóvel,
+   3+3+(1+2) no tablet e 4+4 no computador, sem uma célula vazia em nenhum.
+   Os `grid-column: auto` são obrigatórios: as consultas acumulam-se, e sem
+   eles a regra das três colunas continuava a valer acima dos 76rem. */
+.montra__ig:nth-child(2n + 1) { grid-column: span 2; }
+@media (min-width: 44rem) {
+  .montra__ig:nth-child(2n + 1) { grid-column: auto; }
+  .montra__ig:nth-child(3n + 1) { grid-column: span 3; }
+  .montra__ig:nth-child(3n + 2) { grid-column: span 2; }
+}
+@media (min-width: 76rem) {
+  .montra__ig:nth-child(3n + 1),
+  .montra__ig:nth-child(3n + 2) { grid-column: auto; }
+  .montra__ig:nth-child(4n + 1) { grid-column: span 4; }
+  .montra__ig:nth-child(4n + 2) { grid-column: span 3; }
+  .montra__ig:nth-child(4n + 3) { grid-column: span 2; }
+}

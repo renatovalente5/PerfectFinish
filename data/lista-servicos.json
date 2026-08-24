@@ -1,56 +1,25 @@
 {
  "servicos": [
-  {
-   "nome": "Tira Mossas",
-   "pagina": "tira-mossas"
-  },
-  {
-   "nome": "Polimento",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Polimento de Farol",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Proteção e Correção de Pintura",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Película Solar",
-   "pagina": "peliculas-solares"
-  },
-  {
-   "nome": "Car Wrapping",
-   "pagina": "envelopamento"
-  },
-  {
-   "nome": "PPF",
-   "pagina": "ppf"
-  },
-  {
-   "nome": "Chrome Delete",
-   "pagina": "envelopamento"
-  },
-  {
-   "nome": "Pintura de Travão",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Reparação e Pintura de Jantes",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Decoração de Interiores",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Higienização de Interiores",
-   "pagina": "car-detailing"
-  },
-  {
-   "nome": "Sensor de Estacionamento",
-   "pagina": "car-detailing"
-  }
+  { "nome": "Tira Mossas", "slug": "tira-mossas", "imagem": "" },
+  { "nome": "Polimento", "slug": "polimento", "imagem": "rolls-royce-wraith-1",
+    "obras": ["rolls-royce-wraith", "audi-q4-etron"] },
+  { "nome": "Polimento de Farol", "slug": "polimento-de-farol", "imagem": "" },
+  { "nome": "Proteção e Correção de Pintura", "slug": "car-detailing", "curto": "Correção de Pintura",
+    "imagem": "ferrari-roma-2",
+    "obras": ["ferrari-roma", "porsche-911-992", "porsche-911-targa-gts"] },
+  { "nome": "Película Solar", "slug": "peliculas-solares", "imagem": "ford-mustang-dark-horse-1",
+    "obras": ["bmw-serie-5-pelicula", "maserati-ghibli", "ford-mustang-dark-horse"] },
+  { "nome": "Car Wrapping", "slug": "envelopamento", "imagem": "audi-q7-camaleao-3",
+    "obras": ["audi-q7-camaleao", "amg-cla-45s", "audi-etron-gt", "tesla-model-y",
+              "vw-scirocco-r", "mercedes-classe-a", "bmw-serie-5-touring"] },
+  { "nome": "PPF", "slug": "ppf", "imagem": "lotus-emeya-ppf-1", "obras": ["lotus-emeya-ppf"] },
+  { "nome": "Chrome Delete", "slug": "chrome-delete", "imagem": "" },
+  { "nome": "Pintura de Travão", "slug": "pintura-de-travao", "imagem": "tesla-pincas-1",
+    "obras": ["tesla-pincas"] },
+  { "nome": "Reparação e Pintura de Jantes", "slug": "jantes", "curto": "Jantes",
+    "imagem": "smart-fortwo-2", "obras": ["smart-fortwo"] },
+  { "nome": "Decoração de Interiores", "slug": "decoracao-de-interiores", "imagem": "" },
+  { "nome": "Higienização de Interiores", "slug": "higienizacao-de-interiores", "imagem": "" },
+  { "nome": "Sensor de Estacionamento", "slug": "sensor-de-estacionamento", "imagem": "" }
  ]
 }

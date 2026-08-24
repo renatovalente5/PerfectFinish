@@ -418,27 +418,67 @@ content:
           collapsible: true
           min: 1
         description: >-
-          A lista completa que aparece em «Todos os serviços», na página
-          inicial. Cada nome salta para o bloco que o explica, na mesma
-          página. É o sítio para acrescentar ou tirar um serviço.
+          Os treze serviços do estúdio. Quem TEM fotografia aparece como
+          azulejo na montra da página inicial; quem NÃO tem aparece só como
+          nome na tira acima dela. Basta carregar uma fotografia para o
+          serviço passar de nome a azulejo — não é preciso mexer em mais nada.
         fields:
           - name: nome
             label: Nome do serviço
             type: string
             required: true
             description: 'Como o cliente lhe chama. Exemplo: Pintura de Travão.'
-          - name: pagina
-            label: Página que o explica
-            type: select
+          - name: slug
+            label: Identificador da âncora
+            type: string
             required: true
-            description: 'Para que bloco da página inicial salta quem carregar neste nome.'
+            pattern: '^[a-z0-9-]+$'
+            description: >-
+              Só minúsculas, números e hífenes. É o endereço do bloco
+              (/#s-pintura-de-travao). NÃO mude depois de publicado: as
+              ligações que já existirem deixam de funcionar.
+          - name: imagem
+            label: Fotografia do serviço
+            type: image
+            options: { path: assets/img/obras, extensions: [webp, avif, jpg, jpeg, png] }
+            description: >-
+              Deixe vazio se ainda não houver fotografia deste serviço — o nome
+              continua na lista, e é isso que evita um buraco na grelha.
+              Limites do backoffice: falha acima de cerca de 3,3 MB por
+              ficheiro, e o HEIC do iPhone não é aceite (exportar como JPEG).
+          - name: curto
+            label: Nome curto (opcional)
+            type: string
+            description: >-
+              Só se o nome completo não couber no azulejo. Exemplo: «Jantes»
+              para «Reparação e Pintura de Jantes».
+          - name: obras
+            label: Trabalhos na galeria deste serviço
+            type: select
+            list: true
+            description: >-
+              Que trabalhos abrem quando alguém carrega no azulejo. Em branco,
+              usa o trabalho a que a fotografia de cima pertence.
             options:
               values:
-                - { name: tira-mossas, label: Tira Mossas }
-                - { name: peliculas-solares, label: Películas Solares }
-                - { name: ppf, label: PPF }
-                - { name: envelopamento, label: Envelopamento }
-                - { name: car-detailing, label: Car Detailing }
+                - { name: amg-cla-45s, label: Mercedes-AMG CLA 45 S }
+                - { name: audi-etron-gt, label: Audi e-tron GT }
+                - { name: audi-q4-etron, label: Audi Q4 e-tron }
+                - { name: audi-q7-camaleao, label: Audi Q7 S line }
+                - { name: bmw-serie-5-pelicula, label: BMW Série 5 }
+                - { name: bmw-serie-5-touring, label: BMW Série 5 Touring M Sport }
+                - { name: ferrari-roma, label: Ferrari Roma }
+                - { name: ford-mustang-dark-horse, label: Ford Mustang Dark Horse }
+                - { name: lotus-emeya-ppf, label: Lotus Emeya }
+                - { name: maserati-ghibli, label: Maserati Ghibli }
+                - { name: mercedes-classe-a, label: Mercedes-Benz Classe A }
+                - { name: porsche-911-992, label: Porsche 911 (992) }
+                - { name: porsche-911-targa-gts, label: Porsche 911 Targa 4 GTS }
+                - { name: rolls-royce-wraith, label: Rolls-Royce Wraith }
+                - { name: smart-fortwo, label: Smart Fortwo }
+                - { name: tesla-model-y, label: Tesla Model Y }
+                - { name: tesla-pincas, label: Tesla — pinças de travão }
+                - { name: vw-scirocco-r, label: VW Scirocco R }
 
   # ══════════════════════════════════════════════════════ 6. DEFINIÇÕES
   - name: definicoes

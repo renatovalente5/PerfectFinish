@@ -300,12 +300,16 @@ function dadosEstruturados(pagina) {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: `Serviços ${D.marca.nome}`,
-      itemListElement: SERVICOS.map((s) => ({
+      /* Os TREZE, e não os cinco de antes. É aqui que o Google fica a saber
+         que a casa faz «higienização de interiores» e «sensor de
+         estacionamento», que não têm fotografia e portanto não têm azulejo —
+         mas têm nome na tira e âncora própria. */
+      itemListElement: LISTA_SERVICOS.map((sv) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: s.nome_longo,
-          url: abs(`/#s-${s.slug}`),
+          name: sv.nome,
+          url: abs(`/#s-${sv.slug}`),
           provider: { "@id": `${SITE}/#estudio` },
         },
       })),
@@ -376,6 +380,7 @@ function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, 
 @font-face{font-family:"Inter Tight";src:url("${u("/assets/fonts/inter-tight-latin.woff2")}") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 ${CSS}
 </style>
+<script>document.documentElement.dataset.js="1"</script>
 <script type="application/ld+json">${dadosEstruturados({ url, titulo, descricao, migalhas, servico })}</script>
 </head>
 <body${classe ? ` class="${classe}"` : ""}>
@@ -453,14 +458,72 @@ function blocoAvaliacoes({ claro = false } = {}) {
 </section>`;
 }
 
-/** Os 13 serviços que o estúdio faz, cada um a ligar para a página que o
- *  cobre. Os cinco cartões acima são as áreas; esta é a lista completa, para
- *  quem procura um serviço concreto o encontrar pelo nome exacto. */
-function listaCompleta() {
-  return `<ul class="lista-servicos">${LISTA_SERVICOS.map((sv) =>
-    `<li><a href="${u(`/#s-${sv.pagina}`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</a></li>`
+/** A tira com os treze nomes.
+ *  Faz o trabalho que faziam DUAS coisas: o parágrafo de abertura e a caixa
+ *  «Todos os serviços». Medido: 46 px de altura no computador e 212 px no
+ *  telemóvel, contra 271 e 605 da caixa que substitui.
+ *
+ *  NÃO são ligações, e é deliberado: treze âncoras que rolam duzentos pixeis
+ *  não pagam treze alvos de toque num telemóvel. O `id` fica no <li> dos que
+ *  não têm azulejo — é o que mantém `/#s-<slug>` a existir para os treze, que
+ *  é o que o 404 e os dados estruturados precisam.
+ *  `role="list"` é obrigatório: o `list-style: none` remove a semântica de
+ *  lista no Safari com VoiceOver, e isso é intencional da Apple, não defeito. */
+function tiraServicos() {
+  return `<ul class="rol-servicos" role="list">${LISTA_SERVICOS.map((sv) =>
+    `<li${sv.imagem ? "" : ` id="s-${esc(sv.slug)}"`}><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</li>`
   ).join("")}</ul>`;
 }
+
+/** Um azulejo da montra: fotografia e nome, mais nada — foi o pedido («quero
+ *  só imagens, nada de especificações»). Carregar abre a galeria daquele
+ *  serviço sem sair da página; o `[data-galeria]` já é tratado pelo site.js e
+ *  não há uma linha de JS nova.
+ *
+ *  ACESSIBILIDADE E SEO, e é aqui que se decide:
+ *    · o nome é texto a sério e VISÍVEL. Nada dentro do ficheiro de imagem
+ *      (falharia o WCAG 1.4.5) e nada escondido — o Google não indexa a
+ *      partir de `aria-label`;
+ *    · o `aria-labelledby` aponta para o próprio nome visível, portanto o
+ *      nome acessível do botão é letra por letra o que se lê no ecrã. Sem
+ *      `aria-label` a duplicar texto, que é como se rompe o WCAG 2.5.3 no dia
+ *      em que os dois deixam de concordar;
+ *    · e assim o `alt` da fotografia fica livre para descrever o CARRO, que é
+ *      o que o Google Imagens lê. */
+function azulejoServico(sv) {
+  /* A galeria: as obras indicadas nos dados; em falta, a obra a que a própria
+     fotografia de capa pertence. Nunca fotografias de outro serviço — seria
+     dizer que aquilo é tira mossas quando não é. */
+  const obras = TRABALHOS.filter((t) => (sv.obras?.length
+    ? sv.obras.includes(t.slug)
+    : t.fotos.includes(sv.imagem)));
+  const fotos = obras.flatMap((t) => t.fotos);
+  const galeria = JSON.stringify(fotos.map((f) => ({
+    src: foto("obras", f), alt: alturaFoto(f),
+  })));
+
+  return `<li class="montra__peca" id="s-${esc(sv.slug)}">
+  <button type="button" aria-labelledby="n-${esc(sv.slug)}"
+    data-galeria="${esc(galeria)}" data-titulo="${esc(sv.nome)}">
+   ${figura("obras", sv.imagem, alturaFoto(sv.imagem), {
+     medidas: "(min-width: 76rem) 18rem, (min-width: 44rem) 33vw, 46vw" })}
+   <span class="montra__nome" id="n-${esc(sv.slug)}">${esc(sv.curto || sv.nome)}</span>
+   ${fotos.length > 1 ? `<span class="montra__conta" aria-hidden="true">${fotos.length}</span>` : ""}
+  </button>
+ </li>`;
+}
+
+/** O azulejo do Instagram. Não é enfeite: substitui a linha de fecho da
+ *  secção, e é a peça que enche o que a grelha deixar por preencher (ver o
+ *  `:nth-child` no CSS). Fica em último porque a saída para fora só se oferece
+ *  depois de a prova estar vista. */
+const azulejoInstagram = () => `<li class="montra__peca montra__ig">
+  <a href="${esc(IG)}" target="_blank" rel="noopener">
+   ${svg("instagram")}
+   <span class="montra__convite">Mais no Instagram <span class="seta">→</span></span>
+   <span class="montra__conta-ig">@perfectfinish.pt</span>
+  </a>
+ </li>`;
 
 const CTA = (titulo, texto) => `<section class="seccao alto">
  <div class="caixa" style="text-align:center;display:grid;justify-items:center;gap:var(--e-5)">
@@ -474,28 +537,52 @@ const CTA = (titulo, texto) => `<section class="seccao alto">
  </div>
 </section>`;
 
-function comparador(par) {
-  /* Aqui não se usa <picture>: as duas imagens têm de ficar sobrepostas em
-     posição absoluta e o <picture> mete um elemento pelo meio. Usa-se o
-     AVIF directamente, com o WebP como alternativa no `onerror` — o AVIF é
-     Baseline há muito e o par de ficheiros existe sempre. */
-  const img = (nome, alt, classe) => {
-    const base = foto("obras", nome).replace(/\.webp$/, "");
-    return `<img class="${classe}" src="${base}.avif" alt="${esc(alt)}" width="828" height="828"
- loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${base}.webp'">`;
+/* Setas da pega. Duas peças em vez do glifo `◀▶`: o glifo herdava a
+   tipografia, mudava de forma entre sistemas e era o detalhe que mais
+   envelhecia o comparador. */
+const SETA_ESQ = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 4.4 7.6 12l7.6 7.6 2.1-2.1L11.8 12l5.5-5.5z"/></svg>';
+const SETA_DIR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.8 4.4 6.7 6.5 12.2 12l-5.5 5.5 2.1 2.1L18.4 12z"/></svg>';
+
+function comparador(par, i) {
+  /* Aqui não se usa <picture>: as duas fotografias têm de ficar exactamente no
+     mesmo sítio e o <picture> mete um elemento pelo meio que desfaz tanto a
+     sobreposição como a grelha do díptico. Daí o AVIF em `srcset` com o WebP
+     no `onerror`, como já era.
+     O que é novo é o `srcset` com descritores 1x/2x. A caixa NUNCA passa de
+     414 px CSS, portanto os únicos candidatos possíveis são o ficheiro de 414
+     e o de 828 — e servia-se sempre o de 828. Num ecrã 1x isto passa os cinco
+     pares de 304 kB para 158 kB.
+     A guarda do `raiz === bruto` é para o backoffice: o campo é do tipo
+     `image` e um ficheiro carregado à mão pelo cliente não tem as variantes
+     -414/-828. Sem ela o gerador inventava caminhos que não existem e a
+     auditoria travava a publicação a seguir a uma gravação do cliente. */
+  const imagem = (nome, alt, classe) => {
+    const bruto = foto("obras", nome);
+    const raiz = bruto.replace(/-828\.webp$/, "");
+    if (raiz === bruto) {
+      return `<img class="${classe}" src="${bruto}" alt="${esc(alt)}" width="414" height="414" loading="lazy" decoding="async">`;
+    }
+    return `<img class="${classe}" alt="${esc(alt)}" width="414" height="414" loading="lazy" decoding="async"
+ src="${raiz}-414.avif" srcset="${raiz}-414.avif 1x, ${raiz}-828.avif 2x"
+ onerror="this.onerror=null;this.srcset='${raiz}-414.webp 1x, ${raiz}-828.webp 2x';this.src='${raiz}-414.webp'">`;
   };
+
+  /* As fotografias primeiro no DOM e os selos depois: no estado sem JS a
+     grelha pinta por ordem de documento, e um selo declarado antes da sua
+     imagem ficava por baixo dela. */
   return `<figure class="par">
  <div class="comparador">
+  ${imagem(par.antes, par.alt_antes, "antes")}
+  ${imagem(par.depois, par.alt_depois, "depois")}
   <span class="comparador__etiqueta antes">Antes</span>
   <span class="comparador__etiqueta depois">Depois</span>
-  ${img(par.antes, par.alt_antes, "antes")}
-  ${img(par.depois, par.alt_depois, "depois")}
   <span class="comparador__linha" aria-hidden="true"></span>
-  <span class="comparador__pega" aria-hidden="true">◀▶</span>
-  <input type="range" min="0" max="100" value="50" step="1"
+  <span class="comparador__pega" aria-hidden="true">${SETA_ESQ}${SETA_DIR}</span>
+  <input class="comparador__regua" type="range" min="0" max="100" value="50" step="1" disabled
    aria-label="Comparar antes e depois — ${esc(par.veiculo)}, ${esc(par.servico)}">
  </div>
  <figcaption>
+  <span class="par__indice" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
   <span class="servico">${esc(par.servico)}</span>
   <span class="veiculo">${esc(par.veiculo)}</span>
   <p class="legenda">${esc(par.legenda)}</p>
@@ -569,48 +656,6 @@ const ig = (texto, classe = "botao botao--linha") =>
  * trabalhos correspondentes: fica-se na mesma página e vêem-se mais imagens,
  * que é exactamente o que foi pedido.
  */
-function cartaoServico(sv) {
-  const fotos = TRABALHOS.filter((t) => t.pagina === sv.slug)
-    .flatMap((t) => t.fotos).slice(0, 12);
-  const capa = sv.imagem || fotos[0];
-
-  /* O TIRA MOSSAS NÃO TEM FOTOGRAFIA UTILIZÁVEL em todo o acervo — e é o
-     serviço que dá nome à casa. As três que existem estão contra a luz e a
-     mossa não se lê a 414 px.
-     Não se põe ali a fotografia de outro serviço: seria dizer que aquilo é
-     tira mossas quando não é. Fica um cartão com o nome e o escudo, que
-     manda para o Instagram. Assim a âncora continua a existir, a grelha não
-     fica com um buraco, e ninguém é enganado.
-     Quando houver fotografia — um plano aproximado com a tábua de leitura,
-     antes e depois, no mesmo enquadramento — basta preencher o campo
-     «Fotografia do serviço» no backoffice e este cartão passa a ser igual
-     aos outros. */
-  if (!capa) {
-    return `<li class="cartao-servico cartao-servico--sem-foto">
-  <a id="s-${esc(sv.slug)}" href="${esc(IG)}" target="_blank" rel="noopener"
-     aria-label="${esc(sv.nome)} — ver exemplos no Instagram">
-   <img src="${u("/assets/img/marca/simbolo.svg")}" alt="" width="288" height="299">
-   <span class="cartao-servico__nome">${esc(sv.nome)}</span>
-   <span class="cartao-servico__ig">Exemplos no Instagram →</span>
-  </a>
- </li>`;
-  }
-
-  const galeria = JSON.stringify(fotos.map((f) => ({
-    src: foto("obras", f), alt: alturaFoto(f),
-  })));
-
-  return `<li class="cartao-servico">
-  <button type="button" id="s-${esc(sv.slug)}"
-    data-galeria="${esc(galeria)}" data-titulo="${esc(sv.nome)}"
-    aria-label="Ver ${esc(sv.nome)}${fotos.length ? ` — ${fotos.length} fotografias` : ""}">
-   ${figura("obras", capa, `${sv.nome} — Perfect Finish Studio, em Leiria`, {
-     medidas: "(min-width: 68rem) 22rem, (min-width: 44rem) 45vw, 92vw" })}
-   <span class="cartao-servico__nome">${esc(sv.nome)}</span>
-   ${fotos.length > 1 ? `<span class="cartao-servico__conta" aria-hidden="true">${fotos.length}</span>` : ""}
-  </button>
- </li>`;
-}
 
 function inicio() {
 
@@ -644,20 +689,10 @@ function inicio() {
 
 <section class="seccao alto" id="servicos">
  <div class="caixa">
-  <div class="cabeca-seccao">
-   <p class="sobrescrito">Serviços</p>
-   <h2>O que fazemos</h2>
-   <p>${esc(D.textos.sobre)}</p>
-  </div>
-
-  <ul class="cartoes-servico">${SERVICOS.map(cartaoServico).join("")}</ul>
-
-  <div class="lista-servicos__caixa">
-   <h3>Todos os serviços</h3>
-   ${listaCompleta()}
-  </div>
-
-  <p class="fecho-seccao">Mais exemplos de cada serviço no Instagram → <a href="${esc(IG)}" target="_blank" rel="noopener">@perfectfinish.pt</a></p>
+  <p class="sobrescrito">Serviços</p>
+  <h2>O que fazemos</h2>
+  ${tiraServicos()}
+  <ul class="montra" role="list">${LISTA_SERVICOS.filter((sv) => sv.imagem).map(azulejoServico).join("")}${azulejoInstagram()}</ul>
  </div>
 </section>
 
@@ -668,8 +703,8 @@ function inicio() {
    <h2>Arraste para ver a diferença</h2>
    <p>O mesmo carro, o mesmo enquadramento. Só muda o que fizemos.</p>
   </div>
+  <div class="pares">${PARES.slice(0, 2).map(comparador).join("")}</div>
  </div>
- <div class="pares">${PARES.slice(0, 3).map(comparador).join("")}</div>
  <div class="caixa">
   <div class="painel-ig">
    <p>O portefólio completo vive no Instagram, com trabalho novo quase todos os dias.</p>
@@ -687,6 +722,10 @@ ${blocoAvaliacoes({ claro: true })}
   <div class="cabeca-seccao">
    <p class="sobrescrito">Contactos</p>
    <h2>Onde estamos</h2>
+   <!-- Este texto vivia na abertura dos Serviços. Saiu de lá porque o cliente
+        pediu essa secção «mais simples» e «sem textos», e veio para aqui em vez
+        de ser apagado: continua editável no backoffice e aqui não estorva. -->
+   <p>${esc(D.textos.sobre)}</p>
   </div>
   ${blocoContactos()}
  </div>
@@ -717,10 +756,8 @@ function indiceServicos() {
    </a></li>`).join("")}
   </ul>
 
-  <div class="lista-servicos__caixa">
-   <h3>Tudo o que fazemos</h3>
-   ${listaCompleta()}
-  </div>
+  <h3 style="margin-top:var(--e-8)">Tudo o que fazemos</h3>
+  ${tiraServicos()}
  </div>
 </section>
 ${CTA("Não sabe qual precisa?", "Descreva o problema e nós dizemos o que se aplica ao seu caso — mesmo que a resposta seja que não vale a pena.")}`;
@@ -823,8 +860,10 @@ function trabalhos() {
 </section>
 
 <section class="seccao alto">
- <div class="caixa"><div class="cabeca-seccao"><p class="sobrescrito">Antes e depois</p><h2>Arraste para comparar</h2></div></div>
- <div class="pares">${PARES.map(comparador).join("")}</div>
+ <div class="caixa">
+  <div class="cabeca-seccao"><p class="sobrescrito">Antes e depois</p><h2>Arraste para comparar</h2></div>
+  <div class="pares">${PARES.map(comparador).join("")}</div>
+ </div>
 </section>
 
 <section class="seccao claro">
@@ -1120,8 +1159,8 @@ function naoEncontrada() {
       <p class="medida" style="color:var(--osso-fraco);font-size:var(--t--1)">
        As páginas de cada serviço passaram a ser secções da página inicial.
        Talvez seja isto que procura:</p>
-      <ul class="lista-servicos" style="text-align:left;max-width:34rem">
-       ${SERVICOS.map((sv) => `<li><a href="${u(`/#s-${sv.slug}`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome_longo)}</a></li>`).join("")}
+      <ul class="rol-servicos rol-servicos--404" role="list">
+       ${LISTA_SERVICOS.map((sv) => `<li><a href="${u(`/#s-${sv.slug}`)}"><span class="risco" aria-hidden="true"></span>${esc(sv.nome)}</a></li>`).join("")}
       </ul>
       <div class="accoes" style="justify-content:center">
        <a class="botao botao--cheio" href="${zap("Olá! Gostava de pedir um orçamento.")}" target="_blank" rel="noopener">Falar por WhatsApp</a>
