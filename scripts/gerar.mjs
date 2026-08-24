@@ -490,6 +490,15 @@ function blocoAvaliacoes({ claro = false } = {}) {
  *  título muda de duas para três linhas sem se acrescentar campos ao
  *  backoffice de cada vez. */
 
+/** Cola o espaço que vem ANTES de um separador à palavra anterior, para o
+ *  separador nunca abrir uma linha.
+ *  Com «Perfect Finish Studio - Leiria · desde 2009» a 320 px o sobrescrito
+ *  quebrava em duas linhas e a segunda começava por «- LEIRIA», que se lê como
+ *  erro. Feito aqui e não nos dados de propósito: assim o cliente escreve
+ *  normalmente no backoffice, sem espaços especiais invisíveis que ele não tem
+ *  como ver nem manter. Vale para qualquer texto que venha a pôr. */
+const semSeparadorOrfao = (t) => t.replace(/ ([-–—·|/])/g, "\u00A0$1");
+
 function tituloCapa() {
   return String(D.textos.heroi_titulo || "")
     .split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
@@ -702,7 +711,7 @@ function inicio() {
  </div>
  <div class="caixa heroi__interior">
   <div class="heroi__texto">
-   <p class="sobrescrito">${esc(D.marca.reclamo)}</p>
+   <p class="sobrescrito">${semSeparadorOrfao(esc(D.marca.reclamo))}</p>
    <h1 class="ouro">${tituloCapa()}</h1>
    <p class="heroi__sub">${esc(D.textos.heroi_sub)}</p>
    <div class="accoes">

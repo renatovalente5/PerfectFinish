@@ -625,8 +625,19 @@ body[data-menu="aberto"] { overflow: hidden; }
    é a linha que diz o nome do estúdio e a cidade, e num telemóvel é
    precisamente onde isso mais conta. Fica só mais apertado. */
 @media (max-width: 40rem) {
-  .heroi .sobrescrito { margin-bottom: var(--e-3); font-size: .68rem; letter-spacing: .12em; }
-  .heroi .sobrescrito::before { inline-size: 1rem; }
+  /* O espaçamento entre letras é .12em no resto do site; aqui aperta para .07em
+     porque este sobrescrito ganhou «· desde 2009» e passou a ter 42 caracteres.
+     Medido: a .12em cabia numa linha a 375 px mas quebrava a 360 — e 360 é
+     largura corrente em Android. O espaçamento é onde há folga a ganhar sem
+     encolher a letra, que já está nos 10,9 px. */
+  .heroi .sobrescrito {
+    margin-bottom: var(--e-3); font-size: .68rem; letter-spacing: .07em;
+    /* Se ainda assim quebrar (ecrãs de 320), o risco alinha com a PRIMEIRA
+       linha em vez de centrar contra um bloco de duas, e o texto reparte-se
+       de forma equilibrada em vez de deixar duas palavras órfãs. */
+    align-items: start; text-wrap: balance;
+  }
+  .heroi .sobrescrito::before { inline-size: 1rem; margin-top: .45em; }
 }
 
 /* A lista completa dos 13 serviços. Os cartões acima são as áreas; isto é
