@@ -687,9 +687,11 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 /* -------------------------------------------- 08 comparador antes/depois */
 /* Duas propriedades REGISTADAS. Sem `@property` uma variável personalizada é
-   só texto: não interpola, e portanto nem transição nem fotograma-chave lhe
-   tocam. Registada, a cortina passa a ser animável — e é isso que permite
-   ensinar o gesto sem uma linha de JavaScript a mexer pixeis.
+   só texto: não interpola, e portanto nenhuma transição lhe toca. Registada, a
+   cortina passa a poder deslizar — e é isso que faz um toque simples no meio
+   da fotografia correr suavemente até ao ponto, em vez de saltar.
+   (O registo também servia a demonstração ligada ao scroll, que foi removida a
+   pedido do cliente; a transição continua a precisar dele.)
    `inherits: true` é obrigatório: quem lê o valor são os descendentes (a
    fotografia «depois», o filete, a pega, os selos). Com `false` cada um veria
    o valor inicial e a cortina ficava presa a 50%. */
@@ -949,24 +951,19 @@ body[data-menu="aberto"] { overflow: hidden; }
     .comparador[data-vivo]:hover .comparador__pega { scale: 1.08; }
     .comparador[data-vivo][data-arrastar] .comparador__pega { scale: .96; }
 
-    /* A demonstração. À entrada no ecrã a cortina abre do «antes» até ao meio,
-       ao ritmo do scroll. É o que ensina que aquilo se arrasta, e resolve o
-       único problema verdadeiro deste padrão, que é a descoberta.
-       Termina exactamente em 50%, o valor de repouso, e é por isso que passar
-       ao controlo manual não dá salto: a animação estava a segurar o mesmo
-       valor que a folha em linha vai passar a impor.
-       O Firefox não tem animações ligadas ao scroll e fica com o estado final
-       estático — igual ao que sempre teve. Não é regressão. */
-    @supports (animation-timeline: view()) {
-      .comparador[data-vivo]:not([data-manual]) {
-        animation: ensinar linear both;
-        animation-timeline: view();
-        animation-range: entry 30% cover 42%;
-      }
-      @keyframes ensinar {
-        from { --p: 96%; --n: .96; }
-        to   { --p: 50%; --n: .5; }
-      }
+    /* AQUI ESTAVA a demonstração: a cortina abria sozinha à entrada no ecrã, ao
+     ritmo do scroll, com `animation-timeline: view()`. SAIU, a pedido — o
+     cliente disse que «mexe-se sozinho quando desço na página», e tem razão: o
+     que eu tinha desenhado como um gesto único era, na prática, a cortina a
+     seguir o scroll de forma contínua, o que se lê como avaria e não como
+     pista.
+     E sair resolve um segundo problema, mais sério: uma animação CSS a correr
+     sobre `--p` GANHA ao estilo em linha, e é o estilo em linha que o site.js
+     escreve ao arrastar. Enquanto a animação estava viva, qualquer falha em pôr
+     o `data-manual` deixava o arrastar sem efeito nenhum — que é exactamente a
+     queixa do telemóvel. Sem animação, o valor que o JS escreve manda sempre.
+     A descoberta do gesto passa a estar no título da secção («Arraste para ver
+     a diferença») e na pega, que é visível de início. */
     }
   }
 }
@@ -1589,11 +1586,34 @@ body[data-menu="aberto"] { overflow: hidden; }
 }
 .zap-flutuante svg { inline-size: 1.75rem; block-size: 1.75rem; }
 .zap-flutuante:hover { scale: 1.07; box-shadow: 0 .7rem 2rem rgb(0 0 0 / .55); }
-/* Enquanto o aviso de cookies está no ecrã, o botão sobe para não ficar por
-   baixo dele no telemóvel. */
-body:has(.cookies) .zap-flutuante { inset-block-end: calc(clamp(.9rem, 3vw, 1.75rem) + 12.5rem); }
+
+/* SÓ APARECE DEPOIS DE SE COMEÇAR A DESCER, a pedido.
+   O estado por omissão é VISÍVEL: é o que se vê sem JavaScript, e um botão de
+   contacto invisível para sempre seria pior do que um sempre visível. O
+   `data-rolagem` é posto pelo site.js e significa «estou a tratar disto»;
+   só a partir daí é que o botão se esconde no topo.
+   `visibility` E `pointer-events` juntos, não só `opacity`: um botão a zero de
+   opacidade continua a apanhar cliques, e neste projecto já se perdeu uma tarde
+   com um painel invisível a engolir todos os toques da página. */
+html[data-rolagem="sim"] .zap-flutuante {
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .28s var(--curva), visibility .28s var(--curva);
+}
+html[data-rolagem="sim"][data-rolou="sim"] .zap-flutuante {
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+/* Enquanto o aviso de cookies está NO ECRÃ, o botão sobe para não ficar por
+   baixo dele no telemóvel.
+   O `:not([hidden])` não é zelo: o aviso deixou de ser removido do DOM e passou
+   a ser escondido, para o «Preferências» do rodapé o poder reabrir. Sem esta
+   condição, `:has(.cookies)` continuava a casar com o aviso já escondido e o
+   botão ficava 12,5rem acima do canto PARA SEMPRE — que é o «aparece no meio»
+   no telemóvel. Foi um defeito que eu próprio introduzi ao fazer o Preferências. */
+body:has(.cookies:not([hidden])) .zap-flutuante {
+  inset-block-end: calc(clamp(.9rem, 3vw, 1.75rem) + 12.5rem);
+}
 @media (min-width: 40rem) {
-  body:has(.cookies) .zap-flutuante { inset-block-end: clamp(.9rem, 3vw, 1.75rem); }
+  body:has(.cookies:not([hidden])) .zap-flutuante { inset-block-end: clamp(.9rem, 3vw, 1.75rem); }
 }
 /* Com o menu de ecrã inteiro aberto, sai da frente. */
 body[data-menu="aberto"] .zap-flutuante { display: none; }

@@ -800,3 +800,52 @@ As regras `.claro .rol-servicos` e `.claro .montra*` foram removidas por
 deixarem de ter alvo. Se a secção voltar a clara, estão no histórico do git —
 mas a lição fica: nessa versão o dourado tem de ser `--ouro-sombra` (5,70:1),
 porque `--ouro` sobre claro dá 2,84 e chumba.
+
+
+---
+
+## Três correcções do comparador e do botão flutuante (24-08-2026)
+
+**O botão do WhatsApp ficava no meio do ecrã no telemóvel — defeito meu.** A
+regra que o levanta para não ficar debaixo do aviso de cookies era
+`body:has(.cookies)`. Quando fiz o «Preferências» do rodapé, o aviso deixou de
+ser removido do DOM e passou a ser escondido — e `:has(.cookies)` continua a
+casar com um elemento `hidden`. Resultado: o botão ficava 12,5rem acima do canto
+PARA SEMPRE. Corrigido com `:has(.cookies:not([hidden]))`. Medido: 214 px do
+fundo com o aviso à vista, 14 px depois de decidir.
+
+**O botão só aparece depois de se começar a descer**, a pedido. Aproveita o vigia
+de scroll que o cabeçalho já tinha (mesmas fasquias 60/30, mesmo travão de
+rAF), portanto aparece no mesmo instante em que o cabeçalho encolhe. O estado
+por omissão é VISÍVEL e o `data-rolagem` posto pelo site.js é que autoriza
+esconder — sem JS um botão de contacto invisível para sempre seria pior do que
+um sempre visível. E `visibility` mais `pointer-events`, não só `opacity`:
+verificado com `elementFromPoint` que no topo não apanha cliques.
+
+**A cortina mexia-se sozinha ao descer a página.** Era a demonstração ligada ao
+scroll (`animation-timeline: view()`). Eu tinha-a desenhado como um gesto único
+à entrada, mas na prática é a cortina a seguir o scroll continuamente — lê-se
+como avaria, não como pista. Saiu.
+E sair resolveu um segundo problema, mais sério: **uma animação CSS a correr
+sobre `--p` ganha ao estilo em linha**, que é o que o site.js escreve ao
+arrastar. Enquanto a animação estava viva, qualquer falha em pôr o
+`data-manual` deixava o arrastar sem efeito nenhum.
+
+**O arrastar deixou de depender do comportamento nativo do range em toque.** O
+cliente relatou que no telemóvel não mexia com o dedo, e neste ambiente não
+consigo reproduzir toque — o painel do navegador não compõe e as teclas e
+gestos injectados não chegam ao elemento focado. Em vez de adivinhar qual das
+peculiaridades do range era a culpada, o valor passa a ser calculado do x do
+ponteiro (`setPointerCapture` para o dedo poder sair da fotografia). O `<input>`
+fica e continua a fazer a acessibilidade toda.
+Efeito lateral valioso: **agora é testável**. Com eventos `PointerEvent` de
+`pointerType: touch` verifiquei toque simples a 20%, arrastar até 80% com a
+transição desligada, largar a limpar o estado, e o teclado a 10% — tudo a
+responder.
+
+### Lição de ambiente
+O painel do navegador desta sessão não compõe de forma fiável, e isso já me deu
+três falsos alarmes: um comparador «vazio» (as imagens estavam carregadas,
+`complete: true`, 200, com bytes), um `rolou: "nao"` depois de rolar (o rAF não
+dispara em separador oculto) e um Enter que não abria um `<details>`. Antes de
+diagnosticar, confirmar que a página está a pintar.

@@ -34,11 +34,24 @@
       const DESCER = 60, SUBIR = 30;
       let encolhido = false, agendado = false;
 
+      /* O botão flutuante do WhatsApp só aparece depois de se começar a descer,
+         a pedido. Aproveita ESTE vigia em vez de criar outro: mesmas fasquias,
+         mesmo travão de requestAnimationFrame, e assim o botão aparece no mesmo
+         instante em que o cabeçalho encolhe — lê-se como uma coisa só.
+         O `data-rolagem` diz «este JavaScript está a tratar do botão». Sem ele
+         o CSS deixa o botão visível, que é o estado certo sem JS: um botão de
+         contacto invisível para sempre seria pior do que um sempre visível.
+         Por isso também NÃO se põe isto num script no <head>: se o site.js
+         falhasse depois de esconder o botão, ficava escondido para sempre — é
+         exactamente o erro que o comparador tinha. */
+      document.documentElement.dataset.rolagem = "sim";
+
       const avaliar = () => {
         agendado = false;
         const y = window.scrollY;
         if (!encolhido && y > DESCER) { encolhido = true; cabecalho.dataset.encolhido = "sim"; }
         else if (encolhido && y < SUBIR) { encolhido = false; cabecalho.dataset.encolhido = "nao"; }
+        document.documentElement.dataset.rolou = encolhido ? "sim" : "nao";
       };
       const aoRolar = () => {
         if (agendado) return;
@@ -116,23 +129,47 @@
         cmp.style.setProperty("--n", String(v / 100));
       };
 
-      /* Primeiro gesto humano: desliga a demonstração ligada ao scroll. A
-         animação estava a segurar 50%, que é o valor com que a régua nasce, por
-         isso a passagem ao controlo manual não dá salto. */
-      const assumir = () => { cmp.dataset.manual = "sim"; };
-      regua.addEventListener("keydown", assumir, { passive: true });
-      regua.addEventListener("pointerdown", () => { assumir(); activo = cmp; },
-                             { capture: true, passive: true });
+      /* O ARRASTAR É CALCULADO AQUI, e não deixado ao comportamento nativo do
+         range. O cliente relatou que no telemóvel não mexia com o dedo, e não
+         consigo reproduzir toque no ambiente onde trabalho — portanto em vez de
+         adivinhar qual das peculiaridades do range em toque era a culpada,
+         deixa de se depender dela: lê-se o x do ponteiro e escreve-se o valor.
+         O <input> fica, e continua a fazer o trabalho todo de acessibilidade —
+         setas, Home/End, PageUp, nome e valor para leitores de ecrã. */
+      const valorDoX = (x) => {
+        const r = regua.getBoundingClientRect();
+        if (r.width <= 0) return null;
+        return Math.round(Math.min(100, Math.max(0, ((x - r.left) / r.width) * 100)));
+      };
+      const mover = (x, arrastando) => {
+        const v = valorDoX(x);
+        if (v === null) return;
+        regua.value = String(v);
+        if (arrastando) cmp.dataset.arrastar = "sim";
+        pintar();
+      };
 
-      /* A transição sai da frente só quando o ponteiro MEXE, e não já no
-         pointerdown. Assim um clique no carril desliza até ao ponto (fica bem) e
-         um arrastar cola ao dedo (fica certo) — o mesmo controlo dá as duas
-         coisas sem as confundir. */
-      regua.addEventListener("pointermove", () => {
-        if (activo === cmp) cmp.dataset.arrastar = "sim";
+      regua.addEventListener("pointerdown", (e) => {
+        activo = cmp;
+        /* Captura o ponteiro: o dedo pode sair da fotografia a arrastar e os
+           eventos continuam a chegar aqui. */
+        try { regua.setPointerCapture(e.pointerId); } catch { /* sem suporte */ }
+        mover(e.clientX, false);   /* um toque simples salta para o ponto */
+        /* `passive` porque nunca se chama preventDefault: o `touch-action: pan-y`
+           do CSS é que decide o que o navegador faz com o gesto, e um escutador
+           não-passivo aqui só custava desempenho ao rolar. */
+      }, { capture: true, passive: true });
+
+      /* A transição só sai da frente quando o ponteiro MEXE, e não já no
+         pointerdown: assim um toque simples desliza até ao ponto (fica bem) e um
+         arrastar cola ao dedo (fica certo), com o mesmo controlo. */
+      regua.addEventListener("pointermove", (e) => {
+        if (activo !== cmp) return;
+        mover(e.clientX, true);
       }, { passive: true });
 
-      regua.addEventListener("input", () => { assumir(); pintar(); }, { passive: true });
+      /* Teclado e qualquer outra via que mude o valor. */
+      regua.addEventListener("input", pintar, { passive: true });
       pintar();
     });
 
