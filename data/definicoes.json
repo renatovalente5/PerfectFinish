@@ -15,14 +15,14 @@
     "facebook": "https://web.facebook.com/p/Perfect-Finish-100092713274954"
   },
   "morada": {
-    "rua": "Rua do Tomar 95, Cardosos",
-    "codigo_postal": "2420-125",
+    "rua": "Estrada Nacional 242, n.º 113 — Pavilhão D",
+    "codigo_postal": "2400-446",
     "localidade": "Leiria",
     "distrito": "Leiria",
     "pais": "Portugal",
-    "mapa": "https://maps.app.goo.gl/EFuMtn7EsXTcR58v8",
-    "latitude": 39.7165807,
-    "longitude": -8.7040658
+    "mapa": "https://www.google.com/maps/search/?api=1&query=39.7481277%2C-8.838489",
+    "latitude": 39.7481277,
+    "longitude": -8.838489
   },
   "horario": [
     {
@@ -46,7 +46,7 @@
     "nota": 4.9,
     "total": 94,
     "endpoint": "",
-    "incorporar": "https://www.google.com/maps?q=39.7165807,-8.7040658&z=16&output=embed"
+    "incorporar": "https://www.google.com/maps?q=39.7481277,-8.838489&z=16&output=embed"
   },
   "empresa": {
     "titular": "Welington de Oliveira Galhardo",

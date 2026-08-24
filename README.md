@@ -129,16 +129,22 @@ dois obrigatórios por lei estão preenchidos** — o e-mail e o nome civil do
 titular (Welington de Oliveira Galhardo, Empresário em Nome Individual) — e a
 auditoria passa a zero erros e zero avisos.
 
-1. **Código postal.** O `2420-125` foi tirado do perfil do Google do próprio
-   cliente, mas os registos dos CTT associam esse código a Pereiras,
-   Caranguejeira. Confirmar nos CTT antes de o fixar no Google Business
-   Profile e nos dados estruturados.
-2. **Preços da loja.** Estão todos como «Sob consulta». Os produtos foram
+1. **A ficha do Google do novo endereço.** O mapa e a ligação da morada são
+   feitos por COORDENADAS, e não pela ficha do sítio: o endereço que o cliente
+   mandou é da ficha de outra empresa («Varzea Do Lis — Actividades Hoteleiras,
+   Lda.») e o mapa mostraria esse nome. Quando o cliente actualizar a morada no
+   Google Business Profile dele, trocar `morada.mapa` e `google.incorporar` pela
+   ficha própria — aí o mapa passa a mostrar «Perfect Finish Studio».
+2. **O número da morada.** O cliente escreveu «Estr. Nacional 242 113». Ficou
+   como «n.º 113», que é a leitura mais provável (é a forma como o Google
+   formata moradas, e um código postal de cidade não combina com um marco
+   quilométrico). Confirmar que não é «km 113».
+3. **Preços da loja.** Estão todos como «Sob consulta». Os produtos foram
    propostos por nós; confirmar quais existem mesmo e a que preço (por lei,
    preço final com IVA).
-3. **Fotografias em falta:** interiores (não existe nenhuma em todo o acervo) e
+4. **Fotografias em falta:** interiores (não existe nenhuma em todo o acervo) e
    tira mossas (as que há não aguentam publicação, e é o serviço que dá nome à
    casa). Um close-up com tábua de leitura, antes e depois, no mesmo
    enquadramento, resolvia.
-4. **Telefone.** Um roll-up numa das fotografias lê `968 828 910`; em todo o
+5. **Telefone.** Um roll-up numa das fotografias lê `968 828 910`; em todo o
    resto lê-se `968 828 510`. Confirmar qual está errado.
