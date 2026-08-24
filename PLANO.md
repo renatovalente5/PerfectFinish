@@ -849,3 +849,30 @@ três falsos alarmes: um comparador «vazio» (as imagens estavam carregadas,
 `complete: true`, 200, com bytes), um `rolou: "nao"` depois de rolar (o rAF não
 dispara em separador oculto) e um Enter que não abria um `<details>`. Antes de
 diagnosticar, confirmar que a página está a pintar.
+
+
+## «Com carros desde 2009» (24-08-2026)
+
+O cliente quis pôr no site que já trabalha com carros desde 2009. A forma como
+se escreve isto NÃO é indiferente.
+
+**«Trabalha com carros desde 2009» não é «o estúdio existe desde 2009».** A
+marca é recente (a página de Facebook é de 2023) e o texto do site dizia
+literalmente «Somos um estúdio jovem». Dar a entender que a casa abriu em 2009
+seria uma prática comercial enganosa por acção — omitir ou distorcer a data de
+início de actividade cai no DL 57/2008. E seria fácil de desmontar: qualquer
+registo público mostra o contrário.
+
+A redacção resolve a tensão em vez de a esconder: «Somos um estúdio jovem, mas
+não somos novos nisto: trabalhamos com carros desde 2009.» É verdade das duas
+partes, e passa a ser argumento em vez de contradição.
+
+**NÃO se acrescentou `foundingDate` aos dados estruturados**, e é deliberado:
+2009 é a experiência de quem trabalha, não uma data de fundação da empresa que
+eu possa afirmar. Nos dados estruturados uma data é uma afirmação de facto
+verificável; num parágrafo, «trabalhamos com carros desde 2009» é uma afirmação
+sobre experiência. São coisas diferentes e só uma delas está sustentada.
+
+Ficou em dois sítios: no parágrafo de abertura dos Contactos e na descrição da
+marca no rodapé, que aparece em todas as páginas e alimenta a descrição nos
+dados estruturados.
