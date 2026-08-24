@@ -323,13 +323,15 @@ for (const [, tipo] of backoffice.matchAll(/^\s*-?\s*(?:\{\s*)?.*?\btype:\s*([a-
 const nomesNoBackoffice = new Set(
   [...backoffice.matchAll(/\bname:\s*([A-Za-z0-9_-]+)/g)].map((m) => m[1])
 );
-const paraVerificar = [
-  ["data/definicoes.json", null],
-  ["data/pares.json", null],
-  ["data/servicos", "*"],
-  ["data/trabalhos", "*"],
-  ["data/loja", "*"],
-];
+/* TODOS os ficheiros de data/ têm de estar aqui. Faltavam avaliacoes.json e
+   lista-servicos.json, e por isso a verificação nunca reparou que as avaliações
+   NÃO eram editáveis: o cliente via três no site e não tinha como as mudar.
+   A lista deixa de ser escrita à mão — lê-se a pasta, para um ficheiro novo não
+   poder voltar a escapar. */
+const paraVerificar = readdirSync(join(RAIZ, "data"), { withFileTypes: true })
+  .map((e) => (e.isDirectory() ? [`data/${e.name}`, "*"]
+    : e.name.endsWith(".json") ? [`data/${e.name}`, null] : null))
+  .filter(Boolean);
 for (const [caminho, colecao] of paraVerificar) {
   const ficheiros = colecao
     ? readdirSync(join(RAIZ, caminho)).filter((f) => f.endsWith(".json")).map((f) => join(caminho, f))

@@ -1,15 +1,13 @@
 {
- "slug": "lotus-emeya-ppf",
- "veiculo": "Lotus Emeya",
- "servico": "PPF",
- "pagina": "ppf",
- "ordem": 6,
- "legenda": "Frente protegida com película transparente: a cor e o brilho não mudam, a pintura passa a estar coberta.",
- "fotos": [
-  "lotus-emeya-ppf-1",
-  "lotus-emeya-ppf-2",
-  "lotus-emeya-ppf-3"
- ],
- "destaque": true,
- "publicado": true
+  "slug": "lotus-emeya-ppf",
+  "veiculo": "Lotus Emeya",
+  "servico": "PPF",
+  "ordem": 6,
+  "fotos": [
+    "lotus-emeya-ppf-1",
+    "lotus-emeya-ppf-2",
+    "lotus-emeya-ppf-3"
+  ],
+  "destaque": true,
+  "publicado": true
 }

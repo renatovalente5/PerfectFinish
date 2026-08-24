@@ -1,16 +1,14 @@
 {
- "slug": "audi-q7-camaleao",
- "veiculo": "Audi Q7 S line",
- "servico": "Envelopamento",
- "pagina": "envelopamento",
- "ordem": 2,
- "legenda": "Película camaleão sobre o cinzento de série: lilás na sombra, turquesa ao sol. A pintura de fábrica ficou intacta por baixo.",
- "fotos": [
-  "audi-q7-camaleao-1",
-  "audi-q7-camaleao-2",
-  "audi-q7-camaleao-3",
-  "audi-q7-camaleao-4"
- ],
- "destaque": true,
- "publicado": true
+  "slug": "audi-q7-camaleao",
+  "veiculo": "Audi Q7 S line",
+  "servico": "Envelopamento",
+  "ordem": 2,
+  "fotos": [
+    "audi-q7-camaleao-1",
+    "audi-q7-camaleao-2",
+    "audi-q7-camaleao-3",
+    "audi-q7-camaleao-4"
+  ],
+  "destaque": true,
+  "publicado": true
 }

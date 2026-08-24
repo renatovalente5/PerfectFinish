@@ -1,11 +1,10 @@
 {
- "slug": "limpa-interiores",
- "nome": "Limpa-Interiores",
- "familia": "Interior",
- "forma": "spray",
- "ordem": 7,
- "descricao": "Plásticos, tecidos e pele, com acabamento mate e sem cheiro agressivo.",
- "formato": "500 ml",
- "preco": null,
- "publicado": true
+  "slug": "limpa-interiores",
+  "nome": "Limpa-Interiores",
+  "familia": "Interior",
+  "ordem": 7,
+  "descricao": "Plásticos, tecidos e pele, com acabamento mate e sem cheiro agressivo.",
+  "formato": "500 ml",
+  "preco": null,
+  "publicado": true
 }

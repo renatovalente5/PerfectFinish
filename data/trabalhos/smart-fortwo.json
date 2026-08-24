@@ -1,15 +1,13 @@
 {
- "slug": "smart-fortwo",
- "veiculo": "Smart Fortwo",
- "servico": "Jantes e acabamento",
- "pagina": "car-detailing",
- "ordem": 18,
- "legenda": "Jantes recuperadas e pintadas, pinças em vermelho e célula tridion em grafite.",
- "fotos": [
-  "smart-fortwo-1",
-  "smart-fortwo-2",
-  "smart-fortwo-3"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "smart-fortwo",
+  "veiculo": "Smart Fortwo",
+  "servico": "Jantes e acabamento",
+  "ordem": 18,
+  "fotos": [
+    "smart-fortwo-1",
+    "smart-fortwo-2",
+    "smart-fortwo-3"
+  ],
+  "destaque": false,
+  "publicado": true
 }

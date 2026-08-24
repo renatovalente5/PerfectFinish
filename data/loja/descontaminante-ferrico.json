@@ -1,11 +1,10 @@
 {
- "slug": "descontaminante-ferrico",
- "nome": "Descontaminante Férrico",
- "familia": "Preparação",
- "forma": "spray",
- "ordem": 4,
- "descricao": "Reage com as partículas de metal presas ao verniz e mostra onde estão. Passo obrigatório antes de polir.",
- "formato": "500 ml",
- "preco": null,
- "publicado": true
+  "slug": "descontaminante-ferrico",
+  "nome": "Descontaminante Férrico",
+  "familia": "Preparação",
+  "ordem": 4,
+  "descricao": "Reage com as partículas de metal presas ao verniz e mostra onde estão. Passo obrigatório antes de polir.",
+  "formato": "500 ml",
+  "preco": null,
+  "publicado": true
 }

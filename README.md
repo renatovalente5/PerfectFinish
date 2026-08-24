@@ -95,8 +95,8 @@ Por isso `scripts/auditar.mjs` verifica duas coisas e trava a publicação:
 todos os `type:` existem mesmo, e todo o campo presente em `data/` é editável
 no backoffice.
 
-Para uma validação completa contra o schema verdadeiro (feita a 23-08-2026
-contra a versão 2.1.8, resultado **válido**):
+Para uma validação completa contra o schema verdadeiro (última feita a
+24-08-2026, resultado **válido**):
 
 ```bash
 git clone --depth 1 https://github.com/hunvreus/pagescms.git /tmp/pagescms
@@ -108,6 +108,31 @@ ls /tmp/pagescms/fields/core | node -e 'let t=[];process.stdin.on("data",d=>t.pu
 ```
 
 ---
+
+## O que o cliente vê no backoffice
+
+Seis entradas, pela ordem em que se mexem:
+
+| | O que é | Onde aparece no site |
+|---|---|---|
+| **Trabalhos** | Um carro e as suas fotografias | As galerias que abrem nos azulejos dos serviços |
+| **Antes e depois** | Os comparadores | Secção «Antes e depois» — os dois primeiros à vista |
+| **Serviços** | Os treze serviços | Com fotografia = azulejo; sem = nome na lista |
+| **Loja** | Os produtos | Página da Loja |
+| **Avaliações do Google** | As avaliações mostradas | Secção de avaliações |
+| **Dados do estúdio** | Contactos, morada, horário, textos, dados legais | Todo o site |
+
+**Onze campos técnicos estão escondidos** (`hidden: true`): coordenadas,
+endereços de mapa, o servidor das avaliações em directo, os índices dos dias da
+semana, as peças do mosaico da capa. Continuam no ficheiro e editam-se aqui, mas
+não aparecem ao cliente — um campo que não se deve mexer, à vista, é um convite
+a mexer.
+
+**As cinco páginas de serviço saíram de `data/`** para
+`_fonte/servicos-desligados/`. Estão desligadas (`PAGINAS_DE_SERVICO = false`) e
+eram 12 campos por serviço dos quais o site usava dois: o cliente podia escrever
+uma FAQ inteira e nada aparecia. Se voltarem a ser ligadas, mover a pasta de
+volta para `data/servicos` e declarar os campos outra vez.
 
 ## Primeiro acesso ao backoffice
 

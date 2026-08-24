@@ -2,7 +2,6 @@
   "marca": {
     "nome": "Perfect Finish Studio",
     "nome_completo": "Perfect Finish — Tira Mossas, Películas, Car Detail e Lavagem",
-    "assinatura": "by Galhardo",
     "reclamo": "Perfect Finish Studio - Leiria · desde 2009",
     "descricao": "Estúdio de customização automóvel em Leiria, com carros desde 2009: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail."
   },
@@ -51,8 +50,7 @@
   "empresa": {
     "titular": "Welington de Oliveira Galhardo",
     "forma": "Empresário em Nome Individual",
-    "nif": "316 614 610",
-    "registo": ""
+    "nif": "316 614 610"
   },
   "textos": {
     "heroi_titulo": "Studio de\nCustomização\nPremium",

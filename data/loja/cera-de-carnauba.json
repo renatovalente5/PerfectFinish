@@ -1,11 +1,10 @@
 {
- "slug": "cera-de-carnauba",
- "nome": "Cera de Carnaúba",
- "familia": "Proteção",
- "forma": "boiao",
- "ordem": 8,
- "descricao": "Acabamento quente e profundo, sobretudo em cores escuras. Aplicação à mão.",
- "formato": "200 g",
- "preco": null,
- "publicado": true
+  "slug": "cera-de-carnauba",
+  "nome": "Cera de Carnaúba",
+  "familia": "Proteção",
+  "ordem": 8,
+  "descricao": "Acabamento quente e profundo, sobretudo em cores escuras. Aplicação à mão.",
+  "formato": "200 g",
+  "preco": null,
+  "publicado": true
 }

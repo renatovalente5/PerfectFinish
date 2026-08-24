@@ -1,11 +1,10 @@
 {
- "slug": "shampoo-ph-neutro",
- "nome": "Shampoo pH Neutro",
- "familia": "Lavagem",
- "forma": "garrafa",
- "ordem": 1,
- "descricao": "Espuma densa e lubrificação alta para lavar com luva sem arrastar sujidade. Não remove ceras nem selantes já aplicados.",
- "formato": "1 L",
- "preco": null,
- "publicado": true
+  "slug": "shampoo-ph-neutro",
+  "nome": "Shampoo pH Neutro",
+  "familia": "Lavagem",
+  "ordem": 1,
+  "descricao": "Espuma densa e lubrificação alta para lavar com luva sem arrastar sujidade. Não remove ceras nem selantes já aplicados.",
+  "formato": "1 L",
+  "preco": null,
+  "publicado": true
 }

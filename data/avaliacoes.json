@@ -1,28 +1,23 @@
 {
- "resumo": [
-  "O trabalho feito no meu carro mostrou muito cuidado e dedicação aos detalhes.",
-  "Um ótimo profissional em tudo que faz, parabéns, adorei o seu trabalho.",
-  "Ótimo serviço, rápido, ótimo preço e excelente atendimento!"
- ],
- "criticas": [
-  {
-   "autor": "Nelson P.",
-   "quando": "há um mês",
-   "estrelas": 5,
-   "texto": "Excelente oficina, atendimento personalizado às necessidades do seu carro. Muito disponíveis, aconselho vivamente a fazer uma visita."
-  },
-  {
-   "autor": "Victor G.",
-   "quando": "há 2 meses",
-   "estrelas": 5,
-   "texto": "Fiz o detail do carro, remoção de algumas mossas pequenas e chrome delete em vinil. Muito satisfeito com o trabalho.",
-   "nota_traducao": "Traduzido do inglês, como foi escrita no Google."
-  },
-  {
-   "autor": "Marco C.",
-   "quando": "há um ano",
-   "estrelas": 5,
-   "texto": "Top."
-  }
- ]
+  "criticas": [
+    {
+      "autor": "Nelson P.",
+      "quando": "há um mês",
+      "estrelas": 5,
+      "texto": "Excelente oficina, atendimento personalizado às necessidades do seu carro. Muito disponíveis, aconselho vivamente a fazer uma visita."
+    },
+    {
+      "autor": "Victor G.",
+      "quando": "há 2 meses",
+      "estrelas": 5,
+      "texto": "Fiz o detail do carro, remoção de algumas mossas pequenas e chrome delete em vinil. Muito satisfeito com o trabalho.",
+      "nota_traducao": "Traduzido do inglês, como foi escrita no Google."
+    },
+    {
+      "autor": "Marco C.",
+      "quando": "há um ano",
+      "estrelas": 5,
+      "texto": "Top."
+    }
+  ]
 }

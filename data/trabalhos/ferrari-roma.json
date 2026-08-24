@@ -1,15 +1,13 @@
 {
- "slug": "ferrari-roma",
- "veiculo": "Ferrari Roma",
- "servico": "Correção de pintura",
- "pagina": "car-detailing",
- "ordem": 1,
- "legenda": "Correção de pintura painel a painel num V8 de Maranello. Descontaminação, correção por fases sob luz de inspeção e proteção final.",
- "fotos": [
-  "ferrari-roma-1",
-  "ferrari-roma-2",
-  "ferrari-roma-3"
- ],
- "destaque": true,
- "publicado": true
+  "slug": "ferrari-roma",
+  "veiculo": "Ferrari Roma",
+  "servico": "Correção de pintura",
+  "ordem": 1,
+  "fotos": [
+    "ferrari-roma-1",
+    "ferrari-roma-2",
+    "ferrari-roma-3"
+  ],
+  "destaque": true,
+  "publicado": true
 }

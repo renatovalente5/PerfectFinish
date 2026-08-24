@@ -29,7 +29,6 @@ const lerPasta = (p) =>
     .sort((a, b) => (a.ordem ?? 99) - (b.ordem ?? 99));
 
 const D = ler("data/definicoes.json");
-const SERVICOS = lerPasta("data/servicos");
 const TRABALHOS = lerPasta("data/trabalhos").filter((t) => t.publicado !== false);
 const PRODUTOS = lerPasta("data/loja").filter((p) => p.publicado !== false);
 const AVALIACOES = ler("data/avaliacoes.json");
@@ -56,6 +55,14 @@ const _pares = ler("data/pares.json");
    páginas voltam — com o sitemap e as migalhas atrás, sem escrever uma
    palavra nova. */
 const PAGINAS_DE_SERVICO = false;
+
+/* As cinco páginas de serviço estão DESLIGADAS (ver PAGINAS_DE_SERVICO acima)
+   e os seus ficheiros saíram de data/ para _fonte/servicos-desligados/, para
+   não aparecerem no backoffice: eram 12 campos por serviço, dos quais o site
+   usava dois, e o cliente podia escrever uma FAQ inteira sem nada aparecer.
+   Lê-se só se o interruptor for ligado, e daí o `existsSync`. */
+const SERVICOS = PAGINAS_DE_SERVICO && existsSync(join(RAIZ, "_fonte/servicos-desligados"))
+  ? lerPasta("_fonte/servicos-desligados") : [];
 
 const PARES = (Array.isArray(_pares) ? _pares : _pares.pares || [])
   .slice().sort((a, b) => (a.ordem ?? 99) - (b.ordem ?? 99));
@@ -232,7 +239,13 @@ function rodape() {
 
    <div>
     <h4>Serviços</h4>
-    <ul>${SERVICOS.map((s) => `<li><a href="${u(`/#s-${s.slug}`)}">${esc(s.nome)}</a></li>`).join("")}</ul>
+    <!-- Vem da lista de serviços, que é a fonte única. Antes vinha das cinco
+         páginas de serviço desligadas, e eram duas listas de serviços a existir
+         em paralelo — no backoffice apareciam como duas entradas «Serviços».
+         Mostram-se os que têm fotografia: são os que têm azulejo na montra,
+         portanto a âncora leva a algo que se vê. -->
+    <ul>${LISTA_SERVICOS.filter((sv) => sv.imagem).map((sv) =>
+      `<li><a href="${u(`/#s-${sv.slug}`)}">${esc(sv.curto || sv.nome)}</a></li>`).join("")}</ul>
    </div>
 
    <div>

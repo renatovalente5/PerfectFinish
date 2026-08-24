@@ -1,11 +1,10 @@
 {
- "slug": "quick-detailer",
- "nome": "Quick Detailer",
- "familia": "Manutenção",
- "forma": "spray",
- "ordem": 6,
- "descricao": "Para o pó e as marcas do dia-a-dia entre lavagens. Realça o brilho sem deixar película.",
- "formato": "750 ml",
- "preco": null,
- "publicado": true
+  "slug": "quick-detailer",
+  "nome": "Quick Detailer",
+  "familia": "Manutenção",
+  "ordem": 6,
+  "descricao": "Para o pó e as marcas do dia-a-dia entre lavagens. Realça o brilho sem deixar película.",
+  "formato": "750 ml",
+  "preco": null,
+  "publicado": true
 }

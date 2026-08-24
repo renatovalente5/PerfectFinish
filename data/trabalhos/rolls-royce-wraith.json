@@ -1,14 +1,12 @@
 {
- "slug": "rolls-royce-wraith",
- "veiculo": "Rolls-Royce Wraith",
- "servico": "Polimento",
- "pagina": "car-detailing",
- "ordem": 4,
- "legenda": "Preto de espelho, com a coachline dourada pintada à mão preservada em todo o processo.",
- "fotos": [
-  "rolls-royce-wraith-1",
-  "rolls-royce-wraith-2"
- ],
- "destaque": true,
- "publicado": true
+  "slug": "rolls-royce-wraith",
+  "veiculo": "Rolls-Royce Wraith",
+  "servico": "Polimento",
+  "ordem": 4,
+  "fotos": [
+    "rolls-royce-wraith-1",
+    "rolls-royce-wraith-2"
+  ],
+  "destaque": true,
+  "publicado": true
 }

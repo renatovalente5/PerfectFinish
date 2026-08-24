@@ -1,15 +1,13 @@
 {
- "slug": "porsche-911-992",
- "veiculo": "Porsche 911 (992)",
- "servico": "Proteção e correção",
- "pagina": "car-detailing",
- "ordem": 5,
- "legenda": "Preto trabalhado até refletir a luminária sem uma distorção. Brilho uniforme, sem véu nem hologramas.",
- "fotos": [
-  "porsche-911-992-1",
-  "porsche-911-992-2",
-  "porsche-911-992-3"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "porsche-911-992",
+  "veiculo": "Porsche 911 (992)",
+  "servico": "Proteção e correção",
+  "ordem": 5,
+  "fotos": [
+    "porsche-911-992-1",
+    "porsche-911-992-2",
+    "porsche-911-992-3"
+  ],
+  "destaque": false,
+  "publicado": true
 }

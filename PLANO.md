@@ -876,3 +876,53 @@ sobre experiência. São coisas diferentes e só uma delas está sustentada.
 Ficou em dois sítios: no parágrafo de abertura dos Contactos e na descrição da
 marca no rodapé, que aparece em todas as páginas e alimenta a descrição nos
 dados estruturados.
+
+
+---
+
+## Revisão do backoffice (24-08-2026)
+
+O cliente pediu «simples, intuitivo, bem organizado, apenas com o necessário».
+O método foi cruzar cada campo declarado no `.pages.yml` com o que o gerador
+REALMENTE usa, cortando primeiro o código morto das páginas de serviço para não
+contar usos que não existem.
+
+**O que estava mal, por ordem de gravidade:**
+
+1. **Havia DUAS entradas chamadas Serviços**, e a que manda no site chamava-se
+   «Lista de todos os serviços». A outra eram as cinco páginas de serviço, com
+   12 campos cada — FAQ, introduções, blocos «porquê» — de que o site usava
+   DOIS (`slug` e `nome`, para a coluna do rodapé). O cliente podia escrever uma
+   FAQ inteira e nada aparecia.
+   A pasta saiu de `data/` para `_fonte/servicos-desligados/` e a coluna do
+   rodapé passou a vir de `lista-servicos.json`: uma só fonte de verdade.
+
+2. **As avaliações NÃO eram editáveis.** O cliente via três no site e não tinha
+   como as mudar. E a auditoria não deu por isso porque a lista de ficheiros a
+   verificar era escrita à mão e faltavam lá `avaliacoes.json` e
+   `lista-servicos.json`. **Agora a auditoria lê a pasta `data/`**, para um
+   ficheiro novo não poder voltar a escapar.
+
+3. **Campos mortos**: `trabalhos.pagina`, `trabalhos.legenda`, `loja.forma`,
+   `empresa.registo`, `marca.assinatura`, `avaliacoes.resumo`. Removidos dos
+   dados e do backoffice.
+
+4. **Campos técnicos à vista**: coordenadas, endereços de mapa, o endpoint das
+   avaliações em directo, os índices dos dias da semana, as peças do mosaico.
+   Passaram a `hidden: true` — continuam no ficheiro e editam-se no repositório,
+   mas o cliente não os vê.
+
+`hidden` e `readonly` SÃO opções reais do Pages CMS 2.x (confirmado em
+`lib/config-schema.ts`, linhas 392 e 398). Não se declara nada por palpite neste
+ficheiro: uma opção inventada é ignorada em silêncio.
+
+Resultado: 674 → 548 linhas, 6 entradas ordenadas por frequência de uso, 68
+campos visíveis e 11 escondidos. **Validado contra o esquema real** com o
+procedimento do README — não só contra a auditoria própria.
+
+### Erro meu no meio
+Cortei o cabeçalho do ficheiro em `s.index("content:")` e apanhei o PRIMEIRO
+`content:`, que é o `settings.content.merge` — perdi o `merge: true`, os modelos
+de commit e o bloco `media:`. Recuperei do git e passei a ancorar na coluna zero
+(`l == "content:"`). Num ficheiro com chaves repetidas a níveis diferentes,
+procurar por texto não basta.

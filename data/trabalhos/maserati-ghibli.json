@@ -1,14 +1,12 @@
 {
- "slug": "maserati-ghibli",
- "veiculo": "Maserati Ghibli",
- "servico": "Película solar",
- "pagina": "peliculas-solares",
- "ordem": 16,
- "legenda": "Escurecimento à medida, com os cromados originais preservados.",
- "fotos": [
-  "maserati-ghibli-1",
-  "maserati-ghibli-2"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "maserati-ghibli",
+  "veiculo": "Maserati Ghibli",
+  "servico": "Película solar",
+  "ordem": 16,
+  "fotos": [
+    "maserati-ghibli-1",
+    "maserati-ghibli-2"
+  ],
+  "destaque": false,
+  "publicado": true
 }

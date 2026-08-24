@@ -1,15 +1,13 @@
 {
- "slug": "bmw-serie-5-touring",
- "veiculo": "BMW Série 5 Touring M Sport",
- "servico": "Envelopamento",
- "pagina": "envelopamento",
- "ordem": 15,
- "legenda": "Vermelho de brilho intenso, pinças amarelas e jantes negras.",
- "fotos": [
-  "bmw-serie-5-touring-1",
-  "bmw-serie-5-touring-2",
-  "bmw-serie-5-touring-3"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "bmw-serie-5-touring",
+  "veiculo": "BMW Série 5 Touring M Sport",
+  "servico": "Envelopamento",
+  "ordem": 15,
+  "fotos": [
+    "bmw-serie-5-touring-1",
+    "bmw-serie-5-touring-2",
+    "bmw-serie-5-touring-3"
+  ],
+  "destaque": false,
+  "publicado": true
 }

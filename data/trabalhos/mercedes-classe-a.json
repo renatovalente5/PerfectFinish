@@ -1,15 +1,13 @@
 {
- "slug": "mercedes-classe-a",
- "veiculo": "Mercedes-Benz Classe A",
- "servico": "Envelopamento",
- "pagina": "envelopamento",
- "ordem": 14,
- "legenda": "Prateado metalizado de fábrica, branco acetinado à saída.",
- "fotos": [
-  "mercedes-classe-a-1",
-  "mercedes-classe-a-2",
-  "mercedes-classe-a-3"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "mercedes-classe-a",
+  "veiculo": "Mercedes-Benz Classe A",
+  "servico": "Envelopamento",
+  "ordem": 14,
+  "fotos": [
+    "mercedes-classe-a-1",
+    "mercedes-classe-a-2",
+    "mercedes-classe-a-3"
+  ],
+  "destaque": false,
+  "publicado": true
 }

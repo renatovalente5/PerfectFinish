@@ -1,14 +1,12 @@
 {
- "slug": "ford-mustang-dark-horse",
- "veiculo": "Ford Mustang Dark Horse",
- "servico": "Película solar",
- "pagina": "peliculas-solares",
- "ordem": 12,
- "legenda": "Película cortada à medida de cada vidro, sem bolhas nem falhas de bordo.",
- "fotos": [
-  "ford-mustang-dark-horse-1",
-  "ford-mustang-dark-horse-2"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "ford-mustang-dark-horse",
+  "veiculo": "Ford Mustang Dark Horse",
+  "servico": "Película solar",
+  "ordem": 12,
+  "fotos": [
+    "ford-mustang-dark-horse-1",
+    "ford-mustang-dark-horse-2"
+  ],
+  "destaque": false,
+  "publicado": true
 }

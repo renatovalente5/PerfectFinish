@@ -1,15 +1,13 @@
 {
- "slug": "audi-etron-gt",
- "veiculo": "Audi e-tron GT",
- "servico": "Envelopamento",
- "pagina": "envelopamento",
- "ordem": 7,
- "legenda": "Grafite acetinado aplicado painel a painel sobre o branco de fábrica.",
- "fotos": [
-  "audi-etron-gt-1",
-  "audi-etron-gt-2",
-  "audi-etron-gt-3"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "audi-etron-gt",
+  "veiculo": "Audi e-tron GT",
+  "servico": "Envelopamento",
+  "ordem": 7,
+  "fotos": [
+    "audi-etron-gt-1",
+    "audi-etron-gt-2",
+    "audi-etron-gt-3"
+  ],
+  "destaque": false,
+  "publicado": true
 }

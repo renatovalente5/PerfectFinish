@@ -1,15 +1,13 @@
 {
- "slug": "porsche-911-targa-gts",
- "veiculo": "Porsche 911 Targa 4 GTS",
- "servico": "Proteção de pintura",
- "pagina": "car-detailing",
- "ordem": 9,
- "legenda": "Entregue pronto a sair para estrada, com a pintura corrigida e protegida.",
- "fotos": [
-  "porsche-911-targa-gts-1",
-  "porsche-911-targa-gts-2",
-  "porsche-911-targa-gts-3"
- ],
- "destaque": false,
- "publicado": true
+  "slug": "porsche-911-targa-gts",
+  "veiculo": "Porsche 911 Targa 4 GTS",
+  "servico": "Proteção de pintura",
+  "ordem": 9,
+  "fotos": [
+    "porsche-911-targa-gts-1",
+    "porsche-911-targa-gts-2",
+    "porsche-911-targa-gts-3"
+  ],
+  "destaque": false,
+  "publicado": true
 }
