@@ -800,7 +800,7 @@ ${blocoAvaliacoes({ claro: true })}
 
   return pagina({
     url: "/",
-    titulo: "Studio de Customização Premium em Leiria | Perfect Finish",
+    titulo: "Estúdio de Customização Premium em Leiria | Perfect Finish",
     descricao: "Estúdio de customização em Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail. 4,9 ★ em 94 avaliações no Google.",
     corpo,
   });
