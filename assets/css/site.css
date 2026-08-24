@@ -1852,19 +1852,6 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
   color: var(--osso); text-align: start; text-wrap: balance;
 }
 
-/* Quantas fotografias tem a galeria. Sem isto ninguém adivinha que o azulejo
-   abre uma galeria e não uma imagem só. */
-.montra__conta {
-  position: absolute; z-index: 1;
-  inset-block-start: .5rem; inset-inline-end: .5rem;
-  min-inline-size: 1.55rem; block-size: 1.55rem; padding-inline: .35rem;
-  border-radius: 1rem; display: grid; place-items: center;
-  font-family: var(--letra-titulo); font-size: .625rem; font-weight: 600;
-  color: var(--ouro-alto);
-  background: color-mix(in oklab, var(--tinta) 72%, transparent);
-  border: 1px solid var(--filete); backdrop-filter: blur(4px);
-}
-
 /* O AZULEJO DO INSTAGRAM. Sem `aspect-ratio`: estica sozinho à altura da linha
    e só usa o mínimo quando fica sozinho nela. */
 .montra__ig > a {

@@ -544,7 +544,6 @@ function azulejoServico(sv) {
    ${figura("obras", sv.imagem, alturaFoto(sv.imagem), {
      medidas: "(min-width: 76rem) 18rem, (min-width: 44rem) 33vw, 46vw" })}
    <span class="montra__nome" id="n-${esc(sv.slug)}">${esc(sv.curto || sv.nome)}</span>
-   ${fotos.length > 1 ? `<span class="montra__conta" aria-hidden="true">${fotos.length}</span>` : ""}
   </button>
  </li>`;
 }
