@@ -263,8 +263,19 @@ h1.titulo-pagina { font-size: var(--t-4); line-height: .98; letter-spacing: -.02
       var(--ouro-alto) 62%, var(--ouro-fundo) 100%);
     -webkit-background-clip: text; background-clip: text;
     color: transparent;
-    /* Sem isto, os descendentes de linhas grandes ficam cortados no Safari. */
-    padding-bottom: .06em;
+    /* O `background-clip: text` pinta o gradiente SÓ dentro da caixa de
+       padding: o que a tinta do glifo passar dessa caixa não recebe cor
+       nenhuma e desaparece.
+       Medido a 67,2 px de corpo com Archivo: a tinta saía 6 px ACIMA e 1,1 px
+       abaixo da caixa. Em cima não havia padding nenhum, e foi assim que o til
+       do Ã de «Customização» ficou cortado; em baixo os .06em que já existiam
+       não chegavam para a cedilha do Ç, que ficava 1,1 px de fora.
+       6/67,2 = .089em e 1,1/67,2 = .016em, portanto .1em e .08em dão folga aos
+       dois — e a folga interessa porque o texto é editável no backoffice e
+       ninguém vai medir glifo a glifo de cada vez.
+       A margem negativa devolve a posição, para o layout não mexer com isto. */
+    padding-block: .1em .08em;
+    margin-top: -.1em;
   }
 }
 
@@ -552,7 +563,14 @@ body[data-menu="aberto"] { overflow: hidden; }
    62% e não 42%: o painel gravado acaba aos 58% da IMAGEM, e como o `cover`
    corta na horizontal, isso dá bem mais do que 42% da caixa. Medido. */
 @media (min-width: 64rem) {
-  .heroi__texto, .provas { max-inline-size: min(38rem, 52%); }
+  .heroi__texto { max-inline-size: min(38rem, 52%); }
+  /* A régua de provas leva mais largura do que o texto: não é prosa, é uma
+     tira compacta, e com a largura de leitura do texto (608 px a 1440) o selo
+     da localidade caía para segunda linha — 342 + 221 + 56 de intervalo dão
+     620, medido. Mais largura não custa contraste porque tudo isto continua
+     dentro da zona onde o véu é forte (até 50% da janela), e o selo tem painel
+     próprio por cima disso. */
+  .provas { max-inline-size: min(46rem, 64%); }
 
   /* Véu horizontal, em CSS e não gravado na imagem: assim acompanha o layout
      em vez de acompanhar o recorte do `object-fit: cover`, que muda a cada
@@ -584,7 +602,10 @@ body[data-menu="aberto"] { overflow: hidden; }
   font-size: clamp(1.85rem, .2rem + 8.4vw, 4.2rem);
   margin-block: var(--e-5) var(--e-3);
 }
-.heroi h1 span + span { margin-top: -.06em; }
+/* -.18em = -.1 para cancelar o `padding-top` novo das linhas douradas, -.02 do
+   `padding-bottom` que subiu de .06 para .08, e -.06 do aperto entre linhas que
+   já existia antes de tudo isto. */
+.heroi h1 span + span { margin-top: -.18em; }
 /* «Proteção absoluta» é uma assinatura, não uma descrição. Este subtítulo é o
    que diz ao Google e a quem chega o que é que a casa faz — e o <h1> é a
    única arma que resta agora que não há páginas por serviço. */
@@ -601,11 +622,34 @@ body[data-menu="aberto"] { overflow: hidden; }
   border-top: 1px solid var(--filete-fraco);
   list-style: none;
 }
-.provas li { display: grid; gap: .15rem; }
+.provas li { display: flex; align-items: center; gap: .55rem; min-inline-size: 0; }
 .provas b {
   font-family: var(--letra-titulo);
   font-size: var(--t-2); font-weight: 700; color: var(--ouro-alto);
   line-height: 1; letter-spacing: -.02em;
+}
+/* As cinco estrelas antes da nota, como no exemplo. O corpo é o MESMO do
+   número, para escalarem juntos quando a tipografia muda de tamanho.
+   O .88em não é arbitrário: a estrela desenhada só ocupa cerca de dois terços
+   da sua moldura de 24x24, portanto uma caixa igual ao corpo do número daria
+   uma estrela visivelmente mais pequena do que os dígitos. Medido: com .88em a
+   estrela fica a ~0,83 da altura das maiúsculas, que é a proporção do
+   exemplo. */
+.provas .estrelas { display: inline-flex; gap: .1em; color: var(--ouro); }
+.provas .estrelas svg { font-size: var(--t-2); inline-size: .88em; block-size: .88em; }
+
+/* A localidade num selo com contorno, e não como segundo bloco de texto. */
+.provas__selo {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .5rem 1rem .5rem .85rem;
+  border: 1px solid var(--filete); border-radius: 999px;
+  background: color-mix(in oklab, var(--tinta) 55%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: var(--t--1); color: var(--osso); letter-spacing: .01em;
+}
+.provas__selo svg {
+  inline-size: 1rem; block-size: 1rem; flex: none; color: var(--ouro);
+  fill: none; stroke: currentColor; stroke-width: 1.6;
 }
 /* `--osso-meio` e não `--osso-fraco`: medido por cima do fundo da capa, o
    fraco dava 4,04:1 no pior ponto — abaixo do mínimo de 4,5:1 para texto

@@ -489,6 +489,16 @@ function blocoAvaliacoes({ claro = false } = {}) {
  *  (medido: «Customização Premium» dá 864 px numa coluna de 608), e assim o
  *  título muda de duas para três linhas sem se acrescentar campos ao
  *  backoffice de cada vez. */
+/** Cinco estrelas para a régua de provas da capa.
+ *  O bloco de avaliações tem uma função igual, mas fechada dentro dele; esta
+ *  vive aqui porque é usada na capa, que é gerada noutro sítio. Duplicar cinco
+ *  linhas é melhor do que expor o interior desse bloco só para isto. */
+function estrelasFixas(n) {
+  const uma = (cheia) => `<svg viewBox="0 0 24 24" fill="${cheia ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICONE.estrela}</svg>`;
+  return `<span class="estrelas" role="img" aria-label="${n} de 5 estrelas">${
+    Array.from({ length: 5 }, (_, i) => uma(i < n)).join("")}</span>`;
+}
+
 function tituloCapa() {
   return String(D.textos.heroi_titulo || "")
     .split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
@@ -709,13 +719,17 @@ function inicio() {
     <!-- Só «Ver trabalhos», a pedido. O «Pedir orçamento» não desaparece do
          site: continua na navbar, no menu de telemóvel, no botão flutuante do
          WhatsApp e no fecho dos Contactos. -->
-    <a class="botao botao--cheio" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
+    <a class="botao botao--linha" href="${u("/#trabalhos")}">Ver trabalhos <span class="seta">→</span></a>
    </div>
   </div>
 
   <ul class="provas">
-   <li><b>${String(D.google.nota).replace(".", ",")} ★</b><span>${D.google.total} avaliações no Google</span></li>
-   <li><b>Leiria</b><span>e toda a região Centro</span></li>
+   <li>
+    ${estrelasFixas(Math.round(D.google.nota))}
+    <b>${String(D.google.nota).replace(".", ",")}</b>
+    <span>· ${D.google.total} avaliações Google</span>
+   </li>
+   <li><span class="provas__selo">${svg("local")}${esc(D.morada.localidade)} e toda a região Centro</span></li>
   </ul>
  </div>
 </section>

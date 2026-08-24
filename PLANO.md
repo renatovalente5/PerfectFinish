@@ -678,3 +678,52 @@ De caminho, e pela mesma verificação:
 sessão, portanto há achados que nunca foram julgados. Ficam por adjudicar, entre
 outros: o botão flutuante do WhatsApp a tapar conteúdo, sair da régua com Tab, o
 `onerror` das imagens, e a escolha de ficheiro em DPR 2.
+
+
+---
+
+## O til do Ã cortado no título dourado (24-08-2026)
+
+O cliente viu-o antes de mim, e a minha medição anterior tinha dito que estava
+bem — porque medi a coisa errada.
+
+**Causa:** o `background-clip: text` pinta o gradiente SÓ dentro da caixa de
+padding do elemento. A tinta que o glifo põe fora dessa caixa não recebe cor
+nenhuma e simplesmente desaparece. A regra `.ouro > span` tinha
+`padding-bottom: .06em` para as descidas e **nada em cima**.
+
+**Medição certa:** uma `Range` sobre o conteúdo do `<span>` devolve o rectângulo
+da TINTA; o `getBoundingClientRect` do `<span>` devolve a caixa. A 67,2 px de
+corpo com Archivo, a tinta saía **6 px acima** e 1,1 px abaixo da caixa. Nas
+linhas «Studio de» e «Premium» não há nada tão alto, por isso não se via; em
+«Customização» o til do Ã entra nesses 6 px, e a cedilha do Ç ficava 1,1 px de
+fora por baixo.
+
+**Correcção:** `padding-block: .1em .08em` com `margin-top: -.1em` a devolver a
+posição, para o layout não mexer. A regra que aperta as linhas do título passou
+de -.06em para -.18em (= -.1 do padding novo, -.02 do aumento em baixo, -.06 do
+aperto que já existia). Vale para TODOS os títulos dourados do site, que também
+têm ã e ç.
+
+A folga interessa porque o título é editável no backoffice: ninguém vai medir
+glifo a glifo de cada vez que o cliente muda a frase.
+
+## A régua de provas na forma pedida (24-08-2026)
+
+Cinco estrelas, a nota, «· N avaliações Google», e a localidade num selo com
+contorno e ícone — a partir de uma fotografia de outro site que o cliente mandou.
+
+Duas coisas que precisaram de número e não de gosto:
+· **O tamanho das estrelas.** A estrela desenhada ocupa cerca de dois terços da
+  moldura de 24x24, portanto uma caixa igual ao corpo do número dava uma estrela
+  visivelmente menor do que os dígitos. Com `.88em` do mesmo corpo fica a ~0,83
+  da altura das maiúsculas, que é a proporção do exemplo.
+· **A largura da régua.** Com a largura de leitura do texto (608 px a 1440) o
+  selo caía para segunda linha: 342 + 221 + 56 de intervalo dão 620. A régua
+  passou a `min(46rem, 64%)` — não é prosa, é uma tira compacta. Não custa
+  contraste porque continua dentro da zona onde o véu é forte (até 50% da
+  janela) e o selo tem painel próprio por cima disso.
+  Contraste medido por composição real (fotografia + véu + painel): nota 7,69 ·
+  texto 7,71 · selo 14,48 · estrelas 5,20.
+
+O botão da capa voltou ao contorno, a pedido.
