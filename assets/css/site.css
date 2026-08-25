@@ -1749,9 +1749,12 @@ body[data-menu="aberto"] .zap-flutuante { display: none; }
     background: color-mix(in oklab, var(--ouro) 8%, transparent);
   }
   .loja-movel svg { inline-size: 1.25rem; block-size: 1.25rem; }
-  /* O item 04 do menu de ecrã inteiro é a Loja, e destaca-se. */
-  .menu__lista li:last-child a { color: var(--ouro-alto); border-top: 1px solid var(--filete); }
-  .menu__lista li:last-child .numero { color: var(--ouro); }
+  /* A Loja NÃO se destaca no menu de ecrã inteiro, a pedido: ali é mais um
+     item da lista, como os outros. Levava dourado e um filete mais forte, e o
+     cliente disse que não precisa de ser especial.
+     No cabeçalho do computador continua destacada, porque lá é o único sítio
+     onde compete com o botão de orçamento e precisa de se ler como página à
+     parte — e isso não foi posto em causa. */
 }
 
 
