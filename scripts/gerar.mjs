@@ -824,7 +824,11 @@ ${blocoAvaliacoes({ claro: true })}
   return pagina({
     url: "/",
     titulo: "Estúdio de Customização Premium em Leiria | Perfect Finish",
-    descricao: "Estúdio de customização em Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail. 4,9 ★ em 94 avaliações no Google.",
+    /* Sem a nota nem o número de avaliações, a pedido: aparecem no cartão de
+       partilha e o cliente não os quer ali. E eram números escritos à mão que
+       envelheciam sozinhos — a nota real está na secção de avaliações, que vem
+       dos dados. */
+    descricao: "Estúdio de customização automóvel em Leiria, com carros desde 2009: tira mossas sem pintura, películas solares, PPF, envelopamento e car detail.",
     corpo,
   });
 }
