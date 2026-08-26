@@ -300,6 +300,28 @@ for (const classe of usadas) {
   }
 }
 
+/* -------------------------------------------------------- domínio próprio */
+/* Se existe CNAME no repositório, TEM de existir no site publicado. Esta
+   publicação é por workflow e o artefacto substitui o site inteiro: um CNAME
+   que fique só na raiz do repositório desaparece à primeira publicação e o
+   GitHub perde o domínio. E se o CNAME existir mas os caminhos ainda levarem o
+   prefixo da subpasta, o site fica no ar com tudo a dar 404 — foi exactamente o
+   que aconteceu ao apontar o domínio. */
+if (existsSync(join(RAIZ, "CNAME"))) {
+  const dominio = readFileSync(join(RAIZ, "CNAME"), "utf8").trim();
+  if (!existsSync(join(SAIDA, "CNAME"))) {
+    falha("existe CNAME no repositório mas não em _site/ — a publicação perderia o domínio próprio");
+  } else if (readFileSync(join(SAIDA, "CNAME"), "utf8").trim() !== dominio) {
+    falha("o CNAME de _site/ não coincide com o do repositório");
+  }
+  for (const [nome, html] of paginas) {
+    if (/(?:href|src)="\/PerfectFinish\//.test(html)) {
+      falha(`${nome}: ainda tem caminhos com o prefixo /PerfectFinish, e com domínio próprio dão 404`);
+      break;
+    }
+  }
+}
+
 /* ------------------------------------------------------------- backoffice */
 /* O `.pages.yml` é validado por Zod no editor do Pages CMS, mas o caminho de
    execução NÃO chama essa validação: um ficheiro com um tipo inventado ou um

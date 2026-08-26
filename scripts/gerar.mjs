@@ -1265,6 +1265,11 @@ for (const pasta of ["assets"]) cpSync(join(RAIZ, pasta), join(SAIDA, pasta), { 
 escrever(".nojekyll", "");
 if (CNAME) escrever("CNAME", CNAME + "\n");
 
+/* O CNAME sai DENTRO do site publicado, e não só na raiz do repositório: esta
+   publicação é por workflow e o artefacto substitui o site inteiro, portanto um
+   CNAME que só exista no repositório desaparece e o domínio próprio cai com ele. */
+if (CNAME) escrever("CNAME", CNAME + "\n");
+
 escrever("robots.txt", `User-agent: *
 Allow: /
 
