@@ -276,7 +276,6 @@ function rodape() {
     <h4>Contactos</h4>
     <ul class="rodape__contactos">
      ${contacto("telefone", `<a href="tel:+351${TEL}">${TEL_TXT}</a><br><span class="custo-chamada">${CUSTO}</span>`)}
-     ${D.contactos.email ? contacto("email", `<a href="mailto:${esc(D.contactos.email)}">${esc(D.contactos.email)}</a>`) : ""}
      ${contacto("local", `${esc(D.morada.rua)}<br>${esc(D.morada.codigo_postal)} ${esc(D.morada.localidade)}`)}
      ${contacto("relogio", D.horario.map((h) => `${esc(h.dias)}: ${esc(h.horas)}`).join("<br>"))}
     </ul>
@@ -1025,13 +1024,25 @@ function blocoContactos() {
    </dl>
 
    <div>
-    <div class="mapa" data-incorporar="${esc(D.google.incorporar)}">
-     <div class="mapa__fundo" aria-hidden="true"></div>
-     <div class="mapa__convite">
-      <p><strong>Mapa do Google</strong><br>Carregar o mapa envia o seu endereço IP para a Google. Só o fazemos com a sua autorização.</p>
-      <button class="botao botao--linha" type="button" data-carregar-mapa>Carregar o mapa</button>
-      <p style="font-size:var(--t--2)"><a href="${esc(D.morada.mapa)}" target="_blank" rel="noopener">…ou abrir directamente no Google Maps →</a></p>
+    <!-- O botão de abrir no Maps é NOSSO e vive FORA do .mapa, de propósito.
+         O que o Google mostra por cima do mapa aparece só ao interagir, e está
+         dentro do iframe: nada do lado de fora lhe pode tocar.
+         Fora do .mapa porque o site.js limpa esse elemento para lá meter o
+         iframe (e para o repor ao retirar a autorização) — um botão lá dentro
+         era apagado nas duas passagens.
+         Só se mostra com o mapa carregado: sem mapa, o convite ao lado já
+         oferece a mesma ligação. -->
+    <div class="mapa__caixa">
+     <div class="mapa" data-incorporar="${esc(D.google.incorporar)}">
+      <div class="mapa__fundo" aria-hidden="true"></div>
+      <div class="mapa__convite">
+       <p><strong>Mapa do Google</strong><br>Carregar o mapa envia o seu endereço IP para a Google. Só o fazemos com a sua autorização.</p>
+       <button class="botao botao--linha" type="button" data-carregar-mapa>Carregar o mapa</button>
+       <p style="font-size:var(--t--2)"><a href="${esc(D.morada.mapa)}" target="_blank" rel="noopener">…ou abrir directamente no Google Maps →</a></p>
+      </div>
      </div>
+     <a class="mapa__abrir" href="${esc(D.morada.mapa)}" target="_blank" rel="noopener">
+      ${svg("local")}Abrir no Maps<span class="seta" aria-hidden="true">↗</span></a>
     </div>
    </div>
   </div>`;

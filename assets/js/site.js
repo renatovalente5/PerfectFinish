@@ -296,6 +296,11 @@
       marco.allowFullscreen = true;
       alvo.textContent = "";
       alvo.append(marco);
+      /* Diz à caixa que o mapa está carregado: é isto que mostra o nosso botão
+         de abrir no Maps. Um atributo e não `:has(iframe)` no CSS, para não
+         depender de suporte de `:has()` numa coisa que já sabemos quando
+         acontece. */
+      alvo.closest(".mapa__caixa")?.setAttribute("data-mapa", "carregado");
     };
 
     /* Descarregar o mapa outra vez. Guarda-se o conteúdo original do sítio do
@@ -307,6 +312,10 @@
     const descarregarMapa = () => {
       if (!sitioMapa || convite === null) return;
       sitioMapa.innerHTML = convite;
+      /* E esconder outra vez o nosso botão de abrir no Maps. Sem isto ficava à
+         vista sobre o convite de autorização, ou seja o site pedia autorização
+         para o mapa e ao lado já oferecia o mapa — medido e corrigido. */
+      sitioMapa.closest(".mapa__caixa")?.removeAttribute("data-mapa");
       ligarBotaoMapa();
     };
 

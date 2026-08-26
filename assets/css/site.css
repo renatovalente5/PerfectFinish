@@ -1291,6 +1291,36 @@ body[data-menu="aberto"] { overflow: hidden; }
   display: grid; place-items: center;
 }
 .mapa iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
+
+/* BOTÃO DE ABRIR NO GOOGLE MAPS, nosso.
+   O que o Google desenha por cima do mapa aparece só ao interagir e vive dentro
+   do iframe — nada do lado de fora lhe pode tocar. Este fica sempre à vista e
+   usa a linguagem do site.
+   Canto superior DIREITO: o Google ocupa o superior esquerdo com o seu próprio
+   botão, o inferior esquerdo com a miniatura de satélite e o inferior direito
+   com o controlo de deslocação. */
+.mapa__caixa { position: relative; }
+.mapa__abrir {
+  position: absolute; z-index: 3;
+  inset-block-start: var(--e-3); inset-inline-end: var(--e-3);
+  display: none; align-items: center; gap: .45rem;
+  padding: .6rem .9rem;
+  border: 1px solid var(--filete); border-radius: 999px;
+  background: color-mix(in oklab, var(--tinta) 88%, transparent);
+  backdrop-filter: blur(8px);
+  font-family: var(--letra-titulo);
+  font-size: var(--t--2); font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; text-decoration: none; color: var(--osso);
+  transition: border-color .22s var(--curva), color .22s var(--curva);
+}
+/* Só com o mapa carregado. Sem mapa, o convite que está por baixo já oferece a
+   mesma ligação, e dois botões para o mesmo sítio ao mesmo tempo é ruído. */
+.mapa__caixa[data-mapa="carregado"] .mapa__abrir { display: inline-flex; }
+.mapa__abrir:hover { border-color: var(--ouro); color: var(--ouro-alto); }
+.mapa__abrir svg {
+  inline-size: .95rem; block-size: .95rem; flex: none; color: var(--ouro);
+  fill: none; stroke: currentColor; stroke-width: 1.7;
+}
 .mapa__convite {
   display: grid; gap: var(--e-4); justify-items: center; text-align: center;
   padding: var(--e-6); max-width: 32rem;
