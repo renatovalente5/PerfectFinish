@@ -60,6 +60,20 @@ if (!/:where\(ul,\s*ol\)\[class\]\s*\{[^}]*padding-inline-start:\s*0/.test(css))
 // 6. 100vw em propriedades de largura: inclui a barra de scroll e transborda.
 for (const m of css.matchAll(/(?<!max-)(?:inline-size|width)\s*:\s*100vw/g)) problemas.push("largura 100vw (inclui a barra de scroll)");
 
+// 7. Acentos graves dentro de comentários HTML do gerador. Um comentário
+//    escrito num template literal fecha a string no primeiro acento grave e o
+//    ficheiro deixa de compilar. Quebrei esta regra QUATRO vezes num dia, e
+//    escrevê-la no PLANO não bastou — por isso passa a ser verificada.
+{
+  const ger = readFileSync(new URL("../scripts/gerar.mjs", import.meta.url), "utf8");
+  for (const m of ger.matchAll(/<!--[\s\S]*?-->/g)) {
+    if (m[0].includes("`")) {
+      const primeira = m[0].split("\n")[0].trim().slice(0, 56);
+      problemas.push(`comentário HTML com acento grave em gerar.mjs — fecha o template literal: «${primeira}…»`);
+    }
+  }
+}
+
 console.log(problemas.length ? problemas.map(p => "  " + p).join("\n") : "  nada a apontar");
 console.log(`\n${problemas.length} apontamento(s)`);
 process.exit(problemas.length ? 1 : 0);

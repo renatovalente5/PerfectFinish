@@ -260,14 +260,16 @@ function rodape() {
    </div>
 
    <div>
-    <h4>Serviços</h4>
-    <!-- Vem da lista de serviços, que é a fonte única. Antes vinha das cinco
-         páginas de serviço desligadas, e eram duas listas de serviços a existir
-         em paralelo — no backoffice apareciam como duas entradas «Serviços».
-         Mostram-se os que têm fotografia: são os que têm azulejo na montra,
-         portanto a âncora leva a algo que se vê. -->
-    <ul>${LISTA_SERVICOS.filter((sv) => sv.imagem).map((sv) =>
-      `<li><a href="${u(`/#s-${sv.slug}`)}">${esc(sv.curto || sv.nome)}</a></li>`).join("")}</ul>
+    <h4>Navegação</h4>
+    <!-- A MESMA lista do cabeçalho, e não uma cópia escrita à mão: o rodapé é o
+         segundo sítio onde as pessoas procuram por onde ir, e duas listas de
+         navegação que divergem são pior do que uma. Vinha aqui a lista dos
+         serviços com fotografia, a pedido do cliente.
+         Sem aria-current: o rodapé não sabe em que página está (a função não
+         recebe o endereço actual) e o cabeçalho já marca a página. Um leitor de
+         ecrã que ouvisse «página actual» nos dois sítios não ganhava nada. -->
+    <ul>${NAV.map((n) =>
+      `<li><a href="${u(n.url)}">${esc(n.nome)}</a></li>`).join("")}</ul>
    </div>
 
    <div>

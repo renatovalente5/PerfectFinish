@@ -4,7 +4,13 @@
     {
       "name": "perfectfinish",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8813", "--directory", "_dev"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8813",
+        "--directory",
+        "_site"
+      ],
       "port": 8813,
       "url": "http://localhost:8813"
     }

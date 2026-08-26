@@ -1003,3 +1003,40 @@ Nota: `break-inside: avoid` nos itens, senão um nome de duas linhas pode ser
 partido entre colunas. E o risco dourado leva `translate: 0 -.3em` — com
 `align-items: baseline` um filho de 1 px de altura alinha pelo fundo da própria
 caixa e ficava caído.
+
+
+---
+
+## Rodapé: navegação em vez de serviços (26-08-2026)
+
+A pedido. A coluna passa a mostrar a MESMA lista do cabeçalho (`NAV`), e não uma
+cópia escrita à mão: o rodapé é o segundo sítio onde as pessoas procuram por onde
+ir, e duas listas de navegação que divergem são pior do que uma.
+
+Sem `aria-current`: a função do rodapé não recebe o endereço actual, e o
+cabeçalho já marca a página. Ouvir «página actual» duas vezes não ajuda ninguém.
+
+## A pré-visualização local estava a mentir (26-08-2026)
+
+Depois do domínio próprio, os caminhos absolutos deixaram de ter o prefixo
+`/PerfectFinish` — mas o servidor local continuava a servir em
+`_dev/PerfectFinish`. Resultado: a página local aparecia **sem logótipo, sem
+imagens e sem JavaScript**, e isso faz parecer que a alteração que se acabou de
+fazer está estragada quando o que está errado é a montagem.
+
+O `launch.json` passa a servir `_site` na RAIZ, como o domínio faz. Verificado:
+`/`, `/assets/js/site.js`, `/assets/img/marca/logotipo.svg` e `/loja/` todos a
+200, JS a correr, cinco comparadores vivos, zero pedidos 404.
+
+(A única imagem «partida» que sobra é o `<img>` vazio da galeria, que só recebe
+`src` quando se abre uma. É por desenho.)
+
+## A regra dos acentos graves passou a ser verificada (26-08-2026)
+
+Comentários HTML escritos dentro de `template literals` fecham a string no
+primeiro acento grave e o gerador deixa de compilar. **Quebrei esta regra quatro
+vezes num dia**, e escrevê-la aqui não bastou.
+
+O `scripts/responsivo.mjs` passa a percorrer os comentários HTML do gerador e a
+travar se algum tiver acento grave. Confirmado que dispara. Uma regra que se
+quebra quatro vezes não é uma regra, é uma verificação que falta.

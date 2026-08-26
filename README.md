@@ -41,13 +41,17 @@ node scripts/auditar.mjs    # trava a publicação se algo estiver mal
 Ver em local:
 
 ```bash
-python3 -m http.server 8813 --directory _dev
+python3 -m http.server 8813 --directory _site
 ```
 
-`_dev/PerfectFinish` é um atalho para `_site`. Existe porque o site é gerado
-para a subpasta `/PerfectFinish` (é onde vive no GitHub Pages) e assim os
-caminhos absolutos batem certo em local e em produção. Abrir
-<http://localhost:8813/PerfectFinish/>.
+Abrir <http://localhost:8813/>. Serve-se `_site` na RAIZ porque é aí que o site
+vive desde que existe o domínio próprio: com CNAME os caminhos absolutos deixam
+de ter o prefixo `/PerfectFinish`, e um servidor local que sirva numa subpasta
+mostra o site sem imagens nem JavaScript — o que faz parecer que a alteração que
+se acabou de fazer está estragada, quando o que está errado é a montagem local.
+
+(A montagem antiga era `_dev/PerfectFinish` como atalho para `_site`. Existia porque o site era gerado
+para a subpasta `/PerfectFinish`, que é onde vivia no github.io. Já não é o caso.)
 
 ## Ferramentas (correr só quando a origem muda)
 
