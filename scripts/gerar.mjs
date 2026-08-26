@@ -392,7 +392,7 @@ function dadosEstruturados(pagina) {
 }
 
 /* ------------------------------------------------------------- estrutura */
-function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, classe = "" }) {
+function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, classe = "", indexar = true }) {
   const canonico = abs(url);
   return `<!doctype html>
 <html lang="pt-PT">
@@ -401,9 +401,9 @@ function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titulo)}</title>
 <meta name="description" content="${esc(descricao)}">
-<link rel="canonical" href="${canonico}">
+${indexar ? `<link rel="canonical" href="${canonico}">` : ""}
 <meta name="theme-color" content="#1A1717">
-<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="robots" content="${indexar ? "index, follow, max-image-preview:large" : "noindex, follow"}">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_PT">
@@ -422,6 +422,7 @@ function pagina({ url, titulo, descricao, corpo, migalhas = [], servico = null, 
 <link rel="manifest" href="${u("/site.webmanifest")}">
 
 <link rel="preload" as="font" type="font/woff2" crossorigin href="${u("/assets/fonts/archivo-latin.woff2")}">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="${u("/assets/fonts/inter-tight-latin.woff2")}">
 <style>
 @font-face{font-family:"Archivo";src:url("${u("/assets/fonts/archivo-latin.woff2")}") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Inter Tight";src:url("${u("/assets/fonts/inter-tight-latin.woff2")}") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -1206,6 +1207,11 @@ site. O aviso voltará a aparecer na visita seguinte.</p>`
 function naoEncontrada() {
   return pagina({
     url: "/404.html",
+    /* `noindex`: uma página de erro indexada aparece nos resultados a dizer
+       «Página não encontrada» e gasta rastreio em troco de nada. O `follow`
+       fica, para as ligações que ela oferece continuarem a ser seguidas.
+       E sem canónico: canonizar um 404 é declará-lo como página legítima. */
+    indexar: false,
     titulo: "Página não encontrada | Perfect Finish Studio",
     descricao: "A página que procura não existe.",
     corpo: `<section class="seccao" style="padding-top:calc(var(--cabecalho-alto) + 4rem);min-height:60svh;display:grid;place-items:center;text-align:center">

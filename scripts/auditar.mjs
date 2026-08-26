@@ -215,7 +215,14 @@ for (const caminho of paginas) {
   if (!descricao) falha(`${nome}: sem meta description`);
   else if (descricao.length > 165) aviso(`${nome}: description com ${descricao.length} caracteres (ideal ≤ 155)`);
 
-  if (!/<link rel="canonical"/.test(html)) falha(`${nome}: sem canonical`);
+  /* O canónico é exigido nas páginas INDEXÁVEIS. Numa página com `noindex` é
+     contraditório: canonizar é declarar «esta é a versão boa desta página»,
+     enquanto o noindex diz «não a indexes». O 404 é o caso. */
+  const indexavel = !/<meta name="robots" content="[^"]*noindex/.test(html);
+  if (indexavel && !/<link rel="canonical"/.test(html)) falha(`${nome}: sem canonical`);
+  if (!indexavel && /<link rel="canonical"/.test(html)) {
+    falha(`${nome}: tem noindex E canonical — sinais contraditórios para o Google`);
+  }
   if (!/<html lang="pt-PT">/.test(html)) falha(`${nome}: sem lang="pt-PT"`);
   if (!/<h1[\s>]/.test(html) && !nome.includes("404")) {
     const h1 = (html.match(/<h1[\s>]/g) || []).length;
