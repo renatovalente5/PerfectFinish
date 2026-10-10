@@ -91,6 +91,19 @@ raiz — o gerador detecta e passa a gerar para a raiz do domínio.
 **Sem `npm install`.** O gerador é Node puro e o GitHub Actions não instala
 nada. É de propósito: é o que faz isto continuar a publicar daqui a dois anos.
 
+**A guarda do conteúdo.** Antes de gerar, o CI corre `.github/guardas.mjs`
+com as regras de `.github/regras.mjs` — as mesmas que o painel
+(`backoffice.perfectfinishstudio.pt`) confere ao gravar; o painel tem uma cópia
+byte a byte em `estatico/js/regras.js`. Pára só no que partia o site ou a lei
+(a estrutura dos ficheiros, o nome civil do titular, a denominação, o NIF, a
+morada, o e-mail, o telefone e o WhatsApp de todas as páginas); um trabalho ou
+um produto com problemas sai do site só na cópia que o gerador lê, e uma
+fotografia que já não existe sai da lista. A prova é `node
+.github/test-guardas.mjs` (em local; não corre no CI): re-joga os commits de
+`data/`, apaga cada chave de cada ficheiro, e publica de ponta a ponta mais de
+cem casos estragados de propósito. Quando se mudam as regras, copiam-se para o
+painel (`cp .github/regras.mjs ../perfectfinish-painel/estatico/js/regras.js`).
+
 **O `.pages.yml` falha em silêncio.** O Pages CMS valida o ficheiro com Zod
 **apenas no editor de configuração**; o caminho de execução (`config-store.ts`)
 não chama essa validação. Um tipo de campo inventado ou um campo esquecido

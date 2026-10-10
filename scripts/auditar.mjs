@@ -335,9 +335,17 @@ if (existsSync(join(RAIZ, "CNAME"))) {
    campo a menos carrega em silêncio, meio a funcionar. Como isso não dá erro
    nenhum ao cliente, verifica-se aqui.
 
+   SÓ ENQUANTO O PAGES CMS EXISTIR. O backoffice passa a ser o painel próprio
+   (backoffice.perfectfinishstudio.pt), e no dia da troca o `.pages.yml` sai do
+   repositório: esta verificação deixa de ter o que conferir, e a auditoria não
+   pode rebentar por isso. O que o painel deixa mudar, e como, confere-o a
+   guarda (.github/guardas.mjs, com as regras de .github/regras.mjs — as mesmas
+   do painel), no passo «Conferir o conteúdo» antes do gerador.
+
    Não se faz o parse do YAML (não há dependências): fazem-se duas
    verificações de texto que apanham os erros que realmente acontecem. */
-const backoffice = readFileSync(join(RAIZ, ".pages.yml"), "utf8");
+const temPagesCms = existsSync(join(RAIZ, ".pages.yml"));
+const backoffice = temPagesCms ? readFileSync(join(RAIZ, ".pages.yml"), "utf8") : "";
 
 // 1. Todos os tipos de campo têm de existir mesmo no Pages CMS 2.x.
 const TIPOS = new Set(["boolean", "code", "date", "file", "image", "number",
@@ -361,7 +369,7 @@ const paraVerificar = readdirSync(join(RAIZ, "data"), { withFileTypes: true })
   .map((e) => (e.isDirectory() ? [`data/${e.name}`, "*"]
     : e.name.endsWith(".json") ? [`data/${e.name}`, null] : null))
   .filter(Boolean);
-for (const [caminho, colecao] of paraVerificar) {
+for (const [caminho, colecao] of temPagesCms ? paraVerificar : []) {
   const ficheiros = colecao
     ? readdirSync(join(RAIZ, caminho)).filter((f) => f.endsWith(".json")).map((f) => join(caminho, f))
     : [caminho];
@@ -408,6 +416,18 @@ for (const [caminho] of paraVerificar) {
 for (const a of avisos) console.log(`  aviso   ${a}`);
 if (avisos.length) console.log("");
 for (const e of erros) console.log(`  ERRO    ${e}`);
+
+/* NO GITHUB ACTIONS, OS ERROS SÃO TAMBÉM ANOTAÇÕES (::error). É por elas que o
+   painel diz ao dono porque é que a publicação parou (o ecrã «Publicação» lê
+   as anotações do passo que falhou); uma linha «ERRO» só se via na consola da
+   corrida. Escapados como o GitHub manda (%, \r, \n), e com o «##[» partido:
+   o runner lê comandos no que aqui se escreve, e os dados vêm do backoffice.
+   No máximo 10 (o GitHub guarda 10 por passo); o resto está na consola. */
+if (process.env.GITHUB_ACTIONS === "true") {
+  const escMsg = (s) => String(s).replace(/##\[/g, "## [").replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+  for (const e of erros.slice(0, 9)) console.log(`::error title=Auditoria antes de publicar::${escMsg(e)}`);
+  if (erros.length > 9) console.log(`::error title=Auditoria antes de publicar::e mais ${erros.length - 9} — veja a consola desta corrida`);
+}
 
 console.log(
   `\n${erros.length ? "✗" : "✓"} ${erros.length} erro(s), ${avisos.length} aviso(s) ` +

@@ -32,6 +32,25 @@ jobs:
         with:
           node-version: 22
 
+      # A GUARDA DO CONTEÚDO (.github/guardas.mjs, com as regras de
+      # .github/regras.mjs — as mesmas do painel em
+      # backoffice.perfectfinishstudio.pt, que as confere ao gravar). Pára só no
+      # que não se publica sem partir o site ou a lei: a estrutura dos
+      # ficheiros, os dados legais (o nome civil do titular, a denominação, o
+      # NIF, a morada, o e-mail), o telefone e o WhatsApp de todas as páginas.
+      # Um trabalho ou um produto com problemas sai do site SÓ na cópia que o
+      # gerador lê (sem carro, sem nome, sem fotografia…), as fotografias que já
+      # não existem saem das listas, um serviço sem a fotografia dele fica só
+      # com o nome e um comparador sem as duas sai: um item nunca pára a
+      # publicação dos outros. Escreve nos ficheiros de data/ desta corrida, que
+      # não faz commit de volta. O resumo fica na página da corrida, e a prova
+      # de tudo isto é o .github/test-guardas.mjs (corre em local).
+      #
+      # CORRE ANTES DE TUDO O QUE LÊ OS DADOS: o gerador e a auditoria lêem a
+      # cópia já neutralizada.
+      - name: Conferir o conteúdo
+        run: node .github/guardas.mjs --neutralizar . --relatorio-em "$RUNNER_TEMP/relatorio.json"
+
       # Não há `npm ci` porque não há package.json: o gerador é Node puro.
       # É de propósito — é o que faz este site continuar a publicar daqui a
       # dois anos sem ninguém lhe tocar.
