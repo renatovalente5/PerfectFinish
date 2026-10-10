@@ -565,7 +565,11 @@ export function problemasDoProduto(p, ctx = {}) {
      publicação por um que não existe. */
   if (!ausente(p.foto) && p.foto !== '' && !caminhoDeFotoValido(p.foto, 'loja')) {
     neutraliza('foto-invalida', 'esconder', 'foto', 'A fotografia do produto não é uma fotografia da biblioteca da loja: o produto fica escondido da loja até escolher outra.', { foto: p.foto, tirarFoto: true });
-  } else if (typeof ctx.listarPasta === 'function' && !fotografiaExiste(fotografiaDoProduto(p), ctx.listarPasta, 'loja')) {
+  } else if (typeof ctx.listarPasta === 'function' && (temTexto(p.foto) || noSite(p)) && !fotografiaExiste(fotografiaDoProduto(p), ctx.listarPasta, 'loja')) {
+    /* Um produto ESCONDIDO sem fotografia escolhida não parte nada: o gerador
+       não o desenha, e nos dados não há caminho nenhum para a auditoria
+       conferir. Pode gravar-se escondido e ganhar a fotografia depois (o
+       painel cria-o assim); ligar «Mostrar na loja» sem ela é que não. */
     neutraliza('sem-foto', 'esconder', 'foto', temTexto(p.foto)
       ? 'A fotografia do produto já não está na biblioteca: o produto fica escondido da loja até escolher outra.'
       : 'O produto não tem fotografia: fica escondido da loja até ter uma.', temTexto(p.foto) ? { foto: p.foto, tirarFoto: true } : {});

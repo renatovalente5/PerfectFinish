@@ -382,6 +382,7 @@ secao('cada regra, com a classe certa');
       d.trabalhos['porsche-taycan'] = { slug: 'porsche-taycan', veiculo: 'Porsche Taycan', servico: 'PPF', ordem: 19, fotos: [FOTO_T], destaque: false, publicado: true };
       d.servicos.servicos[SV].obras.push('porsche-taycan');
     }],
+    ['um produto novo, escondido, ainda sem fotografia', (d) => { d.loja['luva-nova'] = { slug: 'luva-nova', nome: 'Luva nova', familia: 'Acessórios', ordem: 11, descricao: '', formato: '', preco: null, publicado: false }; }],
     ['um produto novo, do painel', (d) => { d.loja['luva-nova'] = { slug: 'luva-nova', nome: 'Luva nova', familia: 'Acessórios', ordem: 11, descricao: 'Uma luva.', formato: '1 un.', preco: null, foto: FOTO_LOJA, publicado: true }; }],
     ['um comparador novo, do painel', (d) => { d.pares.pares.push({ slug: 'porsche-taycan', veiculo: 'Porsche Taycan', servico: 'PPF', antes: FOTO_T, depois: HOJE.trabalhos[T].fotos[1], ordem: 6, legenda: 'x', alt_antes: 'a', alt_depois: 'b' }); }],
     ['uma avaliação nova', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana R.', quando: 'há uma semana', estrelas: 5, texto: 'Impecável.' }); }],
