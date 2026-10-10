@@ -5,7 +5,8 @@ Leiria: tira mossas sem pintura, películas solares, PPF, envelopamento e car
 detail.
 
 - **Site:** <https://renatovalente5.github.io/PerfectFinish/>
-- **Backoffice:** <https://app.pagescms.org/renatovalente5/PerfectFinish>
+- **Backoffice:** <https://backoffice.perfectfinishstudio.pt> — o painel próprio do site
+  (repositório privado `perfectfinish-painel`), que substituiu o Pages CMS
 - **Plano e decisões:** [`PLANO.md`](PLANO.md)
 
 ---
@@ -28,8 +29,9 @@ worker/        o Cloudflare Worker das avaliações em directo (opcional)
 _site/         resultado da geração — não é versionado
 ```
 
-O cliente grava no backoffice → o Pages CMS escreve em `data/` → o GitHub
-Actions corre o gerador e a auditoria → o site é publicado. Um a três minutos.
+O cliente grava no painel → o painel confere as regras e faz um commit em
+`data/` (e as fotografias em `assets/img/`) → o GitHub Actions corre a guarda,
+o gerador e a auditoria → o site é publicado. Um a três minutos.
 
 ## Comandos
 
@@ -104,7 +106,9 @@ fotografia que já não existe sai da lista. A prova é `node
 cem casos estragados de propósito. Quando se mudam as regras, copiam-se para o
 painel (`cp .github/regras.mjs ../perfectfinish-painel/estatico/js/regras.js`).
 
-**O `.pages.yml` falha em silêncio.** O Pages CMS valida o ficheiro com Zod
+**O `.pages.yml` falha em silêncio** (enquanto existir: sai do repositório
+depois de o painel estar no ar, e a auditoria deixa de o conferir). O Pages CMS
+valida o ficheiro com Zod
 **apenas no editor de configuração**; o caminho de execução (`config-store.ts`)
 não chama essa validação. Um tipo de campo inventado ou um campo esquecido
 carrega meio a funcionar, sem erro nenhum — e o cliente não tem como perceber.
@@ -128,22 +132,24 @@ ls /tmp/pagescms/fields/core | node -e 'let t=[];process.stdin.on("data",d=>t.pu
 
 ## O que o cliente vê no backoffice
 
-Seis entradas, pela ordem em que se mexem:
+Seis entradas, pela ordem do menu do painel (que tem ainda o Início, a
+Publicação, a Ajuda e a Conta):
 
 | | O que é | Onde aparece no site |
 |---|---|---|
 | **Trabalhos** | Um carro e as suas fotografias | As galerias que abrem nos azulejos dos serviços |
 | **Antes e depois** | Os comparadores | Secção «Antes e depois» — os dois primeiros à vista |
 | **Serviços** | Os treze serviços | Com fotografia = azulejo; sem = nome na lista |
+| **Avaliações** | As avaliações mostradas | Secção de avaliações |
 | **Loja** | Os produtos | Página da Loja |
-| **Avaliações do Google** | As avaliações mostradas | Secção de avaliações |
 | **Dados do estúdio** | Contactos, morada, horário, textos, dados legais | Todo o site |
 
-**Onze campos técnicos estão escondidos** (`hidden: true`): coordenadas,
-endereços de mapa, o servidor das avaliações em directo, os índices dos dias da
-semana, as peças do mosaico da capa. Continuam no ficheiro e editam-se aqui, mas
-não aparecem ao cliente — um campo que não se deve mexer, à vista, é um convite
-a mexer.
+**Os campos técnicos não aparecem no painel**: coordenadas, endereços de mapa,
+o servidor das avaliações em directo, as peças do mosaico da capa. Continuam no
+ficheiro e editam-se aqui — um campo que não se deve mexer, à vista, é um
+convite a mexer. Os dias da semana em números (`indices`, para o site marcar a
+linha de hoje) também não se vêem: o painel escreve-os a partir dos dias
+(«Segunda a sexta» → `1,2,3,4,5`).
 
 **As cinco páginas de serviço saíram de `data/`** para
 `_fonte/servicos-desligados/`. Estão desligadas (`PAGINAS_DE_SERVICO = false`) e
@@ -151,18 +157,14 @@ eram 12 campos por serviço dos quais o site usava dois: o cliente podia escreve
 uma FAQ inteira e nada aparecia. Se voltarem a ser ligadas, mover a pasta de
 volta para `data/servicos` e declarar os campos outra vez.
 
-## Primeiro acesso ao backoffice
+## Entrar no backoffice
 
-O <https://app.pagescms.org> pede uma autorização do GitHub (OAuth) na
-primeira entrada. **Só o dono da conta a pode dar** — não é algo que se faça
-por ele. Passos:
-
-1. Entrar em <https://app.pagescms.org> e escolher «Sign in with GitHub».
-2. Autorizar o acesso ao repositório `PerfectFinish` (só a esse).
-3. Abrir <https://app.pagescms.org/renatovalente5/PerfectFinish>.
-
-Depois disso o cliente pode ser convidado como colaborador e passa a entrar
-com o email dele.
+Em <https://backoffice.perfectfinishstudio.pt> entra-se com o email: o painel
+manda um código de 8 algarismos (de `painel@perfectfinishstudio.pt`), sem
+palavra-passe e sem conta no GitHub. Só entram os emails da lista do painel
+(`ADMINS`, no repositório do painel). As gravações chegam ao repositório pela
+GitHub App do painel, como commits «Painel: …». O ecrã «Ajuda» do painel diz o
+que fazer em cada caso, e a quem ligar numa avaria.
 
 ## Por preencher (depende do cliente)
 

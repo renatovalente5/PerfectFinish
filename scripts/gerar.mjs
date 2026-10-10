@@ -291,7 +291,7 @@ function rodape() {
     <li><a href="${u("/informacao-legal/")}">Informação legal</a></li>
     <li><a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer">Livro de Reclamações</a></li>
     <li><button type="button" class="rodape__botao" data-preferencias>Preferências</button></li>
-    <li><a class="rodape__gestao" href="https://app.pagescms.org/renatovalente5/PerfectFinish" target="_blank" rel="noopener">Gestão</a></li>
+    <li><a class="rodape__gestao" href="https://backoffice.perfectfinishstudio.pt" target="_blank" rel="noopener">Gestão</a></li>
    </ul>
   </div>
  </div>

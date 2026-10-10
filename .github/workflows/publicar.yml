@@ -1,14 +1,15 @@
 name: Publicar
 
 # Publica a cada envio para a branch principal, e também à mão pelo separador
-# Actions — que é o que o botão «Publicar site agora» do backoffice dispara.
+# Actions — que é o que o «Publicar outra vez» do painel
+# (backoffice.perfectfinishstudio.pt) dispara, sem entradas.
 on:
   push:
     branches: [main]
   workflow_dispatch:
     inputs:
       payload:
-        description: 'Enviado pelo Pages CMS. Não é preciso preencher.'
+        description: 'Era o que o Pages CMS enviava; o painel não o envia. Não é preciso preencher.'
         required: false
 
 permissions:
