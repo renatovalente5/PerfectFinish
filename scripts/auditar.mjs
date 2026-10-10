@@ -321,9 +321,12 @@ if (existsSync(join(RAIZ, "CNAME"))) {
   } else if (readFileSync(join(SAIDA, "CNAME"), "utf8").trim() !== dominio) {
     falha("o CNAME de _site/ não coincide com o do repositório");
   }
-  for (const [nome, html] of paginas) {
-    if (/(?:href|src)="\/PerfectFinish\//.test(html)) {
-      falha(`${nome}: ainda tem caminhos com o prefixo /PerfectFinish, e com domínio próprio dão 404`);
+  /* `paginas` são os caminhos dos ficheiros, e não pares [nome, html]: com
+     `for (const [nome, html] of paginas)` o «html» era a segunda letra do
+     caminho, e esta verificação nunca falhava. */
+  for (const caminho of paginas) {
+    if (/(?:href|src)="\/PerfectFinish\//.test(readFileSync(caminho, "utf8"))) {
+      falha(`/${relative(SAIDA, caminho)}: ainda tem caminhos com o prefixo /PerfectFinish, e com domínio próprio dão 404`);
       break;
     }
   }

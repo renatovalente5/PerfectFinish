@@ -14,7 +14,10 @@
  *   · o site.js marca «hoje» a linha certa do horário em cada dia da semana, e
  *     nunca uma linha sem os dias em números (era marcada aos domingos) — o
  *     site.js verdadeiro, corrido num contexto à parte com uma página de
- *     faz-de-conta. */
+ *     faz-de-conta;
+ *   · a auditoria trava a publicação quando o domínio próprio se perdia: um
+ *     CNAME errado ou em falta no _site, e páginas geradas com o prefixo
+ *     /PerfectFinish (sem o CNAME) quando o repositório o tem. */
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, realpathSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -158,6 +161,33 @@ secao('o «hoje» do horário: o site.js marca a linha certa, e nunca uma sem os
     if (!igual(r.marcadas, esperado(dia)) || r.falhas.length) mal.push(`${NOMES[dia]}: marcou ${JSON.stringify(r.marcadas)}, devia ${JSON.stringify(esperado(dia))}${r.falhas.length ? ` (${r.falhas[0]})` : ''}`);
   }
   certo(mal.length === 0, 'de domingo a sábado, «hoje» é a linha certa — e uma linha sem os dias em números (data-dias="" ou sem o atributo) nunca é marcada, nem ao domingo', mal.join(' | '));
+}
+
+/* ================================================================== */
+secao('a auditoria do domínio próprio pode falhar');
+{
+  const auditar = (w) => correr(w, 'auditar.mjs');
+  /* Um CNAME errado no site gerado (o GitHub Pages passava a servir outro domínio). */
+  const w = clone();
+  correr(w, 'gerar.mjs');
+  certo(auditar(w).status === 0, 'com o CNAME certo, a auditoria passa');
+  writeFileSync(join(w, '_site', 'CNAME'), 'outro-dominio.pt\n');
+  const errado = auditar(w);
+  certo(errado.status === 1 && /ERRO {4}o CNAME de _site\/ não coincide com o do repositório/.test(errado.saida), 'um CNAME errado no _site: a auditoria trava, e diz porquê', errado.saida.slice(-300));
+  rmSync(join(w, '_site', 'CNAME'));
+  const semCname = auditar(w);
+  certo(semCname.status === 1 && /ERRO {4}existe CNAME no repositório mas não em _site\//.test(semCname.saida), 'sem o CNAME no _site: trava (a publicação perdia o domínio próprio)', semCname.saida.slice(-300));
+  /* As páginas geradas sem o CNAME (com o prefixo /PerfectFinish da subpasta
+     do github.io) com o repositório a ter o CNAME: com domínio próprio, tudo
+     daria 404. */
+  const w2 = clone();
+  rmSync(join(w2, 'CNAME'));
+  correr(w2, 'gerar.mjs');
+  writeFileSync(join(w2, 'CNAME'), readFileSync(join(RAIZ, 'CNAME')));
+  writeFileSync(join(w2, '_site', 'CNAME'), readFileSync(join(RAIZ, 'CNAME')));
+  const prefixo = auditar(w2);
+  certo(prefixo.status === 1 && /ERRO {4}\/[^:]+: ainda tem caminhos com o prefixo \/PerfectFinish, e com domínio próprio dão 404/.test(prefixo.saida),
+    'páginas com o prefixo /PerfectFinish e o CNAME no repositório: trava, a dizer qual (a verificação que nunca falhava)', prefixo.saida.split('\n').filter((l) => /ERRO/.test(l)).slice(0, 3).join(' | '));
 }
 
 /* ================================================================== */
