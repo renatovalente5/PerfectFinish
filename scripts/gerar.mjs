@@ -977,6 +977,11 @@ ${CTA(`Precisa de ${s.nome.toLowerCase()}?`, "Mande-nos uma mensagem com uma fot
 }
 
 
+/* O PREÇO COM DUAS CASAS: «12,50 €», «18,00 €» (era o número tal e qual:
+   «12,5 €»). O que não é número (um commit à mão) sai como está, escapado —
+   a guarda já o assinala. */
+const precoEmEuros = (v) => (typeof v === "number" && Number.isFinite(v) ? v.toFixed(2).replace(".", ",") : esc(String(v).replace(".", ",")));
+
 function loja() {
   const cartao = (p) => `<article class="produto revelar">
  <div class="produto__imagem">${figura("loja", p.foto || p.slug, `${p.nome} — ${p.familia}`, {
@@ -986,7 +991,7 @@ function loja() {
   <span class="produto__familia">${esc(p.familia)}</span>
   <h3>${esc(p.nome)}</h3>
   <p>${esc(p.descricao)}</p>
-  <span class="produto__preco">${p.preco ? `${String(p.preco).replace(".", ",")} €<small>IVA incluído · ${esc(p.formato)}</small>` : `Sob consulta<small>${esc(p.formato)}</small>`}</span>
+  <span class="produto__preco">${p.preco ? `${precoEmEuros(p.preco)} €<small>IVA incluído · ${esc(p.formato)}</small>` : `Sob consulta<small>${esc(p.formato)}</small>`}</span>
  </div>
  <a class="botao botao--linha" href="${zap(`Olá! Tenho interesse no produto: ${p.nome} (${p.formato}). Pode dizer-me o preço e a disponibilidade?`)}" target="_blank" rel="noopener">Pedir por WhatsApp <span class="seta">→</span></a>
 </article>`;

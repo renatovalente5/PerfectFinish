@@ -17,7 +17,9 @@
  *     faz-de-conta;
  *   · a auditoria trava a publicação quando o domínio próprio se perdia: um
  *     CNAME errado ou em falta no _site, e páginas geradas com o prefixo
- *     /PerfectFinish (sem o CNAME) quando o repositório o tem. */
+ *     /PerfectFinish (sem o CNAME) quando o repositório o tem;
+ *   · os preços da loja com duas casas decimais («12,50 €», «18,00 €»), e
+ *     «Sob consulta» sem preço ou com 0. */
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, realpathSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -188,6 +190,20 @@ secao('a auditoria do domínio próprio pode falhar');
   const prefixo = auditar(w2);
   certo(prefixo.status === 1 && /ERRO {4}\/[^:]+: ainda tem caminhos com o prefixo \/PerfectFinish, e com domínio próprio dão 404/.test(prefixo.saida),
     'páginas com o prefixo /PerfectFinish e o CNAME no repositório: trava, a dizer qual (a verificação que nunca falhava)', prefixo.saida.split('\n').filter((l) => /ERRO/.test(l)).slice(0, 3).join(' | '));
+}
+
+/* ================================================================== */
+secao('os preços da loja com duas casas decimais');
+{
+  const w = clone();
+  const precos = { 'cera-de-carnauba': 12.5, 'limpa-jantes': 18, 'shampoo-ph-neutro': 9.9, 'luva-de-lavagem': 0, 'quick-detailer': null };
+  for (const [slug, preco] of Object.entries(precos)) { const rel = `data/loja/${slug}.json`; const o = lerJ(w, rel); o.preco = preco; escreverJ(w, rel, o); }
+  const g = correr(w, 'gerar.mjs');
+  const loja = g.status === 0 ? site(w, 'loja/index.html') : '';
+  const precoDe = (nome) => { const i = loja.indexOf(`<h3>${nome}</h3>`); return i < 0 ? null : (/class="produto__preco">([^<]*)</.exec(loja.slice(i))?.[1] ?? null); };
+  const vistos = { cera: precoDe('Cera de Carnaúba'), jantes: precoDe('Limpa-Jantes'), shampoo: precoDe('Shampoo pH Neutro'), luva: precoDe('Luva de Lavagem'), quick: precoDe('Quick Detailer') };
+  certo(igual(vistos, { cera: '12,50 €', jantes: '18,00 €', shampoo: '9,90 €', luva: 'Sob consulta', quick: 'Sob consulta' }), 'na loja: 12,50 €, 18,00 € e 9,90 € (duas casas), e «Sob consulta» sem preço ou com 0', vistos);
+  certo(correr(w, 'auditar.mjs').status === 0, 'e a auditoria passa');
 }
 
 /* ================================================================== */
