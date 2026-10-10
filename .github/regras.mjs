@@ -844,7 +844,7 @@ export function problemasDasDefinicoes(d, ctx = {}) {
       conferirTexto(out, base, { valor: h.horas, chave: `definicoes:horario.${i}.horas`, campo: `horario.${i}.horas`, rotulo: `Horas (linha ${i + 1})`, max: TAMANHOS.horas, classeVazio: 'avisa' });
       /* Os índices dos dias (escondidos) dizem ao site que linha marcar como
          «hoje». */
-      if (!ausente(h.indices) && !(typeof h.indices === 'string' && /^[0-6](,[0-6])*$/.test(h.indices))) avisa(`horario.${i}.indices`, 'horario', `horario.${i}.dias`, `Os dias da semana da ${i + 1}.ª linha (em números) não estão certos. Só o Renato os pode corrigir.`);
+      if (!ausente(h.indices) && !(typeof h.indices === 'string' && /^[0-6](,[0-6])*$/.test(h.indices))) avisa(`horario.${i}.indices`, 'horario', `horario.${i}.dias`, `Os dias da semana da ${i + 1}.ª linha (em números) não estão certos. Escreva os dias outra vez (ex.: Segunda a sexta), ou fale com o Renato.`);
     });
   }
 
@@ -1144,13 +1144,13 @@ export function mudancasBloqueadas(antes, depois, qual = 'definicoes') {
     if (tem(a, k) || tem(SECCOES_DEFINICOES, k) || out.some((x) => x.caminho === k)) continue;
     out.push({ caminho: k, motivo: 'chave_nova' });
   }
-  /* AS LINHAS DO HORÁRIO podem entrar, sair e mudar de lugar; os índices dos
-     dias de cada uma (escondidos) não se escrevem no painel: uma linha nova
-     não os traz, e uma que já existia leva os seus. */
+  /* AS LINHAS DO HORÁRIO podem entrar, sair e mudar de lugar. Os dias da
+     semana em números (`indices`, escondidos no .pages.yml) também mudam: o
+     painel escreve-os a partir dos dias («Segunda a sexta» → 1,2,3,4,5), para o
+     site marcar a linha de hoje (sem eles, o site.js marcava-a aos domingos).
+     Uns números estragados são um aviso das regras (problemasDasDefinicoes). */
   if (Array.isArray(d.horario)) {
-    const conhecidos = new Set((Array.isArray(a.horario) ? a.horario : []).filter(eObjecto).map((h) => JSON.stringify(h.indices ?? null)));
     d.horario.forEach((h, i) => {
-      if (eObjecto(h) && !ausente(h.indices) && !conhecidos.has(JSON.stringify(h.indices))) out.push({ caminho: `horario.${i}.indices`, motivo: 'mudou' });
       if (eObjecto(h)) for (const k of Object.keys(h)) if (!CAMPOS_HORARIO.includes(k)) out.push({ caminho: `horario.${i}.${k}`, motivo: 'chave_nova' });
     });
   }
