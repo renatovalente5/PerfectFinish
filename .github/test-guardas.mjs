@@ -133,9 +133,10 @@ secao('os dados de hoje');
   certo(deClasse(lista, 'bloqueia').length === 0, 'nada pára a publicação', deClasse(lista, 'bloqueia').map((p) => p.chave).join(', '));
   certo(deClasse(lista, 'neutraliza').length === 0, 'nada muda no site', deClasse(lista, 'neutraliza').map((p) => p.chave).join(', '));
   certo(avisos(lista).length === 0, 'nenhum aviso', avisos(lista).map((p) => `${p.chave}: ${p.mensagem}`).join(' | '));
-  const esperados = ['produto:descontaminante-ferrico:familia-fora', 'produto:quick-detailer:familia-fora'];
+  /* Até 10 out 2026 eram dois (as categorias «Preparação» e «Manutenção»,
+     fora da lista): entraram na lista, e os produtos ficaram como estavam. */
   const vistos = lembretes(lista).map((p) => p.chave).sort();
-  certo(JSON.stringify(vistos) === JSON.stringify(esperados), 'os lembretes são os 2 que os dados pedem (as categorias «Preparação» e «Manutenção», fora da lista do .pages.yml)', vistos.join(', '));
+  certo(vistos.length === 0, 'nenhum lembrete', vistos.join(', '));
   let iguais = 0; const diferentes = [];
   const todos = [...Object.entries(R.FICHEIROS).map(([k, rel]) => [rel, TEXTO[k]]),
     ...Object.entries(TEXTO.trabalhos).map(([n, t]) => [R.ficheiroDoTrabalho(n), t]), ...Object.entries(TEXTO.loja).map(([n, t]) => [R.ficheiroDoProduto(n), t])];
@@ -145,7 +146,22 @@ secao('os dados de hoje');
   const naoBate = Object.entries(HOJE.trabalhos).filter(([n, t]) => t.slug !== n).concat(Object.entries(HOJE.loja).filter(([n, p]) => p.slug !== n));
   certo(naoBate.length === 0, 'em cada trabalho e produto, o campo `slug` é o nome do ficheiro (o gerador usa o campo)', naoBate.map(([n]) => n).join(', '));
   const g = correr('node', [GUARDA]);
-  certo(g.status === 0 && /0 que param, 0 que mudam o site \(0 item\(ns\)\), 0 avisos, 2 lembretes/.test(g.out), 'a guarda, como programa, no repositório: sai com 0, e diz o mesmo', g.out.slice(-300) + g.err);
+  certo(g.status === 0 && /0 que param, 0 que mudam o site \(0 item\(ns\)\), 0 avisos, 0 lembretes/.test(g.out), 'a guarda, como programa, no repositório: sai com 0, e diz o mesmo', g.out.slice(-300) + g.err);
+}
+
+/* ================================================================== */
+secao('as categorias da loja');
+{
+  certo(['Preparação', 'Manutenção'].every((f) => R.FAMILIAS.includes(f)) && HOJE.loja['descontaminante-ferrico']?.familia === 'Preparação' && HOJE.loja['quick-detailer']?.familia === 'Manutenção',
+    '«Preparação» e «Manutenção» estão na lista das categorias (os dois produtos que as usam ficam como estavam)', R.FAMILIAS.join(', '));
+  /* Enquanto o .pages.yml existir (até o painel estar no ar), as duas listas
+     são a mesma: o Pages CMS e o painel oferecem as mesmas categorias. */
+  if (existsSync(join(RAIZ, '.pages.yml'))) {
+    const yml = readFileSync(join(RAIZ, '.pages.yml'), 'utf8');
+    const bloco = /- name: familia\n[\s\S]*?values:\n((?:[ \t]+- \{[^\n]*\}\n)+)/.exec(yml)?.[1] ?? '';
+    const doPagesCms = [...bloco.matchAll(/name: ([^,}]+?)\s*,/g)].map((m) => m[1].trim());
+    certo(JSON.stringify(doPagesCms) === JSON.stringify(R.FAMILIAS), 'as categorias do .pages.yml são as das regras, pela mesma ordem', doPagesCms.join(', '));
+  }
 }
 
 /* ================================================================== */

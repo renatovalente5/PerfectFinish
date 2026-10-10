@@ -323,7 +323,9 @@ content:
         options:
           values:
             - { name: Lavagem, label: Lavagem }
+            - { name: Preparação, label: Preparação }
             - { name: Proteção, label: Proteção }
+            - { name: Manutenção, label: Manutenção }
             - { name: Rodas, label: Rodas }
             - { name: Interior, label: Interior }
             - { name: Acessórios, label: Acessórios }

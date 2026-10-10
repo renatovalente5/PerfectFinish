@@ -122,7 +122,7 @@ export const eCopia = (nomeFicheiro) => {
 
 /* As categorias da loja, as do .pages.yml (a chave `name` de cada opção; o
    site escreve-a tal e qual no cartão do produto). */
-export const FAMILIAS = Object.freeze(['Lavagem', 'Proteção', 'Rodas', 'Interior', 'Acessórios']);
+export const FAMILIAS = Object.freeze(['Lavagem', 'Preparação', 'Proteção', 'Manutenção', 'Rodas', 'Interior', 'Acessórios']);
 
 /* AS CHAVES DE CADA FICHEIRO, PELA ORDEM EM QUE O FICHEIRO AS TEM (a dos 18
    trabalhos e dos 10 produtos de hoje). Uma chave nova entra por esta ordem
