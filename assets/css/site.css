@@ -1405,6 +1405,11 @@ body[data-menu="aberto"] { overflow: hidden; }
   border-top: 1px solid var(--filete-fraco); padding-top: var(--e-5);
   display: flex; flex-wrap: wrap; align-items: center;
   justify-content: space-between; gap: var(--e-4) var(--e-6);
+  /* A última ligação da fila («Gestão») ficava DEBAIXO do botão flutuante do
+     WhatsApp (o 18), com a página no fundo: a 1280 px de largura não se
+     conseguia carregar nela (medido: o centro dela era o ícone do botão). A
+     fila guarda à direita a largura do botão e a distância dele à margem. */
+  padding-inline-end: calc(3.5rem + clamp(.9rem, 3vw, 1.75rem));
 }
 .rodape__copyright { color: var(--osso-fraco); font-size: var(--t--2); flex: none; }
 
