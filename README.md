@@ -38,6 +38,7 @@ o gerador e a auditoria → o site é publicado. Um a três minutos.
 ```bash
 node scripts/gerar.mjs      # gera _site/
 node scripts/auditar.mjs    # trava a publicação se algo estiver mal
+node scripts/test-site.mjs  # a bateria do gerador, do site.js e da auditoria (em local)
 ```
 
 Ver em local:

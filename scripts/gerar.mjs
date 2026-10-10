@@ -95,6 +95,43 @@ const CUSTO = "(Chamada para a rede móvel nacional)";
 const zap = (texto) =>
   `https://wa.me/${D.contactos.whatsapp}?text=${encodeURIComponent(texto)}`;
 
+/* O HORÁRIO, PARA O GOOGLE E PARA AS DESCRIÇÕES, sai do horário dos dados — o
+   que o painel grava: cada linha com os dias, as horas e os dias em números
+   (`indices`, 0 = domingo). Estava escrito à mão aqui (o JSON-LD e a descrição
+   da página de contactos), e mudar o horário no painel não o mudava.
+   Uma linha «Encerrado», sem os dias em números, ou com horas que não se
+   percebem fica de fora do JSON-LD: mais vale não dizer nada ao Google do que
+   dizer-lhe mal. Percebe «09:00 – 18:30», «9h00 - 13h00» e duas partes no
+   mesmo dia («09:00 – 13:00 e 14:30 – 18:30»). */
+const DIAS_SCHEMA = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const LINHAS_DO_HORARIO = Array.isArray(D.horario) ? D.horario.filter((h) => h && typeof h === "object") : [];
+function intervalosDe(horas) {
+  const hora = (h, m) => `${String(Number(h)).padStart(2, "0")}:${m}`;
+  const out = [];
+  for (const m of String(horas ?? "").matchAll(/(\d{1,2})\s*[:hH]\s*(\d{2})\s*(?:–|—|-|às|até|a)\s*(\d{1,2})\s*[:hH]\s*(\d{2})/g)) {
+    if (Number(m[1]) > 24 || Number(m[3]) > 24 || Number(m[2]) > 59 || Number(m[4]) > 59) continue;
+    out.push({ opens: hora(m[1], m[2]), closes: hora(m[3], m[4]) });
+  }
+  return out;
+}
+/* Os dias em números de uma linha, de segunda a domingo; null se não servem. */
+const diasDe = (linha) => (typeof linha.indices === "string" && /^[0-6](,[0-6])*$/.test(linha.indices)
+  ? [...new Set(linha.indices.split(",").map(Number))].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7))
+  : null);
+const horarioEstruturado = () => LINHAS_DO_HORARIO.flatMap((linha) => {
+  const dias = diasDe(linha);
+  if (!dias) return [];
+  const nomes = dias.map((i) => DIAS_SCHEMA[i]);
+  return intervalosDe(linha.horas).map(({ opens, closes }) => ({
+    "@type": "OpeningHoursSpecification", dayOfWeek: nomes.length === 1 ? nomes[0] : nomes, opens, closes,
+  }));
+});
+/* O horário numa frase («Segunda a sexta 09:00 – 18:30, Sábado 09:00 –
+   13:00»), sem as linhas em que está fechado. */
+const horarioEmFrase = () => LINHAS_DO_HORARIO
+  .filter((h) => typeof h.dias === "string" && h.dias.trim() && intervalosDe(h.horas).length)
+  .map((h) => `${h.dias.trim()} ${String(h.horas).trim()}`).join(", ");
+
 /**
  * <picture> para uma fotografia.
  *
@@ -337,10 +374,7 @@ function dadosEstruturados(pagina) {
     },
     geo: { "@type": "GeoCoordinates", latitude: D.morada.latitude, longitude: D.morada.longitude },
     hasMap: D.morada.mapa,
-    openingHoursSpecification: [
-      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "18:30" },
-      { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "09:00", closes: "13:00" },
-    ],
+    openingHoursSpecification: horarioEstruturado(),
     areaServed: ["Leiria", "Marinha Grande", "Batalha", "Pombal", "Porto de Mós", "Ourém", "Fátima", "Alcobaça", "Nazaré", "Caldas da Rainha"]
       .map((n) => ({ "@type": "City", name: n })),
     knowsLanguage: ["pt-PT"],
@@ -1060,7 +1094,7 @@ ${CTA("Marque connosco", "Diga-nos o que precisa e combinamos o dia. A maioria d
   return pagina({
     url: "/contactos/",
     titulo: "Contactos — Perfect Finish Studio, Leiria",
-    descricao: `Perfect Finish Studio: ${D.morada.rua}, ${D.morada.codigo_postal} ${D.morada.localidade}. Telefone ${TEL_TXT}. Segunda a sexta 09:00–18:30, sábado 09:00–13:00.`,
+    descricao: `Perfect Finish Studio: ${D.morada.rua}, ${D.morada.codigo_postal} ${D.morada.localidade}. Telefone ${TEL_TXT}.${horarioEmFrase() ? ` ${horarioEmFrase()}.` : ""}`,
     corpo,
     migalhas: [{ nome: "Contactos", url: "/contactos/" }],
   });
