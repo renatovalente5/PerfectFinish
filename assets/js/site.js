@@ -269,7 +269,10 @@
     if (horario) {
       const hoje = new Date().getDay(); // 0 = domingo
       $$("li", horario).forEach((linha) => {
-        const dias = (linha.dataset.dias || "").split(",").map(Number);
+        /* Só os algarismos de 0 a 6. Uma linha sem os dias em números
+           (data-dias="") dava `"".split(",")` → `[""]` → `[0]`, e ficava
+           marcada como «hoje» aos domingos. */
+        const dias = (linha.dataset.dias || "").split(",").map((x) => x.trim()).filter((x) => /^[0-6]$/.test(x)).map(Number);
         if (dias.includes(hoje)) linha.dataset.hoje = "sim";
       });
     }

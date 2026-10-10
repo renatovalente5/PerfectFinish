@@ -10,12 +10,17 @@
  * O que prova (as correcções de 10 out 2026, uma secção cada):
  *   · o horário do JSON-LD (openingHoursSpecification) e o texto da página de
  *     contactos saem do horário dos dados — o que o painel grava —, e nenhuma
- *     hora fica escrita à mão no gerador. */
+ *     hora fica escrita à mão no gerador;
+ *   · o site.js marca «hoje» a linha certa do horário em cada dia da semana, e
+ *     nunca uma linha sem os dias em números (era marcada aos domingos) — o
+ *     site.js verdadeiro, corrido num contexto à parte com uma página de
+ *     faz-de-conta. */
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, realpathSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync, execFileSync } from 'node:child_process';
+import vm from 'node:vm';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TMP = realpathSync(mkdtempSync(join(tmpdir(), 'pf-site-')));
@@ -104,6 +109,55 @@ secao('o horário do JSON-LD e da página de contactos sai dos dados');
   const codigo = readFileSync(join(RAIZ, 'scripts', 'gerar.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   const horas = [...codigo.matchAll(/["'`][^"'`\n]*\b\d{1,2}:\d{2}\b[^"'`\n]*["'`]/g)].map((m) => m[0]);
   certo(horas.length === 0, 'nenhuma hora escrita à mão no código do gerador', horas);
+}
+
+/* ================================================================== */
+secao('o «hoje» do horário: o site.js marca a linha certa, e nunca uma sem os dias');
+{
+  /* O site.js VERDADEIRO, corrido num contexto à parte: uma página de
+     faz-de-conta só com a lista do horário (os outros blocos não encontram o
+     que procuram, e cada um falha sozinho, como o site.js promete), e o dia da
+     semana escolhido. → as linhas marcadas, e as falhas do bloco do horário. */
+  const FONTE = readFileSync(join(RAIZ, 'assets', 'js', 'site.js'), 'utf8');
+  function marcar(dia, valores) {
+    const linhas = valores.map((v) => ({ dataset: v === undefined ? {} : { dias: v } }));
+    const nada = () => {};
+    const classes = { add: nada, remove: nada, toggle: nada, contains: () => false };
+    const horario = { querySelectorAll: (s) => (s === 'li' ? linhas : []), querySelector: () => null };
+    const documento = {
+      querySelector: (s) => (s === '.horario' ? horario : null), querySelectorAll: () => [],
+      documentElement: { dataset: {}, classList: classes, style: { setProperty: nada } }, body: { dataset: {}, classList: classes, style: {} },
+      addEventListener: nada, removeEventListener: nada, createElement: () => ({ dataset: {}, classList: classes, style: {}, setAttribute: nada, append: nada, appendChild: nada }),
+    };
+    class Data extends Date { getDay() { return dia; } }
+    const falhas = [];
+    const ctx = {
+      document: documento, Date: Data, console: { error: (...a) => falhas.push(a.map(String).join(' ')), log: nada, warn: nada },
+      setTimeout: () => 0, clearTimeout: nada, setInterval: () => 0, clearInterval: nada, requestAnimationFrame: () => 0, cancelAnimationFrame: nada,
+      matchMedia: () => ({ matches: false, addEventListener: nada, addListener: nada }), localStorage: { getItem: () => null, setItem: nada, removeItem: nada },
+      location: { hash: '', pathname: '/', search: '' }, navigator: { userAgent: 'node' }, addEventListener: nada, removeEventListener: nada,
+      scrollY: 0, innerWidth: 1280, innerHeight: 800, fetch: () => Promise.reject(new Error('sem rede')),
+    };
+    ctx.window = ctx;
+    vm.runInNewContext(FONTE, ctx);
+    return { marcadas: linhas.map((l, i) => (l.dataset.hoje === 'sim' ? i : -1)).filter((i) => i >= 0), falhas: falhas.filter((f) => /horário/.test(f)) };
+  }
+  /* As linhas como o site as publica hoje (o data-dias de cada uma), e uma
+     linha sem os dias em números (como o gerador a escreve: data-dias=""), e
+     outra sem o atributo. */
+  const w = clone();
+  correr(w, 'gerar.mjs');
+  const deHoje = [...(/<ul class="horario">([\s\S]*?)<\/ul>/.exec(site(w, 'index.html'))?.[1] ?? '').matchAll(/<li data-dias="([^"]*)">/g)].map((m) => m[1]);
+  certo(igual(deHoje, ['1,2,3,4,5', '6', '0']), 'o site publica as três linhas do horário com os dias em números', deHoje);
+  const valores = [...deHoje, '', undefined, ' 6 , x'];
+  const esperado = (dia) => [dia >= 1 && dia <= 5 ? 0 : -1, dia === 6 ? 1 : -1, dia === 0 ? 2 : -1, dia === 6 ? 5 : -1].filter((i) => i >= 0);
+  const NOMES = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+  const mal = [];
+  for (let dia = 0; dia < 7; dia++) {
+    const r = marcar(dia, valores);
+    if (!igual(r.marcadas, esperado(dia)) || r.falhas.length) mal.push(`${NOMES[dia]}: marcou ${JSON.stringify(r.marcadas)}, devia ${JSON.stringify(esperado(dia))}${r.falhas.length ? ` (${r.falhas[0]})` : ''}`);
+  }
+  certo(mal.length === 0, 'de domingo a sábado, «hoje» é a linha certa — e uma linha sem os dias em números (data-dias="" ou sem o atributo) nunca é marcada, nem ao domingo', mal.join(' | '));
 }
 
 /* ================================================================== */
