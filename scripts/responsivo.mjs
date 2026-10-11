@@ -76,4 +76,7 @@ for (const m of css.matchAll(/(?<!max-)(?:inline-size|width)\s*:\s*100vw/g)) pro
 
 console.log(problemas.length ? problemas.map(p => "  " + p).join("\n") : "  nada a apontar");
 console.log(`\n${problemas.length} apontamento(s)`);
-process.exit(problemas.length ? 1 : 0);
+/* O código de saída, e não process.exit(): no macOS a escrita para um pipe é
+   assíncrona, e o exit logo a seguir cortava o que ainda estava na fila a quem
+   lê por um pipe (a test-guardas, o ensaio do painel). Ver scripts/auditar.mjs. */
+process.exitCode = problemas.length ? 1 : 0;

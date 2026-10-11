@@ -37,9 +37,18 @@ const avisos = [];
 const falha = (m) => erros.push(m);
 const aviso = (m) => avisos.push(m);
 
+/* SAIR SEM CORTAR A SAÍDA. No macOS, a escrita para um pipe é assíncrona (no
+   Linux não): um process.exit() logo a seguir a escrever deita fora o que ainda
+   está na fila — e quem lê a auditoria por um pipe (a test-site, a test-guardas,
+   o ensaio do painel), se estiver ocupado nesse momento, recebia só os
+   primeiros 8 KB, sem a última linha. Por isso o fim marca o código de saída
+   (process.exitCode) e deixa o Node sair sozinho, quando tudo já saiu. Aqui, no
+   início, ainda não se escreveu nada além desta linha: espera-se que saia, e
+   pára-se. */
 if (!existsSync(SAIDA)) {
-  console.error("Não existe _site/. Corra primeiro: node scripts/gerar.mjs");
-  process.exit(1);
+  process.exitCode = 1;
+  await new Promise((ok) => process.stderr.write("Não existe _site/. Corra primeiro: node scripts/gerar.mjs\n", ok));
+  process.exit();
 }
 
 /* ------------------------------------------------------------ inventário */
@@ -436,4 +445,6 @@ console.log(
   `\n${erros.length ? "✗" : "✓"} ${erros.length} erro(s), ${avisos.length} aviso(s) ` +
   `em ${paginas.length} páginas.`
 );
-process.exit(erros.length ? 1 : 0);
+/* O código de saída, e não process.exit(): o Node só sai quando a saída toda
+   já foi entregue (ver o início). */
+process.exitCode = erros.length ? 1 : 0;

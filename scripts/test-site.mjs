@@ -17,7 +17,10 @@
  *     faz-de-conta;
  *   · a auditoria trava a publicação quando o domínio próprio se perdia: um
  *     CNAME errado ou em falta no _site, e páginas geradas com o prefixo
- *     /PerfectFinish (sem o CNAME) quando o repositório o tem;
+ *     /PerfectFinish (sem o CNAME) quando o repositório o tem — e a saída dela
+ *     chega inteira a quem a lê por um pipe, mesmo ocupado (o process.exit
+ *     cortava-a no macOS: esta bateria falhava às vezes, a correr ao mesmo
+ *     tempo que a test-guardas);
  *   · os preços da loja com duas casas decimais («12,50 €», «18,00 €»), e
  *     «Sob consulta» sem preço ou com 0;
  * e as de 11 out 2026 (decisão do Renato):
@@ -33,7 +36,7 @@ import { readFileSync, writeFileSync, mkdtempSync, rmSync, realpathSync } from '
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { spawnSync, execFileSync } from 'node:child_process';
+import { spawn, spawnSync, execFileSync } from 'node:child_process';
 import vm from 'node:vm';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -199,6 +202,21 @@ secao('a auditoria do domínio próprio pode falhar');
   const prefixo = auditar(w2);
   certo(prefixo.status === 1 && /ERRO {4}\/[^:]+: ainda tem caminhos com o prefixo \/PerfectFinish, e com domínio próprio dão 404/.test(prefixo.saida),
     'páginas com o prefixo /PerfectFinish e o CNAME no repositório: trava, a dizer qual (a verificação que nunca falhava)', prefixo.saida.split('\n').filter((l) => /ERRO/.test(l)).slice(0, 3).join(' | '));
+
+  /* A SAÍDA CHEGA INTEIRA A QUEM ESTÁ OCUPADO. O spawn liga a saída da
+     auditoria por um socket local (é assim no Unix), que no macOS leva uns
+     8 KB; aqui o pai fica 2 s sem ler — como esta bateria quando a máquina
+     está carregada. Com process.exit(), a auditoria saía com o resto ainda na
+     fila e chegavam só os primeiros 8 KB, sem a última linha (e sem o erro do
+     prefixo, que vem no fim: era a falha que aparecia às vezes). */
+  const filho = spawn(process.execPath, [join('scripts', 'auditar.mjs')], { cwd: w2, stdio: ['ignore', 'pipe', 'ignore'], env: { ...process.env, GITHUB_ACTIONS: '', GITHUB_STEP_SUMMARY: '' } });
+  const ate = Date.now() + 2000;
+  while (Date.now() < ate) { /* ocupado: não lê */ }
+  let lida = '';
+  filho.stdout.on('data', (x) => { lida += x; });
+  const codigo = await new Promise((ok) => filho.on('close', ok));
+  certo(codigo === 1 && lida === prefixo.saida && /✗ \d+ erro\(s\)/.test(lida) && lida.length > 16 * 1024,
+    `a saída da auditoria chega inteira, até à última linha, a quem a lê por um pipe, mesmo 2 s ocupado (${lida.length} de ${prefixo.saida.length} bytes)`, `chegaram ${lida.length} bytes; a acabar em: ${lida.slice(-160)}`);
 }
 
 /* ================================================================== */
