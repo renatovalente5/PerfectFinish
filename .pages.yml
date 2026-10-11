@@ -272,9 +272,10 @@ content:
           list: { collapsible: true }
           description: >-
             Só testemunhos que o cliente deu ou autorizou: não copie avaliações
-            do Google sem a autorização de quem as escreveu. Só aparecem no site
-            os que têm «O cliente autorizou mostrar no site» ligado. A nota e o
-            número total de avaliações mudam-se em «Dados do estúdio › Google».
+            do Google sem a autorização de quem as escreveu. Não guarde um
+            testemunho sem a autorização: o que se grava fica público (lê-se no
+            GitHub), apareça ou não no site. A nota e o número total de
+            avaliações mudam-se em «Dados do estúdio › Google».
           fields:
             - name: autor
               label: Nome do cliente
@@ -299,8 +300,9 @@ content:
               type: boolean
               default: false
               description: >-
-                Ligue só com a autorização do cliente. Desligado, o testemunho fica
-                guardado mas não aparece no site.
+                Ligue só com a autorização do cliente. Sem ela, não guarde o
+                testemunho: o que se grava fica público, mesmo que não apareça no
+                site.
 
   # ═══════════════════════════════════════════════════════════════ 2. A LOJA
 

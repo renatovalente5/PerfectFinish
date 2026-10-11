@@ -93,7 +93,15 @@ const trab = (nome, mudar) => (d) => mudar(d.trabalhos[nome], d);
 const prod = (nome, mudar) => (d) => mudar(d.loja[nome], d);
 const serv = (mudar) => (d) => mudar(d.servicos.servicos[SV], d);
 const par = (mudar) => (d) => mudar(d.pares.pares[PA], d);
-const crit = (i, mudar) => (d) => mudar(d.avaliacoes.criticas[i], d);
+/* OS TESTEMUNHOS DE ENSAIO. A lista de hoje está vazia (o repositório é
+   público: só se guarda o que o cliente autorizou), por isso os casos juntam
+   testemunhos inventados — nunca o texto nem o nome de um cliente de verdade.
+   crit(i, mudar) acrescenta os que faltarem até ao i-ésimo, e muda-o. */
+const TESTEMUNHO = Object.freeze({ autor: 'Tiago F.', estrelas: 5, texto: 'Texto de ensaio: o carro ficou como novo.', nota_traducao: 'Traduzido do inglês (ensaio).', autorizado: true });
+const crit = (i, mudar) => (d) => {
+  while (d.avaliacoes.criticas.length <= i) d.avaliacoes.criticas.push(clonar(TESTEMUNHO));
+  mudar(d.avaliacoes.criticas[i], d);
+};
 const def = (mudar) => (d) => mudar(d.definicoes, d);
 const FOTO_T = HOJE.trabalhos[T].fotos[0];
 const FOTO_LOJA = 'assets/img/loja/cera-de-carnauba-828.webp';
@@ -168,12 +176,21 @@ secao('as categorias da loja');
 /* OS TESTEMUNHOS DE CLIENTES (decisão do Renato, 11 out 2026): as avaliações
    que estavam copiadas do Google passam a testemunhos publicados com a
    autorização de cada cliente. Só aparecem os autorizados, com o nome próprio
-   e a inicial do apelido; o «quando» saiu (envelhecia sozinho). */
-secao('os testemunhos: só os autorizados, com o nome próprio e a inicial');
+   (um ou dois nomes) e a inicial do apelido; o «quando» saiu (envelhecia
+   sozinho). E só se guarda o que o cliente autorizou: o repositório é público,
+   e o que fica em data/avaliacoes.json lê-se no GitHub, apareça ou não no
+   site. */
+secao('os testemunhos: só se guarda o autorizado, com o nome próprio e a inicial');
 {
   const cs = HOJE.avaliacoes.criticas;
-  certo(cs.length === 3 && cs.every((c) => c.autorizado === false) && cs.every((c) => !Object.hasOwn(c, 'quando')),
-    'os três de hoje ficam guardados, sem autorização (o dono vai pedi-la a cada cliente) e sem data', cs.map((c) => `${c.autor} ${c.autorizado}`).join(', '));
+  certo(Array.isArray(cs) && cs.length === 0,
+    'a lista de hoje está vazia: as três avaliações por autorizar saíram do ficheiro (o repositório é público), e voltam do histórico quando o cliente autorizar', JSON.stringify(cs));
+  const porAutorizar = problemasCom(crit(0, (c) => { c.autorizado = false; })).filter((p) => /:autorizado$/.test(p.chave));
+  certo(porAutorizar.length === 1 && porAutorizar[0].classe === 'avisa' && !porAutorizar[0].lembrete && porAutorizar[0].campo === 'criticas.0.autorizado'
+    && porAutorizar[0].mensagem === 'Só pode guardar um testemunho que o cliente autorizou: o que se grava fica público.',
+    'um testemunho por autorizar: um aviso que não é lembrete (o painel não o grava, a guarda não pára), com a frase «Só pode guardar um testemunho que o cliente autorizou: o que se grava fica público.»', porAutorizar);
+  certo([undefined, null, 'true', 1].every((v) => problemasCom(crit(0, (c) => { if (v === undefined) delete c.autorizado; else c.autorizado = v; })).some((p) => /:autorizado$/.test(p.chave))),
+    'e sem a chave, ou com «true» em texto, ou 1: o mesmo aviso (só true é a autorização)');
   certo(!R.CAMPOS_CRITICA.includes('quando') && R.CAMPOS_CRITICA.includes('autorizado') && R.NOMES_CAMPOS.critica?.autorizado === 'O cliente autorizou mostrar no site' && !Object.hasOwn(R.TAMANHOS, 'quando'),
     'o «quando» saiu dos campos; o «autorizado» entrou', R.CAMPOS_CRITICA.join(', '));
   /* Um ou dois nomes próprios (11 out 2026: «Ana Rita», «João Pedro», «Maria
@@ -190,12 +207,12 @@ secao('os testemunhos: só os autorizados, com o nome próprio e a inicial');
   /* A cópia que o gerador lê: um autorizado com o nome completo sai, e o
      resumo da corrida di-lo; um por autorizar sai sem se dizer que mudou no
      site (já lá não aparecia). */
-  const d1 = com(crit(0, (c) => { c.autorizado = true; c.autor = 'Nelson Pereira'; }));
+  const d1 = com((d) => { crit(1, () => {})(d); d.avaliacoes.criticas[0].autor = 'Tiago Fictício'; });
   const n1 = R.neutralizar(d1, R.problemas(d1, OP));
   const fica = JSON.parse(n1.ficheiros[R.FICHEIROS.avaliacoes] ?? 'null');
-  certo(fica?.criticas?.length === 2 && !fica.criticas.some((c) => c.autor === 'Nelson Pereira') && n1.efeitos.some((e) => e.nome === 'Nelson Pereira' && e.efeitos.includes('esconder')),
-    'um autorizado com o nome completo sai da cópia que o gerador lê, e o resumo da corrida di-lo', JSON.stringify(n1.efeitos));
-  const d2 = com(crit(0, (c) => { c.autor = 'Nelson Pereira'; }));
+  certo(fica?.criticas?.length === 1 && !fica.criticas.some((c) => c.autor === 'Tiago Fictício') && n1.efeitos.some((e) => e.nome === 'Tiago Fictício' && e.efeitos.includes('esconder')),
+    'um autorizado com o nome completo sai da cópia que o gerador lê (o outro fica), e o resumo da corrida di-lo', JSON.stringify(n1.efeitos));
+  const d2 = com(crit(0, (c) => { c.autor = 'Tiago Fictício'; c.autorizado = false; }));
   certo(R.neutralizar(d2, R.problemas(d2, OP)).efeitos.length === 0, 'um por autorizar com o nome completo não «muda no site» (já lá não aparecia)');
   if (existsSync(join(RAIZ, '.pages.yml'))) {
     const yml = readFileSync(join(RAIZ, '.pages.yml'), 'utf8');
@@ -351,21 +368,23 @@ secao('cada regra, com a classe certa');
     ['nenhum comparador', (d) => { d.pares.pares = []; }, 'avisa', 'pares:vazia'],
 
     /* Os testemunhos (11 out 2026): só aparecem os autorizados, com o nome
-       próprio e a inicial do apelido. Um sem nome no formato certo ou sem
-       texto sai do site (na cópia que o gerador lê). */
+       próprio (um ou dois nomes) e a inicial do apelido. Um sem nome no
+       formato certo ou sem texto sai do site (na cópia que o gerador lê); um
+       por autorizar é um aviso (o painel não o grava; a guarda não pára). */
     ['os testemunhos num texto', (d) => { d.avaliacoes = { criticas: 'x' }; }, 'bloqueia', 'avaliacoes:forma'],
     ['um testemunho que não é um testemunho', (d) => { d.avaliacoes.criticas.push(null); }, 'bloqueia', `avaliacoes:#${HOJE.avaliacoes.criticas.length + 1}:forma`],
-    ['testemunho sem o nome do cliente', crit(0, (c) => { c.autor = ''; c.autorizado = true; }), 'neutraliza', `avaliacoes:#1:autor`, 'esconder'],
-    ['o nome completo do cliente', crit(0, (c) => { c.autor = 'Nelson Pereira'; c.autorizado = true; }), 'neutraliza', 'avaliacoes:nelson-pereira:autor-formato', 'esconder'],
-    ['dois nomes próprios com o apelido por extenso', crit(0, (c) => { c.autor = 'Ana Rita Pereira'; c.autorizado = true; }), 'neutraliza', 'avaliacoes:ana-rita-pereira:autor-formato', 'esconder'],
-    ['só o nome próprio', crit(0, (c) => { c.autor = 'Nelson'; }), 'neutraliza', 'avaliacoes:nelson:autor-formato', 'esconder'],
-    ['a inicial sem ponto', crit(0, (c) => { c.autor = 'Nelson P'; }), 'neutraliza', 'avaliacoes:nelson-p:autor-formato', 'esconder'],
-    ['o nome em minúsculas', crit(0, (c) => { c.autor = 'nelson p.'; }), 'neutraliza', 'avaliacoes:nelson-p:autor-formato', 'esconder'],
-    ['seis estrelas', crit(0, (c) => { c.estrelas = 6; }), 'avisa', 'avaliacoes:nelson-p:estrelas'],
-    ['estrelas num texto', crit(0, (c) => { c.estrelas = '5'; }), 'avisa', 'avaliacoes:nelson-p:estrelas'],
-    ['testemunho sem texto', crit(0, (c) => { delete c.texto; c.autorizado = true; }), 'neutraliza', 'avaliacoes:nelson-p:texto', 'esconder'],
-    ['sem dizer se o cliente autorizou', crit(0, (c) => { delete c.autorizado; }), 'avisa', 'avaliacoes:nelson-p:autorizado'],
-    ['«autorizado» escrito como texto', crit(0, (c) => { c.autorizado = 'sim'; }), 'avisa', 'avaliacoes:nelson-p:autorizado'],
+    ['testemunho sem o nome do cliente', crit(0, (c) => { c.autor = ''; }), 'neutraliza', `avaliacoes:#1:autor`, 'esconder'],
+    ['o nome completo do cliente', crit(0, (c) => { c.autor = 'Tiago Fictício'; }), 'neutraliza', 'avaliacoes:tiago-ficticio:autor-formato', 'esconder'],
+    ['dois nomes próprios com o apelido por extenso', crit(0, (c) => { c.autor = 'Ana Rita Fictícia'; }), 'neutraliza', 'avaliacoes:ana-rita-ficticia:autor-formato', 'esconder'],
+    ['só o nome próprio', crit(0, (c) => { c.autor = 'Tiago'; }), 'neutraliza', 'avaliacoes:tiago:autor-formato', 'esconder'],
+    ['a inicial sem ponto', crit(0, (c) => { c.autor = 'Tiago F'; }), 'neutraliza', 'avaliacoes:tiago-f:autor-formato', 'esconder'],
+    ['o nome em minúsculas', crit(0, (c) => { c.autor = 'tiago f.'; }), 'neutraliza', 'avaliacoes:tiago-f:autor-formato', 'esconder'],
+    ['seis estrelas', crit(0, (c) => { c.estrelas = 6; }), 'avisa', 'avaliacoes:tiago-f:estrelas'],
+    ['estrelas num texto', crit(0, (c) => { c.estrelas = '5'; }), 'avisa', 'avaliacoes:tiago-f:estrelas'],
+    ['testemunho sem texto', crit(0, (c) => { delete c.texto; }), 'neutraliza', 'avaliacoes:tiago-f:texto', 'esconder'],
+    ['um testemunho por autorizar', crit(0, (c) => { c.autorizado = false; }), 'avisa', 'avaliacoes:tiago-f:autorizado'],
+    ['sem dizer se o cliente autorizou', crit(0, (c) => { delete c.autorizado; }), 'avisa', 'avaliacoes:tiago-f:autorizado'],
+    ['«autorizado» escrito como texto', crit(0, (c) => { c.autorizado = 'sim'; }), 'avisa', 'avaliacoes:tiago-f:autorizado'],
 
     ['sem telefone', def((x) => { delete x.contactos.telefone; }), 'bloqueia', 'definicoes:contactos.telefone'],
     ['telefone com espaços', def((x) => { x.contactos.telefone = '968 828 510'; }), 'bloqueia', 'definicoes:contactos.telefone'],
@@ -451,10 +470,9 @@ secao('cada regra, com a classe certa');
     ['um produto novo, do painel', (d) => { d.loja['luva-nova'] = { slug: 'luva-nova', nome: 'Luva nova', familia: 'Acessórios', ordem: 11, descricao: 'Uma luva.', formato: '1 un.', preco: null, foto: FOTO_LOJA, publicado: true }; }],
     ['um comparador novo, do painel', (d) => { d.pares.pares.push({ slug: 'porsche-taycan', veiculo: 'Porsche Taycan', servico: 'PPF', antes: FOTO_T, depois: HOJE.trabalhos[T].fotos[1], ordem: 6, legenda: 'x', alt_antes: 'a', alt_depois: 'b' }); }],
     ['um testemunho novo, autorizado, sem estrelas', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana R.', texto: 'Impecável.', autorizado: true }); }],
-    ['um testemunho com nome composto e acentos', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana-Rita Ó.', estrelas: 4, texto: 'Muito bom.', autorizado: false }); }],
+    ['um testemunho com nome composto e acentos', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana-Rita Ó.', estrelas: 4, texto: 'Muito bom.', autorizado: true }); }],
     ['um testemunho com dois nomes próprios', (d) => { d.avaliacoes.criticas.push({ autor: 'Maria João C.', texto: 'Muito bom.', autorizado: true }); }],
-    ['um testemunho sem estrelas', crit(0, (c) => { delete c.estrelas; })],
-    ['os três testemunhos de hoje autorizados', (d) => { for (const c of d.avaliacoes.criticas) c.autorizado = true; }],
+    ['um testemunho sem estrelas nem nota de tradução', crit(0, (c) => { delete c.estrelas; delete c.nota_traducao; })],
   ];
   for (const [descr, mudar, listar] of SIM) {
     const n = novos(problemasCom(mudar, listar ? { listarPasta: listar } : OP)).filter((p) => !p.lembrete);
@@ -513,7 +531,7 @@ secao('o varrimento: cada chave apagada');
     { nome: 'avisa', slug: 'avisa', imagem: [null, 'lembrete'], obras: [null, 'lembrete'], curto: null }, 'Serviços');
   varrer('apagar cada chave de cada comparador', HOJE.pares.pares.map((p, i) => [p.slug, Object.keys(p), (k) => (d) => { delete d.pares.pares[i][k]; }]),
     { veiculo: 'avisa', servico: 'avisa', antes: 'neutraliza', depois: 'neutraliza', alt_antes: 'lembrete', alt_depois: 'lembrete' }, 'Antes e depois');
-  varrer('apagar cada chave de cada testemunho', HOJE.avaliacoes.criticas.map((c, i) => [c.autor, Object.keys(c), (k) => crit(i, (x) => { delete x[k]; })]),
+  varrer('apagar cada chave de um testemunho (de ensaio: a lista de hoje está vazia)', [[TESTEMUNHO.autor, Object.keys(TESTEMUNHO), (k) => crit(0, (x) => { delete x[k]; })]],
     { autor: 'neutraliza', texto: 'neutraliza', autorizado: 'avisa', estrelas: null, nota_traducao: null }, 'Avaliações');
 
   /* Os dados do estúdio, em profundidade. O que pára é o que a lei pede ou o
@@ -739,6 +757,8 @@ async function pontaAPonta() {
   const servW = mexer(R.FICHEIROS.servicos);
   const parW = mexer(R.FICHEIROS.pares);
   const critW = mexer(R.FICHEIROS.avaliacoes);
+  /* Um testemunho de ensaio (TESTEMUNHO, autorizado), mudado, no fim da lista. */
+  const comTestemunho = (mudar) => critW((d) => { const c = clonar(TESTEMUNHO); mudar(c); d.criticas.push(c); });
   const fotoNova = (rel, conteudo) => (w) => writeFileSync(join(w, rel), conteudo ?? readFileSync(join(RAIZ, 'assets', 'img', 'marca', 'favicon-512.png')));
   const e = (...fs) => (w) => fs.forEach((f) => f(w));
   const site = (w, rel) => readFileSync(join(w, '_site', rel), 'utf8');
@@ -782,16 +802,18 @@ async function pontaAPonta() {
     ['todos os comparadores sem fotografias', parW((d) => { for (const p of d.pares) p.antes = ''; }), 'publica'],
     ['os comparadores como a lista solta (a forma antiga)', (w) => writeFileSync(join(w, R.FICHEIROS.pares), JSON.stringify(JSON.parse(ler(w, R.FICHEIROS.pares)).pares, null, 2)), 'publica'],
     ['os comparadores num texto', parW((d) => { d.pares = 'x'; }), 'pares:forma'],
-    ...['autor', 'estrelas', 'texto', 'autorizado'].map((k) => [`sem «${k}» num testemunho`, critW((d) => { delete d.criticas[0][k]; }), 'publica']),
-    ...['autor', 'texto'].map((k) => [`sem «${k}» num testemunho autorizado`, critW((d) => { d.criticas[0].autorizado = true; delete d.criticas[0][k]; }), 'publica', (w) => !site(w, 'index.html').includes('class="critica"')]),
-    ['os testemunhos de hoje (nenhum autorizado): só o cartão da nota, sem lista nem a nota dos testemunhos', () => {}, 'publica',
+    ['os testemunhos de hoje (nenhum): só o cartão da nota, sem lista nem a nota dos testemunhos', () => {}, 'publica',
       (w) => { const h = site(w, 'index.html'); return h.includes('class="nota__valor"') && !h.includes('class="criticas"') && !h.includes('class="critica"') && !h.includes('class="avaliacoes__nota-legal"'); }],
-    ['um testemunho autorizado aparece, com a nota por baixo', critW((d) => { d.criticas[0].autorizado = true; }), 'publica',
-      (w) => { const h = site(w, 'index.html').replace(/\s+/g, ' '); return (h.match(/<figure class="critica">/g) ?? []).length === 1 && h.includes('<span class="critica__autor">Nelson P.</span>') && h.includes('publicados com a autorização de cada um'); }],
-    ['um testemunho autorizado com o nome completo fica fora do site', critW((d) => { d.criticas[0].autorizado = true; d.criticas[0].autor = 'Nelson Pereira'; }), 'publica',
-      (w) => !site(w, 'index.html').includes('Nelson Pereira') && !site(w, 'index.html').includes('class="critica"')],
-    ['um testemunho autorizado com estrelas estragadas aparece sem elas', critW((d) => { d.criticas[0].autorizado = true; d.criticas[0].estrelas = 9; }), 'publica',
-      (w) => { const h = site(w, 'index.html'); const f = /<figure class="critica">[\s\S]*?<\/figure>/.exec(h)?.[0] ?? ''; return f.includes('Nelson P.') && !f.includes('class="estrelas"'); }],
+    ['um testemunho autorizado aparece, com a nota por baixo', comTestemunho(() => {}), 'publica',
+      (w) => { const h = site(w, 'index.html').replace(/\s+/g, ' '); return (h.match(/<figure class="critica">/g) ?? []).length === 1 && h.includes('<span class="critica__autor">Tiago F.</span>') && h.includes('publicados com a autorização de cada um'); }],
+    ['um testemunho por autorizar (do Pages CMS) não aparece, e a publicação segue', comTestemunho((c) => { c.autorizado = false; }), 'publica',
+      (w) => !site(w, 'index.html').includes('class="critica"') && !site(w, 'index.html').includes('Tiago F.')],
+    ...['autor', 'texto', 'autorizado'].map((k) => [`sem «${k}» num testemunho: não aparece, e a publicação segue`, comTestemunho((c) => { delete c[k]; }), 'publica', (w) => !site(w, 'index.html').includes('class="critica"')]),
+    ...['estrelas', 'nota_traducao'].map((k) => [`sem «${k}» num testemunho: aparece sem isso`, comTestemunho((c) => { delete c[k]; }), 'publica', (w) => (site(w, 'index.html').match(/<figure class="critica">/g) ?? []).length === 1]),
+    ['um testemunho autorizado com o nome completo fica fora do site', comTestemunho((c) => { c.autor = 'Tiago Fictício'; }), 'publica',
+      (w) => !site(w, 'index.html').includes('Tiago Fictício') && !site(w, 'index.html').includes('class="critica"')],
+    ['um testemunho autorizado com estrelas estragadas aparece sem elas', comTestemunho((c) => { c.estrelas = 9; }), 'publica',
+      (w) => { const h = site(w, 'index.html'); const f = /<figure class="critica">[\s\S]*?<\/figure>/.exec(h)?.[0] ?? ''; return f.includes('Tiago F.') && !f.includes('class="estrelas"'); }],
     ['os testemunhos num texto', critW((d) => { d.criticas = 'x'; }), 'avaliacoes:forma'],
     ...['marca', 'contactos', 'morada', 'horario', 'google', 'empresa', 'textos', 'marca.nome_completo', 'contactos.telefone', 'contactos.telefone_texto', 'contactos.whatsapp', 'contactos.email', 'morada.rua', 'morada.codigo_postal', 'morada.localidade', 'empresa.titular', 'empresa.nif']
       .map((c) => [`sem «${c}» nos dados do estúdio`, defW((d) => { const [a, b] = c.split('.'); if (b) delete d[a][b]; else delete d[a]; }), c.includes('.') ? `definicoes:${c}` : `definicoes:${c}:forma`]),

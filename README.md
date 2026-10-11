@@ -91,8 +91,13 @@ publicados com a autorização de cada um: só aparecem os que têm
 («Nelson P.», «Ana Rita M.»: a guarda confere o formato), o texto, e as estrelas e a nota de tradução se as
 tiverem — sem data. Sem nenhum autorizado, a secção mostra só o cartão da nota
 do Google. A política de privacidade diz o fundamento (o consentimento) e como
-se pede a retirada. As três que estavam copiadas do Google ficaram guardadas
-com `autorizado: false` (11 out 2026): o dono pede a autorização a cada cliente.
+se pede a retirada. **Só se guarda o que o cliente autorizou**: este repositório
+é público, e o que está em `data/` lê-se no GitHub, apareça ou não no site. O
+painel não grava um testemunho sem a autorização; um que chegue por outro
+caminho (o Pages CMS) não aparece, e a guarda avisa. As três avaliações que
+estavam copiadas do Google, por autorizar, saíram do ficheiro (11 out 2026): a
+lista está vazia, e cada uma volta, a partir do histórico, quando o cliente a
+autorizar.
 
 **O prefixo `/PerfectFinish`.** Sem CNAME, o site vive numa subpasta e todos os
 caminhos absolutos têm de a incluir. O gerador trata disso e a auditoria

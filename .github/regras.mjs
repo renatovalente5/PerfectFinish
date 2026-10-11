@@ -749,9 +749,14 @@ export function problemasDosPares(d, ctx = {}) {
    consentimento) e a regra das avaliações de consumidores (DL 57/2008: dizer
    como se garante que vêm de clientes reais; a nota por baixo di-lo).
    Um testemunho sem nome no formato certo ou sem texto fica fora do site (na
-   cópia que o gerador lê) até ser corrigido; um que não diga se foi
-   autorizado não aparece (o gerador só mostra os autorizados), e o painel não
-   o deixa gravar assim. */
+   cópia que o gerador lê) até ser corrigido.
+   SÓ SE GUARDA O QUE O CLIENTE AUTORIZOU: o repositório do site é público, e o
+   que está em data/avaliacoes.json lê-se no GitHub, apareça ou não no site. Um
+   testemunho sem a autorização (`autorizado` que não é true) é um aviso que
+   não é lembrete: o painel não o grava, e diz porquê. Se chegar por outro
+   caminho (o Pages CMS, enquanto o .pages.yml existir), o site não o mostra (o
+   gerador só mostra os autorizados) e a guarda avisa, sem parar a
+   publicação. */
 export function problemasDasAvaliacoes(d) {
   const ficheiro = FICHEIROS.avaliacoes;
   const out = [];
@@ -777,7 +782,7 @@ export function problemasDasAvaliacoes(d) {
     conferirNumero(out, base, { valor: c.estrelas, chave: ch('estrelas'), campo: campo('estrelas'), rotulo: R.estrelas, limites: LIMITES.estrelas,
       mensagem: 'As estrelas são um número inteiro de 1 a 5 (ou nenhum).' });
     conferirTexto(out, base, { valor: c.nota_traducao, chave: ch('nota_traducao'), campo: campo('nota_traducao'), rotulo: R.nota_traducao, max: TAMANHOS.notaTraducao });
-    if (typeof c.autorizado !== 'boolean') out.push({ ...base, classe: 'avisa', chave: ch('autorizado'), campo: campo('autorizado'), mensagem: 'Diga se o cliente autorizou mostrar este testemunho no site: até lá, não aparece.' });
+    if (c.autorizado !== true) out.push({ ...base, classe: 'avisa', chave: ch('autorizado'), campo: campo('autorizado'), mensagem: 'Só pode guardar um testemunho que o cliente autorizou: o que se grava fica público.' });
   });
   return out;
 }

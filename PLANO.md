@@ -181,9 +181,11 @@ números.
 > quem as escreveu, passam a ser um testemunho dado ao estúdio: cada uma tem
 > `autorizado` (sim ou não), e só aparecem as autorizadas, com o nome próprio
 > (um ou dois nomes: «Nelson P.», «Ana Rita M.») e a inicial do apelido, o texto, e as estrelas e a nota de tradução se as
-> tiverem; o «quando» saiu (envelhecia sozinho). As três de hoje ficaram com
-> `autorizado: false` até o dono ter a autorização de cada cliente — até lá, a
-> secção mostra só o cartão da nota. Com testemunhos, a nota por baixo diz de
+> tiverem; o «quando» saiu (envelhecia sozinho). Como o repositório é
+> público (o que está em `data/` lê-se no GitHub, apareça ou não no site), só
+> se guarda o que o cliente autorizou: as três de hoje, por autorizar, saíram
+> do ficheiro — a lista está vazia, e cada uma volta, a partir do histórico,
+> quando o cliente a autorizar. Até lá, a secção mostra só o cartão da nota. Com testemunhos, a nota por baixo diz de
 > onde vêm e de onde vem a nota do Google (DL 57/2008: como se garante que vêm
 > de clientes reais). A política de privacidade troca o parágrafo «Avaliações
 > do Google» por dois pontos: a nota do Google e os testemunhos (o
