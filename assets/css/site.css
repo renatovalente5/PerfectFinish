@@ -1115,7 +1115,9 @@ body[data-menu="aberto"] { overflow: hidden; }
   @starting-style { .lupa:popover-open { opacity: 0; } }
 }
 
-/* -------------------------------------------------------- 10 avaliações */
+/* -------------------------------------------------------- 10 avaliações
+   O cartão da nota do Google e, ao lado, os testemunhos que os clientes
+   autorizaram (sem nenhum, fica só o cartão). */
 .avaliacoes {
   display: grid; gap: var(--e-7);
   grid-template-columns: minmax(0, 1fr);
@@ -1155,7 +1157,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 .critica blockquote { font-size: var(--t-0); line-height: 1.5; }
 .critica figcaption { display: grid; gap: .1rem; }
 .critica__autor { font-weight: 600; font-size: var(--t--1); }
-.critica__quando, .critica__nota { font-size: var(--t--2); color: var(--osso-fraco); }
+.critica__nota { font-size: var(--t--2); color: var(--osso-fraco); }
 
 .avaliacoes__nota-legal {
   font-size: var(--t--2); line-height: 1.6; margin-top: var(--e-6);
@@ -1164,7 +1166,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 /* Na faixa clara tudo isto tem de mudar de tinta. */
 .claro .nota__valor { color: var(--claro-tinta); }
-.claro .nota__conta, .claro .critica__quando, .claro .critica__nota,
+.claro .nota__conta, .claro .critica__nota,
 .claro .avaliacoes__nota-legal { color: var(--claro-meio); }
 .claro .critica {
   background: #FBFAF7; border-color: rgb(0 0 0 / .10);

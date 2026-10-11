@@ -504,15 +504,25 @@ function blocoAvaliacoes({ claro = false } = {}) {
   const estrelas = (n) => `<span class="estrelas" role="img" aria-label="${n} de 5 estrelas">${
     Array.from({ length: 5 }, (_, i) => estrela(i < n)).join("")}</span>`;
 
+  /* OS TESTEMUNHOS DE CLIENTES (data/avaliacoes.json): só os que o cliente
+     autorizou (`autorizado: true`), com o nome próprio e a inicial do apelido,
+     o texto, e as estrelas (de 1 a 5) e a nota de tradução se as tiverem. Sem
+     data: um «há um mês» escrito à mão envelhecia sozinho. Sem nenhum
+     autorizado, a secção fica só com o cartão da nota — sem lista vazia, e sem
+     a nota por baixo, que fala dos testemunhos. Nada disto vai para o JSON-LD
+     (nem Review nem AggregateRating). */
+  const testemunhos = AVALIACOES.criticas.filter((c) => c?.autorizado === true);
+  const comEstrelas = (n) => Number.isInteger(n) && n >= 1 && n <= 5;
   const critica = (c) => `<figure class="critica">
-   ${estrelas(c.estrelas)}
+   ${comEstrelas(c.estrelas) ? estrelas(c.estrelas) : ""}
    <blockquote>${esc(c.texto)}</blockquote>
    <figcaption>
     <span class="critica__autor">${esc(c.autor)}</span>
-    <span class="critica__quando">${esc(c.quando)}</span>
     ${c.nota_traducao ? `<span class="critica__nota">${esc(c.nota_traducao)}</span>` : ""}
    </figcaption>
   </figure>`;
+  const nota = String(D.google.nota).replace(".", ",");
+  const media = D.google.total === 1 ? "da avaliação" : `das ${D.google.total} avaliações`;
 
   return `<section class="seccao${claro ? " claro" : ""}" id="avaliacoes">
  <div class="caixa">
@@ -520,7 +530,7 @@ function blocoAvaliacoes({ claro = false } = {}) {
    <div class="nota">
     <p class="sobrescrito">Avaliações no Google</p>
     <div class="nota__linha">
-     <span class="nota__valor">${String(D.google.nota).replace(".", ",")}</span>
+     <span class="nota__valor">${nota}</span>
      <div>
       ${estrelas(5)}
       <span class="nota__conta">${D.google.total} avaliações</span>
@@ -528,14 +538,12 @@ function blocoAvaliacoes({ claro = false } = {}) {
     </div>
     <a class="botao ${claro ? "botao--claro" : "botao--linha"}" href="${esc(D.google.perfil)}" target="_blank" rel="noopener">Ver todas no Google <span class="seta">→</span></a>
    </div>
-   <div class="criticas">${AVALIACOES.criticas.map(critica).join("")}</div>
+   ${testemunhos.length ? `<div class="criticas">${testemunhos.map(critica).join("")}</div>` : ""}
   </div>
-  <p class="avaliacoes__nota-legal">
-   Avaliações escritas por clientes no perfil do Perfect Finish no Google, onde
-   podem ser lidas na íntegra. Reproduzimos aqui algumas das mais recentes, com
-   o nome próprio e a inicial do apelido; a ordem é nossa. Não filtramos nem
-   respondemos por elas — a classificação de ${String(D.google.nota).replace(".", ",")} é a média de todas as ${D.google.total}.
-  </p>
+  ${testemunhos.length ? `<p class="avaliacoes__nota-legal">
+   Testemunhos de clientes do Perfect Finish, publicados com a autorização de
+   cada um. A nota de ${nota} é a média ${media} do nosso perfil no Google.
+  </p>` : ""}
  </div>
 </section>`;
 }

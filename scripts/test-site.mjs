@@ -19,7 +19,13 @@
  *     CNAME errado ou em falta no _site, e páginas geradas com o prefixo
  *     /PerfectFinish (sem o CNAME) quando o repositório o tem;
  *   · os preços da loja com duas casas decimais («12,50 €», «18,00 €»), e
- *     «Sob consulta» sem preço ou com 0. */
+ *     «Sob consulta» sem preço ou com 0;
+ * e as de 11 out 2026 (decisão do Renato):
+ *   · os testemunhos de clientes: só aparecem os que o cliente autorizou, com
+ *     o nome próprio e a inicial do apelido, sem data, e a nota por baixo diz
+ *     de onde vêm (com a nota e o número do Google, dos dados); sem nenhum
+ *     autorizado fica só o cartão da nota; nada de Review nem AggregateRating
+ *     no JSON-LD. */
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, realpathSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -204,6 +210,52 @@ secao('os preços da loja com duas casas decimais');
   const vistos = { cera: precoDe('Cera de Carnaúba'), jantes: precoDe('Limpa-Jantes'), shampoo: precoDe('Shampoo pH Neutro'), luva: precoDe('Luva de Lavagem'), quick: precoDe('Quick Detailer') };
   certo(igual(vistos, { cera: '12,50 €', jantes: '18,00 €', shampoo: '9,90 €', luva: 'Sob consulta', quick: 'Sob consulta' }), 'na loja: 12,50 €, 18,00 € e 9,90 € (duas casas), e «Sob consulta» sem preço ou com 0', vistos);
   certo(correr(w, 'auditar.mjs').status === 0, 'e a auditoria passa');
+}
+
+/* ================================================================== */
+secao('os testemunhos de clientes: só os autorizados');
+{
+  const avaliacoes = (w) => { const h = site(w, 'index.html'); const i = h.indexOf('id="avaliacoes"'); return i < 0 ? '' : h.slice(i, h.indexOf('</section>', i)); };
+  const figuras = (w) => [...avaliacoes(w).matchAll(/<figure class="critica">([\s\S]*?)<\/figure>/g)].map((m) => m[1]);
+  const ld = (w) => [...site(w, 'index.html').matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n');
+
+  /* Os de hoje: três guardados, nenhum autorizado (o dono vai pedir a
+     autorização a cada cliente). */
+  const w = clone();
+  const g = correr(w, 'gerar.mjs');
+  const a = avaliacoes(w);
+  certo(g.status === 0 && /<span class="nota__valor">4,9<\/span>/.test(a) && /<span class="nota__conta">94 avaliações<\/span>/.test(a) && /Ver todas no Google/.test(a),
+    'com os dados de hoje: o cartão da nota (4,9, 94 avaliações, «Ver todas no Google»)', a.slice(0, 300) || g.saida);
+  certo(!/class="criticas"|class="critica"|avaliacoes__nota-legal|Nelson P\.|Victor G\.|Marco C\./.test(a), 'e mais nada: nenhum testemunho (nenhum está autorizado), sem lista vazia e sem a nota dos testemunhos');
+  certo(correr(w, 'auditar.mjs').status === 0, 'e a auditoria passa');
+
+  /* Dois autorizados (um sem estrelas, outro com a nota de tradução), um não;
+     e a nota e o número do Google mudados nos dados. */
+  const w2 = clone();
+  const d = lerJ(w2, 'data/avaliacoes.json');
+  d.criticas[0].autorizado = true; delete d.criticas[0].estrelas;
+  d.criticas[1].autorizado = true;
+  escreverJ(w2, 'data/avaliacoes.json', d);
+  const def = lerJ(w2, 'data/definicoes.json'); def.google.nota = 4.7; def.google.total = 120; escreverJ(w2, 'data/definicoes.json', def);
+  correr(w2, 'gerar.mjs');
+  const f = figuras(w2);
+  certo(f.length === 2 && f[0].includes('Nelson P.') && f[1].includes('Victor G.') && !avaliacoes(w2).includes('Marco C.'), 'só os autorizados aparecem, pela ordem dos dados', f.map((x) => /critica__autor">([^<]+)/.exec(x)?.[1]));
+  certo(!f[0].includes('class="estrelas"') && (f[1].match(/<svg/g) ?? []).length === 5 && f[1].includes('Traduzido do inglês'), 'as estrelas só quando as tem; a nota de tradução também', f.map((x) => (x.match(/<svg/g) ?? []).length));
+  const legal = /<p class="avaliacoes__nota-legal">([\s\S]*?)<\/p>/.exec(avaliacoes(w2))?.[1].replace(/\s+/g, ' ').trim() ?? '';
+  certo(legal === 'Testemunhos de clientes do Perfect Finish, publicados com a autorização de cada um. A nota de 4,7 é a média das 120 avaliações do nosso perfil no Google.',
+    'a nota por baixo diz de onde vêm, com a nota e o número dos dados (4,7 e 120)', legal);
+  certo(!/AggregateRating|"Review"|reviewRating|ratingValue/.test(ld(w2)), 'nada de Review nem AggregateRating no JSON-LD');
+  certo(correr(w2, 'auditar.mjs').status === 0, 'e a auditoria passa');
+
+  /* Um «quando» que tenha ficado num ficheiro antigo (escrito à mão): não
+     aparece — sem data nenhuma. (A auditoria, enquanto o .pages.yml existir,
+     pára num campo que o Pages CMS não edita: não é desta prova.) */
+  const w3 = clone();
+  const d3 = lerJ(w3, 'data/avaliacoes.json');
+  d3.criticas[1].autorizado = true; d3.criticas[1].quando = 'há 2 meses';
+  escreverJ(w3, 'data/avaliacoes.json', d3);
+  correr(w3, 'gerar.mjs');
+  certo(figuras(w3).length === 1 && !avaliacoes(w3).includes('há 2 meses') && !avaliacoes(w3).includes('critica__quando'), 'sem data nenhuma: um «quando» que ficou nos dados não aparece', figuras(w3));
 }
 
 /* ================================================================== */

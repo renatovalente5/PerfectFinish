@@ -165,6 +165,44 @@ secao('as categorias da loja');
 }
 
 /* ================================================================== */
+/* OS TESTEMUNHOS DE CLIENTES (decisão do Renato, 11 out 2026): as avaliações
+   que estavam copiadas do Google passam a testemunhos publicados com a
+   autorização de cada cliente. Só aparecem os autorizados, com o nome próprio
+   e a inicial do apelido; o «quando» saiu (envelhecia sozinho). */
+secao('os testemunhos: só os autorizados, com o nome próprio e a inicial');
+{
+  const cs = HOJE.avaliacoes.criticas;
+  certo(cs.length === 3 && cs.every((c) => c.autorizado === false) && cs.every((c) => !Object.hasOwn(c, 'quando')),
+    'os três de hoje ficam guardados, sem autorização (o dono vai pedi-la a cada cliente) e sem data', cs.map((c) => `${c.autor} ${c.autorizado}`).join(', '));
+  certo(!R.CAMPOS_CRITICA.includes('quando') && R.CAMPOS_CRITICA.includes('autorizado') && R.NOMES_CAMPOS.critica?.autorizado === 'O cliente autorizou mostrar no site' && !Object.hasOwn(R.TAMANHOS, 'quando'),
+    'o «quando» saiu dos campos; o «autorizado» entrou', R.CAMPOS_CRITICA.join(', '));
+  const bons = ['Nelson P.', 'Ana-Rita M.', 'João S.', 'Zé Ó.'];
+  const maus = ['Nelson Pereira', 'Nelson', 'Nelson P', 'nelson p.', 'NELSON P.', 'Nelson P. Silva', 'Ana Rita M.', 'N. P.', '', 7, null];
+  const valido = typeof R.autorValido === 'function' ? R.autorValido : () => null;
+  certo(bons.every((x) => valido(x) === true) && maus.every((x) => valido(x) === false), 'o formato do nome: o nome próprio e a inicial do apelido, com ponto',
+    `bons que falham: ${bons.filter((x) => valido(x) !== true).join(', ')} · maus que passam: ${maus.filter((x) => valido(x) !== false).join(', ')}`);
+  const noSite = typeof R.testemunhoNoSite === 'function' ? R.testemunhoNoSite : () => null;
+  certo(noSite({ autorizado: true }) === true && [{ autorizado: false }, { autorizado: 'true' }, {}].every((c) => noSite(c) === false), 'no site, só com «autorizado: true» (o mesmo que o gerador)');
+  const daNota = problemasCom(def((x) => { x.google.nota = 9; x.google.total = 'x'; x.google.perfil = ''; })).filter((p) => /^definicoes:google\./.test(p.chave));
+  certo(daNota.length >= 3 && daNota.every((p) => p.ecra === 'Avaliações'), 'a nota, o número e o perfil do Google corrigem-se no ecrã «Avaliações» do painel (com os testemunhos)', daNota.map((p) => `${p.chave} → ${p.ecra}`).join(' | '));
+  /* A cópia que o gerador lê: um autorizado com o nome completo sai, e o
+     resumo da corrida di-lo; um por autorizar sai sem se dizer que mudou no
+     site (já lá não aparecia). */
+  const d1 = com(crit(0, (c) => { c.autorizado = true; c.autor = 'Nelson Pereira'; }));
+  const n1 = R.neutralizar(d1, R.problemas(d1, OP));
+  const fica = JSON.parse(n1.ficheiros[R.FICHEIROS.avaliacoes] ?? 'null');
+  certo(fica?.criticas?.length === 2 && !fica.criticas.some((c) => c.autor === 'Nelson Pereira') && n1.efeitos.some((e) => e.nome === 'Nelson Pereira' && e.efeitos.includes('esconder')),
+    'um autorizado com o nome completo sai da cópia que o gerador lê, e o resumo da corrida di-lo', JSON.stringify(n1.efeitos));
+  const d2 = com(crit(0, (c) => { c.autor = 'Nelson Pereira'; }));
+  certo(R.neutralizar(d2, R.problemas(d2, OP)).efeitos.length === 0, 'um por autorizar com o nome completo não «muda no site» (já lá não aparecia)');
+  if (existsSync(join(RAIZ, '.pages.yml'))) {
+    const yml = readFileSync(join(RAIZ, '.pages.yml'), 'utf8');
+    const bloco = /- name: avaliacoes\n[\s\S]*?(?=\n {2}# ═|\n {2}- name:)/.exec(yml)?.[0] ?? '';
+    certo(/- name: autorizado\n\s+label: O cliente autorizou mostrar no site\n\s+type: boolean/.test(bloco) && !/- name: quando/.test(bloco), 'o .pages.yml (enquanto existir) tem o «autorizado» e já não tem o «quando»');
+  }
+}
+
+/* ================================================================== */
 secao('as fotografias, com a conta do gerador');
 {
   const L = (p) => LISTAR(p);
@@ -310,13 +348,21 @@ secao('cada regra, com a classe certa');
     ['ordem do comparador 0', par((p) => { p.ordem = 0; }), 'avisa', `pares:${SLUG_PA}:ordem`],
     ['nenhum comparador', (d) => { d.pares.pares = []; }, 'avisa', 'pares:vazia'],
 
-    ['as avaliações num texto', (d) => { d.avaliacoes = { criticas: 'x' }; }, 'bloqueia', 'avaliacoes:forma'],
-    ['uma avaliação que não é uma avaliação', (d) => { d.avaliacoes.criticas.push(null); }, 'bloqueia', `avaliacoes:#${HOJE.avaliacoes.criticas.length + 1}:forma`],
-    ['avaliação sem autor', crit(0, (c) => { c.autor = ''; }), 'avisa', `avaliacoes:#1:autor`],
-    ['o nome completo de quem escreveu', crit(0, (c) => { c.autor = 'Nelson Pereira'; }), 'avisa', 'avaliacoes:nelson-pereira:autor-completo', undefined, true],
+    /* Os testemunhos (11 out 2026): só aparecem os autorizados, com o nome
+       próprio e a inicial do apelido. Um sem nome no formato certo ou sem
+       texto sai do site (na cópia que o gerador lê). */
+    ['os testemunhos num texto', (d) => { d.avaliacoes = { criticas: 'x' }; }, 'bloqueia', 'avaliacoes:forma'],
+    ['um testemunho que não é um testemunho', (d) => { d.avaliacoes.criticas.push(null); }, 'bloqueia', `avaliacoes:#${HOJE.avaliacoes.criticas.length + 1}:forma`],
+    ['testemunho sem o nome do cliente', crit(0, (c) => { c.autor = ''; c.autorizado = true; }), 'neutraliza', `avaliacoes:#1:autor`, 'esconder'],
+    ['o nome completo do cliente', crit(0, (c) => { c.autor = 'Nelson Pereira'; c.autorizado = true; }), 'neutraliza', 'avaliacoes:nelson-pereira:autor-formato', 'esconder'],
+    ['só o nome próprio', crit(0, (c) => { c.autor = 'Nelson'; }), 'neutraliza', 'avaliacoes:nelson:autor-formato', 'esconder'],
+    ['a inicial sem ponto', crit(0, (c) => { c.autor = 'Nelson P'; }), 'neutraliza', 'avaliacoes:nelson-p:autor-formato', 'esconder'],
+    ['o nome em minúsculas', crit(0, (c) => { c.autor = 'nelson p.'; }), 'neutraliza', 'avaliacoes:nelson-p:autor-formato', 'esconder'],
     ['seis estrelas', crit(0, (c) => { c.estrelas = 6; }), 'avisa', 'avaliacoes:nelson-p:estrelas'],
-    ['sem estrelas', crit(0, (c) => { delete c.estrelas; }), 'avisa', 'avaliacoes:nelson-p:estrelas'],
-    ['avaliação sem texto', crit(0, (c) => { delete c.texto; }), 'avisa', 'avaliacoes:nelson-p:texto'],
+    ['estrelas num texto', crit(0, (c) => { c.estrelas = '5'; }), 'avisa', 'avaliacoes:nelson-p:estrelas'],
+    ['testemunho sem texto', crit(0, (c) => { delete c.texto; c.autorizado = true; }), 'neutraliza', 'avaliacoes:nelson-p:texto', 'esconder'],
+    ['sem dizer se o cliente autorizou', crit(0, (c) => { delete c.autorizado; }), 'avisa', 'avaliacoes:nelson-p:autorizado'],
+    ['«autorizado» escrito como texto', crit(0, (c) => { c.autorizado = 'sim'; }), 'avisa', 'avaliacoes:nelson-p:autorizado'],
 
     ['sem telefone', def((x) => { delete x.contactos.telefone; }), 'bloqueia', 'definicoes:contactos.telefone'],
     ['telefone com espaços', def((x) => { x.contactos.telefone = '968 828 510'; }), 'bloqueia', 'definicoes:contactos.telefone'],
@@ -401,7 +447,10 @@ secao('cada regra, com a classe certa');
     ['um produto novo, escondido, ainda sem fotografia', (d) => { d.loja['luva-nova'] = { slug: 'luva-nova', nome: 'Luva nova', familia: 'Acessórios', ordem: 11, descricao: '', formato: '', preco: null, publicado: false }; }],
     ['um produto novo, do painel', (d) => { d.loja['luva-nova'] = { slug: 'luva-nova', nome: 'Luva nova', familia: 'Acessórios', ordem: 11, descricao: 'Uma luva.', formato: '1 un.', preco: null, foto: FOTO_LOJA, publicado: true }; }],
     ['um comparador novo, do painel', (d) => { d.pares.pares.push({ slug: 'porsche-taycan', veiculo: 'Porsche Taycan', servico: 'PPF', antes: FOTO_T, depois: HOJE.trabalhos[T].fotos[1], ordem: 6, legenda: 'x', alt_antes: 'a', alt_depois: 'b' }); }],
-    ['uma avaliação nova', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana R.', quando: 'há uma semana', estrelas: 5, texto: 'Impecável.' }); }],
+    ['um testemunho novo, autorizado, sem estrelas', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana R.', texto: 'Impecável.', autorizado: true }); }],
+    ['um testemunho com nome composto e acentos', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana-Rita Ó.', estrelas: 4, texto: 'Muito bom.', autorizado: false }); }],
+    ['um testemunho sem estrelas', crit(0, (c) => { delete c.estrelas; })],
+    ['os três testemunhos de hoje autorizados', (d) => { for (const c of d.avaliacoes.criticas) c.autorizado = true; }],
   ];
   for (const [descr, mudar, listar] of SIM) {
     const n = novos(problemasCom(mudar, listar ? { listarPasta: listar } : OP)).filter((p) => !p.lembrete);
@@ -460,8 +509,8 @@ secao('o varrimento: cada chave apagada');
     { nome: 'avisa', slug: 'avisa', imagem: [null, 'lembrete'], obras: [null, 'lembrete'], curto: null }, 'Serviços');
   varrer('apagar cada chave de cada comparador', HOJE.pares.pares.map((p, i) => [p.slug, Object.keys(p), (k) => (d) => { delete d.pares.pares[i][k]; }]),
     { veiculo: 'avisa', servico: 'avisa', antes: 'neutraliza', depois: 'neutraliza', alt_antes: 'lembrete', alt_depois: 'lembrete' }, 'Antes e depois');
-  varrer('apagar cada chave de cada avaliação', HOJE.avaliacoes.criticas.map((c, i) => [c.autor, Object.keys(c), (k) => crit(i, (x) => { delete x[k]; })]),
-    { autor: 'avisa', estrelas: 'avisa', texto: 'avisa' }, 'Avaliações');
+  varrer('apagar cada chave de cada testemunho', HOJE.avaliacoes.criticas.map((c, i) => [c.autor, Object.keys(c), (k) => crit(i, (x) => { delete x[k]; })]),
+    { autor: 'neutraliza', texto: 'neutraliza', autorizado: 'avisa', estrelas: null, nota_traducao: null }, 'Avaliações');
 
   /* Os dados do estúdio, em profundidade. O que pára é o que a lei pede ou o
      que o gerador lê sem perguntar; o resto avisa ou cala-se. */
@@ -482,7 +531,11 @@ secao('o varrimento: cada chave apagada');
     if (para) param++;
     if (para !== PARAM.has(k)) maus2.push(`${k}: ${para ? 'pára' : 'não pára'}`);
     if (lista.some((p) => p.classe === 'neutraliza')) maus2.push(`${k}: neutraliza nos dados do estúdio`);
-    for (const p of lista) if (!String(p.ecra).startsWith('Dados do estúdio') || /data\/|\.json/.test(p.mensagem)) maus2.push(`${k}: ecrã «${p.ecra}», mensagem «${p.mensagem}»`);
+    /* A secção google (a nota, o número e o perfil) corrige-se no ecrã
+       «Avaliações» do painel, junto dos testemunhos; o resto em «Dados do
+       estúdio». */
+    const ecraCerto = (p) => (c[0] === 'google' ? p.ecra === 'Avaliações' : String(p.ecra).startsWith('Dados do estúdio'));
+    for (const p of lista) if (!ecraCerto(p) || /data\/|\.json/.test(p.mensagem)) maus2.push(`${k}: ecrã «${p.ecra}», mensagem «${p.mensagem}»`);
   }
   certo(maus2.length === 0, `apagar cada um dos ${caminhos.length} caminhos dos dados do estúdio: param os ${param} que a lei ou o gerador pedem, e cada problema diz o ecrã`, maus2.slice(0, 8).join(' | '));
 }
@@ -725,8 +778,17 @@ async function pontaAPonta() {
     ['todos os comparadores sem fotografias', parW((d) => { for (const p of d.pares) p.antes = ''; }), 'publica'],
     ['os comparadores como a lista solta (a forma antiga)', (w) => writeFileSync(join(w, R.FICHEIROS.pares), JSON.stringify(JSON.parse(ler(w, R.FICHEIROS.pares)).pares, null, 2)), 'publica'],
     ['os comparadores num texto', parW((d) => { d.pares = 'x'; }), 'pares:forma'],
-    ...['autor', 'quando', 'estrelas', 'texto'].map((k) => [`sem «${k}» numa avaliação`, critW((d) => { delete d.criticas[0][k]; }), 'publica']),
-    ['as avaliações num texto', critW((d) => { d.criticas = 'x'; }), 'avaliacoes:forma'],
+    ...['autor', 'estrelas', 'texto', 'autorizado'].map((k) => [`sem «${k}» num testemunho`, critW((d) => { delete d.criticas[0][k]; }), 'publica']),
+    ...['autor', 'texto'].map((k) => [`sem «${k}» num testemunho autorizado`, critW((d) => { d.criticas[0].autorizado = true; delete d.criticas[0][k]; }), 'publica', (w) => !site(w, 'index.html').includes('class="critica"')]),
+    ['os testemunhos de hoje (nenhum autorizado): só o cartão da nota, sem lista nem a nota dos testemunhos', () => {}, 'publica',
+      (w) => { const h = site(w, 'index.html'); return h.includes('class="nota__valor"') && !h.includes('class="criticas"') && !h.includes('class="critica"') && !h.includes('class="avaliacoes__nota-legal"'); }],
+    ['um testemunho autorizado aparece, com a nota por baixo', critW((d) => { d.criticas[0].autorizado = true; }), 'publica',
+      (w) => { const h = site(w, 'index.html').replace(/\s+/g, ' '); return (h.match(/<figure class="critica">/g) ?? []).length === 1 && h.includes('<span class="critica__autor">Nelson P.</span>') && h.includes('publicados com a autorização de cada um'); }],
+    ['um testemunho autorizado com o nome completo fica fora do site', critW((d) => { d.criticas[0].autorizado = true; d.criticas[0].autor = 'Nelson Pereira'; }), 'publica',
+      (w) => !site(w, 'index.html').includes('Nelson Pereira') && !site(w, 'index.html').includes('class="critica"')],
+    ['um testemunho autorizado com estrelas estragadas aparece sem elas', critW((d) => { d.criticas[0].autorizado = true; d.criticas[0].estrelas = 9; }), 'publica',
+      (w) => { const h = site(w, 'index.html'); const f = /<figure class="critica">[\s\S]*?<\/figure>/.exec(h)?.[0] ?? ''; return f.includes('Nelson P.') && !f.includes('class="estrelas"'); }],
+    ['os testemunhos num texto', critW((d) => { d.criticas = 'x'; }), 'avaliacoes:forma'],
     ...['marca', 'contactos', 'morada', 'horario', 'google', 'empresa', 'textos', 'marca.nome_completo', 'contactos.telefone', 'contactos.telefone_texto', 'contactos.whatsapp', 'contactos.email', 'morada.rua', 'morada.codigo_postal', 'morada.localidade', 'empresa.titular', 'empresa.nif']
       .map((c) => [`sem «${c}» nos dados do estúdio`, defW((d) => { const [a, b] = c.split('.'); if (b) delete d[a][b]; else delete d[a]; }), c.includes('.') ? `definicoes:${c}` : `definicoes:${c}:forma`]),
     ...['marca.nome', 'marca.reclamo', 'marca.descricao', 'contactos.instagram', 'contactos.facebook', 'morada.distrito', 'morada.pais', 'morada.mapa', 'morada.latitude', 'morada.longitude', 'google.nota', 'google.total', 'google.perfil', 'google.endpoint', 'google.incorporar', 'empresa.forma', 'textos.heroi_titulo', 'textos.heroi_sub', 'textos.sobre']

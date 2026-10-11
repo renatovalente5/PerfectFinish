@@ -85,6 +85,14 @@ endereço da imagem. Fotografias novas precisam de nova passagem.
 **Não se copiam avaliações do Google para o repositório.** Os termos do Google
 Maps Platform proíbem-no («copy and save … user reviews»), e num repositório
 público ficaria para sempre no histórico. Ver [`worker/README.md`](worker/README.md).
+O que o site mostra são **testemunhos de clientes** (`data/avaliacoes.json`),
+publicados com a autorização de cada um: só aparecem os que têm
+`autorizado: true`, com o nome próprio e a inicial do apelido («Nelson P.», e a
+guarda confere o formato), o texto, e as estrelas e a nota de tradução se as
+tiverem — sem data. Sem nenhum autorizado, a secção mostra só o cartão da nota
+do Google. A política de privacidade diz o fundamento (o consentimento) e como
+se pede a retirada. As três que estavam copiadas do Google ficaram guardadas
+com `autorizado: false` (11 out 2026): o dono pede a autorização a cada cliente.
 
 **O prefixo `/PerfectFinish`.** Sem CNAME, o site vive numa subpasta e todos os
 caminhos absolutos têm de a incluir. O gerador trata disso e a auditoria
@@ -141,7 +149,7 @@ Publicação, a Ajuda e a Conta):
 | **Trabalhos** | Um carro e as suas fotografias | As galerias que abrem nos azulejos dos serviços |
 | **Antes e depois** | Os comparadores | Secção «Antes e depois» — os dois primeiros à vista |
 | **Serviços** | Os treze serviços | Com fotografia = azulejo; sem = nome na lista |
-| **Avaliações** | As avaliações mostradas | Secção de avaliações |
+| **Avaliações** | A nota do Google e os testemunhos de clientes | Secção de avaliações (os testemunhos só com a autorização do cliente) |
 | **Loja** | Os produtos | Página da Loja |
 | **Dados do estúdio** | Contactos, morada, horário, textos, dados legais | Todo o site |
 

@@ -261,43 +261,46 @@ content:
 
     # ═══════════════════════════════════════════════════════ 5. AVALIAÇÕES
     - name: avaliacoes
-      label: Avaliações do Google
+      label: Testemunhos de clientes
       type: file
       path: data/avaliacoes.json
       format: json
       fields:
         - name: criticas
-          label: Avaliações mostradas no site
+          label: Testemunhos
           type: object
           list: { collapsible: true }
           description: >-
-            Copie do perfil do Google do estúdio. Escreva o primeiro nome e a
-            inicial do apelido (exemplo: «Nelson P.») e NÃO copie a fotografia da
-            pessoa — é o que mantém isto conforme com a protecção de dados.
-            A nota e o número total de avaliações mudam-se em «Dados do estúdio ›
-            Google».
+            Só testemunhos que o cliente deu ou autorizou: não copie avaliações
+            do Google sem a autorização de quem as escreveu. Só aparecem no site
+            os que têm «O cliente autorizou mostrar no site» ligado. A nota e o
+            número total de avaliações mudam-se em «Dados do estúdio › Google».
           fields:
             - name: autor
-              label: Quem escreveu
+              label: Nome do cliente
               type: string
               required: true
-              description: 'Primeiro nome e inicial. Exemplo: Nelson P.'
-            - name: texto
-              label: O que escreveu
-              type: text
-              required: true
+              description: 'Nome próprio e inicial do apelido, com ponto. Exemplo: Nelson P.'
             - name: estrelas
               label: Estrelas
               type: number
               options: { step: 1, min: 1, max: 5 }
-            - name: quando
-              label: Quando
-              type: string
-              description: 'Como aparece no Google. Exemplo: há um mês.'
+              description: 'Opcional, de 1 a 5.'
+            - name: texto
+              label: Testemunho
+              type: text
+              required: true
             - name: nota_traducao
               label: Nota de tradução
               type: string
-              description: 'Só se a avaliação estiver noutra língua. Exemplo: traduzido do inglês.'
+              description: 'Só se o testemunho estiver noutra língua. Exemplo: traduzido do inglês.'
+            - name: autorizado
+              label: O cliente autorizou mostrar no site
+              type: boolean
+              default: false
+              description: >-
+                Ligue só com a autorização do cliente. Desligado, o testemunho fica
+                guardado mas não aparece no site.
 
   # ═══════════════════════════════════════════════════════════════ 2. A LOJA
 

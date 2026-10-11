@@ -20,7 +20,8 @@
  *   definicoes: texto | objecto | null     data/definicoes.json (os dados do estúdio)
  *   servicos:   texto | objecto | null     data/lista-servicos.json ({ servicos: [...] })
  *   pares:      texto | objecto | null     data/pares.json ({ pares: [...] }: antes e depois)
- *   avaliacoes: texto | objecto | null     data/avaliacoes.json ({ criticas: [...] })
+ *   avaliacoes: texto | objecto | null     data/avaliacoes.json ({ criticas: [...] }: os
+ *                                          testemunhos de clientes, com a autorização de cada um)
  *   trabalhos:  { <nome>: texto | objecto | null }   data/trabalhos/<nome>.json
  *   loja:       { <nome>: texto | objecto | null }   data/loja/<nome>.json
  *   <nome> é o nome do ficheiro sem «.json»; o painel escreve-o igual ao campo
@@ -132,7 +133,9 @@ export const CAMPOS_TRABALHO = Object.freeze(['slug', 'veiculo', 'servico', 'ord
 export const CAMPOS_PRODUTO = Object.freeze(['slug', 'nome', 'familia', 'ordem', 'descricao', 'formato', 'preco', 'foto', 'publicado']);
 export const CAMPOS_SERVICO = Object.freeze(['nome', 'slug', 'curto', 'imagem', 'obras']);
 export const CAMPOS_PAR = Object.freeze(['slug', 'veiculo', 'servico', 'antes', 'depois', 'ordem', 'legenda', 'alt_antes', 'alt_depois']);
-export const CAMPOS_CRITICA = Object.freeze(['autor', 'quando', 'estrelas', 'texto', 'nota_traducao']);
+/* Os testemunhos (data/avaliacoes.json). O «quando» saiu a 11 out 2026: envelhecia
+   sozinho («há um mês» ficava escrito para sempre), e não se põe data nenhuma. */
+export const CAMPOS_CRITICA = Object.freeze(['autor', 'estrelas', 'texto', 'nota_traducao', 'autorizado']);
 export const CAMPOS_HORARIO = Object.freeze(['dias', 'horas', 'indices']);
 /* Sempre escritos pelo painel, com o valor explícito. Ausentes valem o de
    sempre: o gerador mostra tudo menos `publicado: false`. */
@@ -145,17 +148,20 @@ export const NOMES_CAMPOS = Object.freeze({
   produto: { nome: 'Produto', familia: 'Categoria', descricao: 'Descrição', formato: 'Formato', preco: 'Preço com IVA', foto: 'Fotografia', publicado: 'Mostrar na loja', ordem: 'Ordem', slug: 'Nome do ficheiro' },
   servico: { nome: 'Nome do serviço', imagem: 'Fotografia', obras: 'Trabalhos que a galeria mostra', curto: 'Nome curto', slug: 'Identificador' },
   par: { veiculo: 'Carro', servico: 'O que se fez', antes: 'Fotografia ANTES', depois: 'Fotografia DEPOIS', legenda: 'Explicação', ordem: 'Ordem', alt_antes: 'Descrição da fotografia ANTES', alt_depois: 'Descrição da fotografia DEPOIS', slug: 'Identificador' },
-  critica: { autor: 'Quem escreveu', texto: 'O que escreveu', estrelas: 'Estrelas', quando: 'Quando', nota_traducao: 'Nota de tradução' },
+  critica: { autor: 'Nome do cliente', texto: 'Testemunho', estrelas: 'Estrelas', nota_traducao: 'Nota de tradução', autorizado: 'O cliente autorizou mostrar no site' },
 });
 
 /* As secções do data/definicoes.json, com o nome do ecrã («Dados do estúdio ›
    Contactos»). O gerador lê-as todas sem perguntar: sem uma delas rebenta a
-   meio. A `capa` (as peças do mosaico) está escondida no .pages.yml. */
+   meio. A `capa` (as peças do mosaico) está escondida no .pages.yml. A secção
+   `google` (a nota, o número de avaliações e o perfil) muda-se noutro ecrã do
+   painel, o «Avaliações», junto dos testemunhos (ECRAS_DAS_SECCOES). */
 export const SECCOES_DEFINICOES = Object.freeze({
   contactos: 'Contactos', morada: 'Morada', horario: 'Horário', textos: 'Textos do site',
   marca: 'Marca', google: 'Google', empresa: 'Dados legais',
 });
 export const ECRA_ESTUDIO = 'Dados do estúdio';
+export const ECRAS_DAS_SECCOES = Object.freeze({ google: 'Avaliações' });
 /* O QUE O PAINEL NUNCA MUDA nos dados do estúdio: os campos com `hidden: true`
    no .pages.yml («um campo que não se deve mexer, à vista, é um convite a
    mexer») — continuam no ficheiro, mudam-se no repositório. O Worker do painel
@@ -179,7 +185,7 @@ export const TAMANHOS = Object.freeze({
   nomeProduto: 80, descricao: 400, formato: 40,
   nomeServico: 80, curto: 30, servicos: 40, obras: 40,
   legenda: 300, alt: 200, pares: 20,
-  autor: 60, textoCritica: 1500, quando: 40, notaTraducao: 80, criticas: 30,
+  autor: 60, textoCritica: 1500, notaTraducao: 80, criticas: 30,
   telefoneTexto: 20, email: 160, url: 500,
   rua: 160, codigoPostal: 10, localidade: 60,
   dias: 40, horas: 40, horario: 10,
@@ -384,7 +390,15 @@ export const nomeDoTrabalho = (t, slug = '') => umaLinha(eObjecto(t) ? t.veiculo
 export const nomeDoProduto = (p, slug = '') => umaLinha(eObjecto(p) ? p.nome : '') || slug || 'produto sem nome';
 export const nomeDoServico = (s, i = 0) => umaLinha(eObjecto(s) ? s.nome : '') || (eObjecto(s) && temTexto(s.slug) ? s.slug : `serviço ${i + 1}`);
 export const nomeDoPar = (p, i = 0) => umaLinha(eObjecto(p) ? p.veiculo : '') || `comparador ${i + 1}`;
-export const nomeDaCritica = (c, i = 0) => umaLinha(eObjecto(c) ? c.autor : '') || `avaliação ${i + 1}`;
+export const nomeDaCritica = (c, i = 0) => umaLinha(eObjecto(c) ? c.autor : '') || `testemunho ${i + 1}`;
+/* O NOME DE QUEM DEU UM TESTEMUNHO, como a política de privacidade promete: o
+   nome próprio e a inicial do apelido, com ponto («Nelson P.», «Ana-Rita M.»,
+   «João S.»). Um nome completo, só o nome próprio ou uma inicial sem ponto
+   não servem: o testemunho não aparece no site até estar assim. */
+const RE_AUTOR = /^\p{Lu}\p{Ll}+(?:[-'’]\p{Lu}?\p{Ll}+)* \p{Lu}\.$/u;
+export const autorValido = (t) => typeof t === 'string' && t.length <= TAMANHOS.autor && RE_AUTOR.test(t.trim());
+/* No site, como o gerador decide: só o testemunho que o cliente autorizou. */
+export const testemunhoNoSite = (c) => eObjecto(c) && c.autorizado === true;
 
 /* A CHAVE DE UM ITEM DE UMA LISTA nas chaves dos problemas: o identificador
    (os serviços e os comparadores têm um; as avaliações, o autor), e a posição
@@ -719,18 +733,30 @@ export function problemasDosPares(d, ctx = {}) {
 }
 
 /* ------------------------------------------------------------------ */
-/* As avaliações (data/avaliacoes.json)                                */
+/* Os testemunhos (data/avaliacoes.json)                               */
 /* ------------------------------------------------------------------ */
 
+/* OS TESTEMUNHOS DE CLIENTES (decisão do Renato, 11 out 2026): só aparecem
+   no site os que o cliente autorizou (`autorizado: true`), com o nome próprio
+   e a inicial do apelido, o texto, e as estrelas e a nota de tradução se as
+   tiverem. Com a autorização de quem o escreveu, o texto deixa de ser
+   «conteúdo copiado do Google» e passa a ser um testemunho dado ao estúdio —
+   o que resolve os termos do Google, a protecção de dados (o fundamento é o
+   consentimento) e a regra das avaliações de consumidores (DL 57/2008: dizer
+   como se garante que vêm de clientes reais; a nota por baixo di-lo).
+   Um testemunho sem nome no formato certo ou sem texto fica fora do site (na
+   cópia que o gerador lê) até ser corrigido; um que não diga se foi
+   autorizado não aparece (o gerador só mostra os autorizados), e o painel não
+   o deixa gravar assim. */
 export function problemasDasAvaliacoes(d) {
   const ficheiro = FICHEIROS.avaliacoes;
   const out = [];
   if (!eObjecto(d) || !Array.isArray(d.criticas)) {
-    out.push({ classe: 'bloqueia', chave: 'avaliacoes:forma', ficheiro, ecra: 'Avaliações', mensagem: 'As avaliações não têm a forma certa: sem ela o site não se consegue gerar. Só o Renato as pode corrigir.' });
+    out.push({ classe: 'bloqueia', chave: 'avaliacoes:forma', ficheiro, ecra: 'Avaliações', mensagem: 'Os testemunhos não têm a forma certa: sem ela o site não se consegue gerar. Só o Renato os pode corrigir.' });
     return out;
   }
   const lista = d.criticas;
-  if (lista.length > TAMANHOS.criticas) out.push({ classe: 'avisa', chave: 'avaliacoes:quantas', ficheiro, ecra: 'Avaliações', campo: 'criticas', mensagem: `Há ${lista.length} avaliações; o máximo é ${TAMANHOS.criticas}.` });
+  if (lista.length > TAMANHOS.criticas) out.push({ classe: 'avisa', chave: 'avaliacoes:quantas', ficheiro, ecra: 'Avaliações', campo: 'criticas', mensagem: `Há ${lista.length} testemunhos; o máximo é ${TAMANHOS.criticas}.` });
   const chaves = chavesDosItens(lista, (c) => (eObjecto(c) ? normal(c.autor) : ''));
   const R = NOMES_CAMPOS.critica;
   lista.forEach((c, i) => {
@@ -738,20 +764,16 @@ export function problemasDasAvaliacoes(d) {
     const base = { ficheiro, ecra: `Avaliações › ${nomeDaCritica(c, i)}`, slug: k, indice: i };
     const ch = (regra) => `avaliacoes:${k}:${regra}`;
     const campo = (x) => `criticas.${i}.${x}`;
-    if (!eObjecto(c)) { out.push({ ...base, classe: 'bloqueia', chave: ch('forma'), mensagem: `A ${i + 1}.ª avaliação não tem a forma de uma avaliação: sem ela o site não se consegue gerar. Só o Renato a pode corrigir.` }); return; }
-    if (conferirTexto(out, base, { valor: c.autor, chave: ch('autor'), campo: campo('autor'), rotulo: R.autor, max: TAMANHOS.autor, classeVazio: 'avisa' })) {
-      /* A PROTECÇÃO DE DADOS (o .pages.yml): o primeiro nome e a inicial do
-         apelido. Um nome completo lembra-se. */
-      const partes = c.autor.trim().split(/\s+/);
-      if (partes.length > 1 && !/^\p{L}\.?$/u.test(partes.at(-1))) {
-        out.push({ ...base, classe: 'avisa', chave: ch('autor-completo'), campo: campo('autor'), lembrete: true, mensagem: 'Escreva só o primeiro nome e a inicial do apelido (ex.: «Nelson P.»): é o que mantém isto conforme com a protecção de dados.' });
-      }
-    }
-    conferirTexto(out, base, { valor: c.texto, chave: ch('texto'), campo: campo('texto'), rotulo: R.texto, max: TAMANHOS.textoCritica, classeVazio: 'avisa', linha: false });
-    conferirNumero(out, base, { valor: c.estrelas, chave: ch('estrelas'), campo: campo('estrelas'), rotulo: R.estrelas, limites: LIMITES.estrelas, obrigatorio: true,
-      mensagem: 'As estrelas são um número inteiro de 1 a 5.' });
-    conferirTexto(out, base, { valor: c.quando, chave: ch('quando'), campo: campo('quando'), rotulo: R.quando, max: TAMANHOS.quando });
+    const fora = (regra, x, mensagem) => out.push({ ...base, classe: 'neutraliza', chave: ch(regra), campo: campo(x), efeito: 'esconder', mensagem });
+    if (!eObjecto(c)) { out.push({ ...base, classe: 'bloqueia', chave: ch('forma'), mensagem: `O ${i + 1}.º testemunho não tem a forma de um testemunho: sem ela o site não se consegue gerar. Só o Renato o pode corrigir.` }); return; }
+    if (vazio(c.autor)) fora('autor', 'autor', 'Falta o nome do cliente: o testemunho não aparece no site até o escrever.');
+    else if (!autorValido(c.autor)) fora('autor-formato', 'autor', 'Escreva o nome próprio e a inicial do apelido, com ponto (ex.: «Nelson P.»): é só isso que a política de privacidade diz que se publica. O testemunho não aparece no site até estar assim.');
+    if (vazio(c.texto) || typeof c.texto !== 'string') fora('texto', 'texto', 'Falta o testemunho: não aparece no site até o escrever.');
+    else conferirTexto(out, base, { valor: c.texto, chave: ch('texto'), campo: campo('texto'), rotulo: R.texto, max: TAMANHOS.textoCritica, linha: false });
+    conferirNumero(out, base, { valor: c.estrelas, chave: ch('estrelas'), campo: campo('estrelas'), rotulo: R.estrelas, limites: LIMITES.estrelas,
+      mensagem: 'As estrelas são um número inteiro de 1 a 5 (ou nenhum).' });
     conferirTexto(out, base, { valor: c.nota_traducao, chave: ch('nota_traducao'), campo: campo('nota_traducao'), rotulo: R.nota_traducao, max: TAMANHOS.notaTraducao });
+    if (typeof c.autorizado !== 'boolean') out.push({ ...base, classe: 'avisa', chave: ch('autorizado'), campo: campo('autorizado'), mensagem: 'Diga se o cliente autorizou mostrar este testemunho no site: até lá, não aparece.' });
   });
   return out;
 }
@@ -764,7 +786,7 @@ export function problemasDasAvaliacoes(d) {
 export function problemasDasDefinicoes(d, ctx = {}) {
   const ficheiro = FICHEIROS.definicoes;
   const out = [];
-  const ecraDe = (s) => (s ? `${ECRA_ESTUDIO} › ${SECCOES_DEFINICOES[s]}` : ECRA_ESTUDIO);
+  const ecraDe = (s) => (s ? ECRAS_DAS_SECCOES[s] ?? `${ECRA_ESTUDIO} › ${SECCOES_DEFINICOES[s]}` : ECRA_ESTUDIO);
   const juntar = (classe, chave, seccao, campo, mensagem, extra = {}) => out.push({ classe, chave: `definicoes:${chave}`, ficheiro, ecra: ecraDe(seccao), campo, mensagem, ...extra });
   const bloqueia = (...a) => juntar('bloqueia', ...a);
   const avisa = (...a) => juntar('avisa', ...a);
@@ -1065,6 +1087,24 @@ export function neutralizar(dados = {}, lista = []) {
         if (eObjecto(s) && s.imagem !== '') { s.imagem = ''; mudou = true; efeitos.push({ ficheiro: FICHEIROS.servicos, slug: p.slug, nome: nomeDoServico(l.obj.servicos[p.indice], p.indice), efeitos: ['sem_fotografia'], motivos: [p.mensagem], fotos: [p.foto] }); }
       }
       if (mudou) ficheiros[FICHEIROS.servicos] = serializar(x, terminacaoDe(l.texto));
+    }
+  }
+  /* Os testemunhos: um sem nome no formato certo ou sem texto sai da lista
+     (e só se diz que mudou no site se estava autorizado — os outros já lá não
+     apareciam). */
+  const prsCriticas = porFicheiro.get(FICHEIROS.avaliacoes);
+  if (prsCriticas && tem(d, 'avaliacoes')) {
+    const l = lerJson(d.avaliacoes);
+    if (eObjecto(l.obj) && Array.isArray(l.obj.criticas)) {
+      const sair = new Set(prsCriticas.filter((p) => p.efeito === 'esconder' && Number.isInteger(p.indice)).map((p) => p.indice));
+      if (sair.size) {
+        const x = JSON.parse(JSON.stringify(l.obj));
+        x.criticas = x.criticas.filter((_, i) => !sair.has(i));
+        ficheiros[FICHEIROS.avaliacoes] = serializar(x, terminacaoDe(l.texto));
+        for (const i of [...sair].sort((a, b) => a - b)) {
+          if (testemunhoNoSite(l.obj.criticas[i])) efeitos.push({ ficheiro: FICHEIROS.avaliacoes, slug: prsCriticas.find((p) => p.indice === i)?.slug, nome: nomeDaCritica(l.obj.criticas[i], i), efeitos: ['esconder'], motivos: prsCriticas.filter((p) => p.indice === i).map((p) => p.mensagem), fotos: [] });
+        }
+      }
     }
   }
   /* Os comparadores: um sem as duas fotografias sai da lista. */
