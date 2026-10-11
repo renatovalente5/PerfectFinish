@@ -1131,6 +1131,12 @@ ${esc(D.morada.rua)}, ${esc(D.morada.codigo_postal)} ${esc(D.morada.localidade)}
 Telefone: <a href="tel:+351${TEL}">${TEL_TXT}</a> ${CUSTO}<br>
 ${D.contactos.email ? `E-mail: <a href="mailto:${esc(D.contactos.email)}">${esc(D.contactos.email)}</a>` : "<em>E-mail: a preencher</em>"}</p>`;
 
+/* Para pedir a retirada de um testemunho: os contactos do início da página
+   (os do IDENT, dos dados do estúdio, com o custo da chamada ao lado do
+   número), e não escritos à mão. */
+const CONTACTOS_DE_RETIRADA = `pelo telefone <a href="tel:+351${TEL}">${TEL_TXT}</a> ${CUSTO}${D.contactos.email
+  ? ` ou pelo e-mail <a href="mailto:${esc(D.contactos.email)}">${esc(D.contactos.email)}</a>` : ""}`;
+
 const informacaoLegal = () => paginaTexto(
   "/informacao-legal/",
   "Informação Legal | Perfect Finish Studio Leiria",
@@ -1215,11 +1221,16 @@ ligação para abrir o Google Maps por sua iniciativa.</p>
 <p>Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a) do RGPD, e artigo 5.º da Lei
 n.º 41/2004). Pode retirá-lo a qualquer momento limpando os dados deste site no seu navegador.</p>
 
-<h2>Avaliações do Google</h2>
-<p>Mostramos a classificação média e o número de avaliações do nosso perfil do Google. Não
-guardamos no site o texto das avaliações nem os nomes ou fotografias de quem as escreveu. Ao
-carregar em «Ler no Google» é encaminhado para o Google, onde se aplicam os termos e a política
-de privacidade da Google.</p>
+<h2>Avaliações e testemunhos</h2>
+<ul>
+ <li><strong>A nota do Google.</strong> Mostramos a classificação média e o número de avaliações
+ do nosso perfil do Google. Ao carregar em «Ver todas no Google» é encaminhado para o Google, onde
+ se aplicam os termos e a política de privacidade da Google.</li>
+ <li><strong>Os testemunhos de clientes.</strong> Só publicamos o testemunho de um cliente com a
+ autorização dele. Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a) do RGPD).
+ Publicamos apenas o nome próprio, a inicial do apelido e o texto que autorizou. Pode pedir-nos que
+ o retiremos a qualquer momento, ${CONTACTOS_DE_RETIRADA}.</li>
+</ul>
 
 <h2>WhatsApp e telefone</h2>
 <p>Se nos contactar por WhatsApp ou por telefone, tratamos os dados que nos der (nome, contacto,

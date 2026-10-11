@@ -25,7 +25,10 @@
  *     o nome próprio e a inicial do apelido, sem data, e a nota por baixo diz
  *     de onde vêm (com a nota e o número do Google, dos dados); sem nenhum
  *     autorizado fica só o cartão da nota; nada de Review nem AggregateRating
- *     no JSON-LD. */
+ *     no JSON-LD;
+ *   · a política de privacidade diz o que o site faz: a nota do Google (o
+ *     botão que ela nomeia existe) e os testemunhos — o consentimento, o que
+ *     se publica, e a retirada pelos contactos dos dados do estúdio. */
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, realpathSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -256,6 +259,30 @@ secao('os testemunhos de clientes: só os autorizados');
   escreverJ(w3, 'data/avaliacoes.json', d3);
   correr(w3, 'gerar.mjs');
   certo(figuras(w3).length === 1 && !avaliacoes(w3).includes('há 2 meses') && !avaliacoes(w3).includes('critica__quando'), 'sem data nenhuma: um «quando» que ficou nos dados não aparece', figuras(w3));
+}
+
+/* ================================================================== */
+secao('a política de privacidade diz o que o site faz (a nota e os testemunhos)');
+{
+  const politica = (w) => site(w, 'politica-de-privacidade/index.html').replace(/\s+/g, ' ');
+  const w = clone();
+  const def = lerJ(w, 'data/definicoes.json');
+  def.contactos.telefone = '912345678'; def.contactos.telefone_texto = '912 345 678'; def.contactos.email = 'outro@exemplo.pt';
+  escreverJ(w, 'data/definicoes.json', def);
+  const g = correr(w, 'gerar.mjs');
+  const p = g.status === 0 ? politica(w) : '';
+  const bloco = /<h2>Avaliações e testemunhos<\/h2>([\s\S]*?)<h2>/.exec(p)?.[1] ?? '';
+  const pontos = [...bloco.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1]);
+  certo(pontos.length === 2 && /A nota do Google/.test(pontos[0]) && /Os testemunhos de clientes/.test(pontos[1]) && !/<h2>Avaliações do Google<\/h2>/.test(p),
+    'o parágrafo «Avaliações do Google» deu lugar a dois pontos: a nota do Google e os testemunhos', pontos.length ? pontos.map((x) => x.slice(0, 60)) : (bloco.slice(0, 200) || g.saida));
+  const nomeado = /«([^»]+)»/.exec(pontos[0] ?? '')?.[1];
+  certo(nomeado === 'Ver todas no Google' && site(w, 'index.html').includes(`${nomeado} <span class="seta">`), 'o botão que a política nomeia é o que a página inicial tem («Ver todas no Google»)', nomeado);
+  certo(/consentimento \(artigo 6\.º, n\.º 1, alínea a\) do RGPD\)/.test(pontos[1] ?? '') && /apenas o nome próprio, a inicial do apelido e o texto que autorizou/.test(pontos[1] ?? ''),
+    'os testemunhos: o fundamento é o consentimento, e publica-se só o nome próprio, a inicial e o texto autorizado', pontos[1]);
+  certo(/a qualquer momento/.test(pontos[1] ?? '') && (pontos[1] ?? '').includes('href="tel:+351912345678">912 345 678</a> (Chamada para a rede móvel nacional)') && (pontos[1] ?? '').includes('href="mailto:outro@exemplo.pt">outro@exemplo.pt</a>'),
+    'a retirada a qualquer momento, pelo telefone e pelo e-mail dos dados do estúdio (e não escritos à mão), com o custo da chamada', pontos[1]);
+  certo(!/Não guardamos no site o texto das avaliações/.test(p), 'e já não diz que não se guarda o texto das avaliações (os testemunhos guardam-se, com autorização)');
+  certo(correr(w, 'auditar.mjs').status === 0, 'e a auditoria passa');
 }
 
 /* ================================================================== */
