@@ -280,7 +280,7 @@ content:
               label: Nome do cliente
               type: string
               required: true
-              description: 'Nome próprio e inicial do apelido, com ponto. Exemplo: Nelson P.'
+              description: 'Um ou dois nomes próprios e a inicial do apelido, com ponto. Exemplos: Nelson P., Ana Rita M.'
             - name: estrelas
               label: Estrelas
               type: number

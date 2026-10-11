@@ -180,7 +180,7 @@ números.
 > política de privacidade (que dizia não se guardarem). Com a autorização de
 > quem as escreveu, passam a ser um testemunho dado ao estúdio: cada uma tem
 > `autorizado` (sim ou não), e só aparecem as autorizadas, com o nome próprio
-> e a inicial do apelido, o texto, e as estrelas e a nota de tradução se as
+> (um ou dois nomes: «Nelson P.», «Ana Rita M.») e a inicial do apelido, o texto, e as estrelas e a nota de tradução se as
 > tiverem; o «quando» saiu (envelhecia sozinho). As três de hoje ficaram com
 > `autorizado: false` até o dono ter a autorização de cada cliente — até lá, a
 > secção mostra só o cartão da nota. Com testemunhos, a nota por baixo diz de

@@ -176,10 +176,12 @@ secao('os testemunhos: só os autorizados, com o nome próprio e a inicial');
     'os três de hoje ficam guardados, sem autorização (o dono vai pedi-la a cada cliente) e sem data', cs.map((c) => `${c.autor} ${c.autorizado}`).join(', '));
   certo(!R.CAMPOS_CRITICA.includes('quando') && R.CAMPOS_CRITICA.includes('autorizado') && R.NOMES_CAMPOS.critica?.autorizado === 'O cliente autorizou mostrar no site' && !Object.hasOwn(R.TAMANHOS, 'quando'),
     'o «quando» saiu dos campos; o «autorizado» entrou', R.CAMPOS_CRITICA.join(', '));
-  const bons = ['Nelson P.', 'Ana-Rita M.', 'João S.', 'Zé Ó.'];
-  const maus = ['Nelson Pereira', 'Nelson', 'Nelson P', 'nelson p.', 'NELSON P.', 'Nelson P. Silva', 'Ana Rita M.', 'N. P.', '', 7, null];
+  /* Um ou dois nomes próprios (11 out 2026: «Ana Rita», «João Pedro», «Maria
+     João» são tão comuns como um só), com «da/de/do/das/dos» entre os dois. */
+  const bons = ['Nelson P.', 'Ana-Rita M.', 'João S.', 'Zé Ó.', 'Ana Rita M.', 'João Pedro S.', 'Maria João C.', 'Maria da Graça S.', 'Maria dos Anjos R.'];
+  const maus = ['Nelson Pereira', 'Ana Rita Pereira', 'Nelson Pereira Silva', 'Ana Rita Pereira M.', 'Ana Rita Sofia M.', 'Nelson', 'Ana Rita', 'Nelson P', 'nelson p.', 'NELSON P.', 'Nelson P. Silva', 'Maria da S.', 'N. P.', '', 7, null];
   const valido = typeof R.autorValido === 'function' ? R.autorValido : () => null;
-  certo(bons.every((x) => valido(x) === true) && maus.every((x) => valido(x) === false), 'o formato do nome: o nome próprio e a inicial do apelido, com ponto',
+  certo(bons.every((x) => valido(x) === true) && maus.every((x) => valido(x) === false), 'o formato do nome: um ou dois nomes próprios e a inicial do apelido, com ponto (e nunca o apelido por extenso)',
     `bons que falham: ${bons.filter((x) => valido(x) !== true).join(', ')} · maus que passam: ${maus.filter((x) => valido(x) !== false).join(', ')}`);
   const noSite = typeof R.testemunhoNoSite === 'function' ? R.testemunhoNoSite : () => null;
   certo(noSite({ autorizado: true }) === true && [{ autorizado: false }, { autorizado: 'true' }, {}].every((c) => noSite(c) === false), 'no site, só com «autorizado: true» (o mesmo que o gerador)');
@@ -355,6 +357,7 @@ secao('cada regra, com a classe certa');
     ['um testemunho que não é um testemunho', (d) => { d.avaliacoes.criticas.push(null); }, 'bloqueia', `avaliacoes:#${HOJE.avaliacoes.criticas.length + 1}:forma`],
     ['testemunho sem o nome do cliente', crit(0, (c) => { c.autor = ''; c.autorizado = true; }), 'neutraliza', `avaliacoes:#1:autor`, 'esconder'],
     ['o nome completo do cliente', crit(0, (c) => { c.autor = 'Nelson Pereira'; c.autorizado = true; }), 'neutraliza', 'avaliacoes:nelson-pereira:autor-formato', 'esconder'],
+    ['dois nomes próprios com o apelido por extenso', crit(0, (c) => { c.autor = 'Ana Rita Pereira'; c.autorizado = true; }), 'neutraliza', 'avaliacoes:ana-rita-pereira:autor-formato', 'esconder'],
     ['só o nome próprio', crit(0, (c) => { c.autor = 'Nelson'; }), 'neutraliza', 'avaliacoes:nelson:autor-formato', 'esconder'],
     ['a inicial sem ponto', crit(0, (c) => { c.autor = 'Nelson P'; }), 'neutraliza', 'avaliacoes:nelson-p:autor-formato', 'esconder'],
     ['o nome em minúsculas', crit(0, (c) => { c.autor = 'nelson p.'; }), 'neutraliza', 'avaliacoes:nelson-p:autor-formato', 'esconder'],
@@ -449,6 +452,7 @@ secao('cada regra, com a classe certa');
     ['um comparador novo, do painel', (d) => { d.pares.pares.push({ slug: 'porsche-taycan', veiculo: 'Porsche Taycan', servico: 'PPF', antes: FOTO_T, depois: HOJE.trabalhos[T].fotos[1], ordem: 6, legenda: 'x', alt_antes: 'a', alt_depois: 'b' }); }],
     ['um testemunho novo, autorizado, sem estrelas', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana R.', texto: 'Impecável.', autorizado: true }); }],
     ['um testemunho com nome composto e acentos', (d) => { d.avaliacoes.criticas.push({ autor: 'Ana-Rita Ó.', estrelas: 4, texto: 'Muito bom.', autorizado: false }); }],
+    ['um testemunho com dois nomes próprios', (d) => { d.avaliacoes.criticas.push({ autor: 'Maria João C.', texto: 'Muito bom.', autorizado: true }); }],
     ['um testemunho sem estrelas', crit(0, (c) => { delete c.estrelas; })],
     ['os três testemunhos de hoje autorizados', (d) => { for (const c of d.avaliacoes.criticas) c.autorizado = true; }],
   ];

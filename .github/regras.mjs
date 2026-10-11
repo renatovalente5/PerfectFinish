@@ -392,10 +392,14 @@ export const nomeDoServico = (s, i = 0) => umaLinha(eObjecto(s) ? s.nome : '') |
 export const nomeDoPar = (p, i = 0) => umaLinha(eObjecto(p) ? p.veiculo : '') || `comparador ${i + 1}`;
 export const nomeDaCritica = (c, i = 0) => umaLinha(eObjecto(c) ? c.autor : '') || `testemunho ${i + 1}`;
 /* O NOME DE QUEM DEU UM TESTEMUNHO, como a política de privacidade promete: o
-   nome próprio e a inicial do apelido, com ponto («Nelson P.», «Ana-Rita M.»,
-   «João S.»). Um nome completo, só o nome próprio ou uma inicial sem ponto
-   não servem: o testemunho não aparece no site até estar assim. */
-const RE_AUTOR = /^\p{Lu}\p{Ll}+(?:[-'’]\p{Lu}?\p{Ll}+)* \p{Lu}\.$/u;
+   nome próprio — um ou dois nomes, como é tão comum em Portugal («Ana Rita»,
+   «João Pedro», «Maria João»; e com «da», «de», «do», «das» ou «dos» entre os
+   dois, «Maria da Graça») — e a inicial do apelido, com ponto («Nelson P.»,
+   «Ana Rita M.», «Ana-Rita M.»). O apelido por extenso («Nelson Pereira»),
+   três nomes, só o nome próprio ou uma inicial sem ponto não servem: o
+   testemunho não aparece no site até estar assim. */
+const NOME_PROPRIO = "\\p{Lu}\\p{Ll}+(?:[-'’]\\p{Lu}?\\p{Ll}+)*";
+const RE_AUTOR = new RegExp(`^${NOME_PROPRIO}(?: (?:(?:da|das|de|do|dos) )?${NOME_PROPRIO})? \\p{Lu}\\.$`, 'u');
 export const autorValido = (t) => typeof t === 'string' && t.length <= TAMANHOS.autor && RE_AUTOR.test(t.trim());
 /* No site, como o gerador decide: só o testemunho que o cliente autorizou. */
 export const testemunhoNoSite = (c) => eObjecto(c) && c.autorizado === true;
@@ -738,8 +742,8 @@ export function problemasDosPares(d, ctx = {}) {
 
 /* OS TESTEMUNHOS DE CLIENTES (decisão do Renato, 11 out 2026): só aparecem
    no site os que o cliente autorizou (`autorizado: true`), com o nome próprio
-   e a inicial do apelido, o texto, e as estrelas e a nota de tradução se as
-   tiverem. Com a autorização de quem o escreveu, o texto deixa de ser
+   (um ou dois nomes) e a inicial do apelido, o texto, e as estrelas e a nota
+   de tradução se as tiverem. Com a autorização de quem o escreveu, o texto deixa de ser
    «conteúdo copiado do Google» e passa a ser um testemunho dado ao estúdio —
    o que resolve os termos do Google, a protecção de dados (o fundamento é o
    consentimento) e a regra das avaliações de consumidores (DL 57/2008: dizer
@@ -767,7 +771,7 @@ export function problemasDasAvaliacoes(d) {
     const fora = (regra, x, mensagem) => out.push({ ...base, classe: 'neutraliza', chave: ch(regra), campo: campo(x), efeito: 'esconder', mensagem });
     if (!eObjecto(c)) { out.push({ ...base, classe: 'bloqueia', chave: ch('forma'), mensagem: `O ${i + 1}.º testemunho não tem a forma de um testemunho: sem ela o site não se consegue gerar. Só o Renato o pode corrigir.` }); return; }
     if (vazio(c.autor)) fora('autor', 'autor', 'Falta o nome do cliente: o testemunho não aparece no site até o escrever.');
-    else if (!autorValido(c.autor)) fora('autor-formato', 'autor', 'Escreva o nome próprio e a inicial do apelido, com ponto (ex.: «Nelson P.»): é só isso que a política de privacidade diz que se publica. O testemunho não aparece no site até estar assim.');
+    else if (!autorValido(c.autor)) fora('autor-formato', 'autor', 'Escreva um ou dois nomes próprios e a inicial do apelido, com ponto (ex.: «Nelson P.» ou «Ana Rita M.»): é só isso que a política de privacidade diz que se publica. O testemunho não aparece no site até estar assim.');
     if (vazio(c.texto) || typeof c.texto !== 'string') fora('texto', 'texto', 'Falta o testemunho: não aparece no site até o escrever.');
     else conferirTexto(out, base, { valor: c.texto, chave: ch('texto'), campo: campo('texto'), rotulo: R.texto, max: TAMANHOS.textoCritica, linha: false });
     conferirNumero(out, base, { valor: c.estrelas, chave: ch('estrelas'), campo: campo('estrelas'), rotulo: R.estrelas, limites: LIMITES.estrelas,

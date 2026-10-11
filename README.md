@@ -87,8 +87,8 @@ Maps Platform proíbem-no («copy and save … user reviews»), e num repositór
 público ficaria para sempre no histórico. Ver [`worker/README.md`](worker/README.md).
 O que o site mostra são **testemunhos de clientes** (`data/avaliacoes.json`),
 publicados com a autorização de cada um: só aparecem os que têm
-`autorizado: true`, com o nome próprio e a inicial do apelido («Nelson P.», e a
-guarda confere o formato), o texto, e as estrelas e a nota de tradução se as
+`autorizado: true`, com o nome próprio (um ou dois nomes) e a inicial do apelido
+(«Nelson P.», «Ana Rita M.»: a guarda confere o formato), o texto, e as estrelas e a nota de tradução se as
 tiverem — sem data. Sem nenhum autorizado, a secção mostra só o cartão da nota
 do Google. A política de privacidade diz o fundamento (o consentimento) e como
 se pede a retirada. As três que estavam copiadas do Google ficaram guardadas
