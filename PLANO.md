@@ -175,6 +175,21 @@ fotografias de perfil — o mínimo de dados pessoais para continuar credível. 
 Worker continua a ser o caminho preferido e, quando ligado, passa a mandar nos
 números.
 
+> **11 out 2026 — passaram a testemunhos de clientes** (decisão do Renato).
+> Copiadas do Google, as críticas iam contra os termos do Google e contra a
+> política de privacidade (que dizia não se guardarem). Com a autorização de
+> quem as escreveu, passam a ser um testemunho dado ao estúdio: cada uma tem
+> `autorizado` (sim ou não), e só aparecem as autorizadas, com o nome próprio
+> e a inicial do apelido, o texto, e as estrelas e a nota de tradução se as
+> tiverem; o «quando» saiu (envelhecia sozinho). As três de hoje ficaram com
+> `autorizado: false` até o dono ter a autorização de cada cliente — até lá, a
+> secção mostra só o cartão da nota. Com testemunhos, a nota por baixo diz de
+> onde vêm e de onde vem a nota do Google (DL 57/2008: como se garante que vêm
+> de clientes reais). A política de privacidade troca o parágrafo «Avaliações
+> do Google» por dois pontos: a nota do Google e os testemunhos (o
+> consentimento, o que se publica e a retirada, pelos contactos dos dados do
+> estúdio). Nada de `Review` nem `AggregateRating` no JSON-LD.
+
 **Botão de WhatsApp** fixo no canto inferior direito, em todas as páginas.
 Sobe quando o aviso de cookies está no ecrã e desaparece com o menu aberto.
 
