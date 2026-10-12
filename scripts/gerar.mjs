@@ -526,7 +526,7 @@ function blocoAvaliacoes({ claro = false } = {}) {
 
   return `<section class="seccao${claro ? " claro" : ""}" id="avaliacoes">
  <div class="caixa">
-  <div class="avaliacoes" data-avaliacoes="${esc(D.google.endpoint || "")}">
+  <div class="avaliacoes${testemunhos.length ? "" : " avaliacoes--so-nota"}" data-avaliacoes="${esc(D.google.endpoint || "")}">
    <div class="nota">
     <p class="sobrescrito">Avaliações no Google</p>
     <div class="nota__linha">
