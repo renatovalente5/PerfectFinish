@@ -56,7 +56,7 @@ let n = 0;
 function clone() {
   const w = join(TMP, `w${++n}`);
   execFileSync('mkdir', ['-p', w]);
-  for (const p of ['data', 'scripts', '.github', 'assets', 'CNAME', '.pages.yml', '_fonte']) execFileSync('cp', ['-c', '-R', join(RAIZ, p), join(w, p)]);
+  for (const p of ['data', 'scripts', '.github', 'assets', 'CNAME', '.pages.yml', '_fonte', 'legal-comum']) execFileSync('cp', ['-c', '-R', join(RAIZ, p), join(w, p)]);
   return w;
 }
 const correr = (w, script) => {

@@ -721,7 +721,7 @@ async function pontaAPonta() {
   secao('a publicação de ponta a ponta (os passos do publicar.yml, tal como estão escritos)');
   const base = join(TMP, 'base'); mkdirSync(base);
   try {
-    for (const p of ['data', 'scripts', '.github', 'assets', 'CNAME', '.pages.yml']) execFileSync('cp', ['-c', '-R', join(RAIZ, p), join(base, p)]);
+    for (const p of ['data', 'scripts', '.github', 'assets', 'CNAME', '.pages.yml', 'legal-comum']) execFileSync('cp', ['-c', '-R', join(RAIZ, p), join(base, p)]);
   } catch (e) { certo(false, 'o clone do repositório (cp -c, APFS)', String(e.message)); return; }
   const nomes = YAML.split('\n').map((l) => l.match(/^ {6}- name: (.+)$/)).filter(Boolean).map((m) => m[1]);
   const PASSOS = nomes.filter((n) => passoDoYaml(n)).map((n) => ({ nome: n, run: passoDoYaml(n) }));
@@ -861,8 +861,11 @@ async function pontaAPonta() {
     execFileSync('cp', ['-c', '-R', base, w]);
     /* Uma página sem o Livro de Reclamações não é coisa da guarda: só a
        auditoria a vê. */
-    const g = join(w, 'scripts', 'gerar.mjs');
-    writeFileSync(g, readFileSync(g, 'utf8').replaceAll('livroreclamacoes.pt', 'exemplo.pt'));
+    /* O endereço vem do gerador e do botão da biblioteca legal-comum (a cópia
+       em legal-comum/): sabotam-se os dois. */
+    for (const g of [join(w, 'scripts', 'gerar.mjs'), join(w, 'legal-comum', 'src', 'livro.mjs')]) {
+      writeFileSync(g, readFileSync(g, 'utf8').replaceAll('livroreclamacoes.pt', 'exemplo.pt'));
+    }
     const r = await publicar(w);
     const f = r.feitos.find((p) => p.status !== 0);
     certo(f?.nome === 'Auditar antes de publicar' && /^::error title=Auditoria antes de publicar::.*Livro de Reclamações/m.test(f.out), 'quando a auditoria trava a publicação, diz porquê em anotações ::error (o painel mostra-as)', f ? `${f.nome}: ${f.out.slice(-300)}` : 'não parou');

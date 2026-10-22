@@ -174,6 +174,11 @@ for (const caminho of paginas) {
   if (!html.includes("livroreclamacoes.pt")) {
     falha(`${nome}: sem ligação para o Livro de Reclamações`);
   }
+  /* A peça da biblioteca legal-comum, no rodapé de todas as páginas, com o
+     ícone («visível e destacado», DL 156/2005, art. 5.º-B). */
+  if (!/<!-- legal-comum:livro v[\d.]+ --><a class="lr-[a-z]+" href="https:\/\/www\.livroreclamacoes\.pt\/inicio"[^>]*><svg class="lr-icone"/.test(html)) {
+    falha(`${nome}: sem o Livro de Reclamações da biblioteca, com o ícone (legal-comum:livro)`);
+  }
   for (const obrigatoria of ["/politica-de-privacidade/", "/informacao-legal/"]) {
     if (!html.includes(BASE + obrigatoria)) {
       falha(`${nome}: sem ligação para ${obrigatoria}`);
@@ -299,10 +304,19 @@ if (!definicoes.empresa.titular) {
    elemento sem estilo, e isso passa numa captura de ecrã distraída. Entrou
    assim: ao apagar um bloco de CSS morto levei com ele o `.lista-servicos`,
    que continuava a ser usado, e a lista dos 13 serviços ficou sem estilo. */
-const folha = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8");
+/* A folha que conta é a que vai embutida nas páginas: a de assets/css/site.css
+   mais o CSS do botão do Livro que o gerar.mjs lhe junta (o livroCss() da
+   biblioteca legal-comum). */
+const embutida = (() => {
+  try { return /<style>([\s\S]*?)<\/style>/.exec(readFileSync(join(SAIDA, "index.html"), "utf8"))?.[1] ?? ""; } catch { return ""; }
+})();
+const folha = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8") + "\n" + embutida;
 const declaradas = new Set(
   [...folha.matchAll(/\.([a-z][a-z0-9_-]*)(?=[\s,:{>~+.\[])/g)].map((m) => m[1])
 );
+/* Ganchos do Livro (legal-comum): o ícone e o texto não têm regra própria — o
+   ícone é pintado por `.lr-discreto svg` (ou `.lr-botao svg`) e o texto herda. */
+for (const gancho of ["lr-icone", "lr-botao__texto"]) declaradas.add(gancho);
 const usadas = new Set();
 for (const caminho of paginas) {
   const html = readFileSync(caminho, "utf8");

@@ -16,6 +16,16 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, existsSync, rea
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+/* As peças legais comuns aos sites do Renato (biblioteca legal-comum, cópia em
+   legal-comum/, instalada por _ferramentas/legal-comum/instalar.mjs; não se
+   edita aqui): o botão do Livro de Reclamações, os destinatários e os direitos
+   da política de privacidade, a frase de quem não grava nada antes de uma
+   escolha, as frases da garantia e a guarda das fichas da Loja. */
+import {
+  VERSAO as VERSAO_LEGAL, livroReclamacoes, livroCss, destinatariosHtml, direitosHtml, frasesPrivacidade,
+  textoSemCookies, textoDefinicoesCookies, prazos, GARANTIA_BENS, GARANTIA_SERVICOS, GARANTIA_COMERCIAL_NOTA,
+  verificarProduto,
+} from "../legal-comum/index.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SAIDA = join(RAIZ, "_site");
@@ -235,14 +245,72 @@ const NAV = [
 ];
 
 /* -------------------------------------------------------------- estrutura */
+/* -------------------------------------------------------- PEÇAS LEGAIS */
+/* Cada peça sai entre marcadores (<!-- legal-comum:<peça> v<versão> -->), como
+   nos sites escritos à mão: é por eles que o verificar-versoes.mjs da
+   biblioteca e a verificação depois de publicar (curl) as encontram. */
+const marcar = (peca, html) => `<!-- legal-comum:${peca} v${VERSAO_LEGAL} -->${html}<!-- /legal-comum:${peca} -->`;
+
+/* O Livro de Reclamações (DL 156/2005, art. 5.º-B), no rodapé de todas as
+   páginas, ao lado das outras ligações legais, e nos Contactos. A variante
+   DISCRETA da biblioteca (por omissão desde a v1.1.0, a pedido do Renato):
+   ícone de livro e texto, com a letra, o tamanho e a cor das ligações
+   vizinhas, sem caixa nem fundo — o ícone é o destaque. O livroCss() traz as
+   regras dela (.lr-discreto); as do botão com caixa (.lr-botao) vêm também e
+   não se usam: o par de cores é o do .botao--cheio (8,17:1). */
+const LIVRO = marcar("livro", livroReclamacoes());
+const LIVRO_CSS = livroCss("lr-botao", { cor: "#1A1717", fundo: "#CBAD4F" });
+
+/* O fornecedor do email, pelo domínio do endereço dos dados (a tabela dos
+   destinatários da privacidade). Um domínio que não se conhece sai «por
+   indicar», em vez de se adivinhar. */
+function fornecedorDoEmail(email = "") {
+  const dominio = String(email).split("@")[1]?.toLowerCase() ?? "";
+  if (/^(gmail|googlemail)\.com$/.test(dominio)) return "google";
+  if (/^(outlook|hotmail|live|msn)\.(com|pt)$/.test(dominio)) return "microsoft";
+  if (/^sapo\.pt$/.test(dominio)) return "sapo";
+  return dominio ? "outro" : undefined;
+}
+/* Quem recebe dados a propósito deste site: o GitHub Pages aloja-o; o mapa é
+   da Google e só carrega depois do clique; o WhatsApp, o Instagram e o
+   Facebook são da Meta; o email é o da caixa do estúdio. Sem analytics, sem
+   formulários, sem pagamentos. */
+const DESTINATARIOS = {
+  alojamento: "github-pages",
+  mapas: "google",
+  whatsapp: true,
+  instagram: Boolean(D.contactos.instagram),
+  facebookPage: Boolean(D.contactos.facebook),
+  email: fornecedorDoEmail(D.contactos.email),
+  emailNome: D.contactos.email ? `fornecedor do email ${String(D.contactos.email).split("@")[1]}` : undefined,
+};
+
+/* A guarda das fichas da Loja, em modo AVISAR: nunca esconde um produto nem
+   pára a publicação — só diz. Hoje os produtos estão «Sob consulta» (sem
+   preço), e o preço é do cliente. No GitHub Actions sai como ::warning. */
+function avisarProdutos(produtos) {
+  const avisos = [];
+  let semFicha = 0;
+  for (const p of produtos) {
+    const { problemas } = verificarProduto({ nome: p.nome, aVenda: true, preco: p.preco }, { categoria: "geral", modo: "avisar" });
+    for (const q of problemas.filter((x) => x.campo === "preco")) avisos.push(`Loja › ${p.nome}: ${q.mensagem}`);
+    if (problemas.some((x) => x.campo !== "preco")) semFicha++;
+  }
+  if (semFicha) avisos.push(`Loja: ${semFicha} produto(s) sem fabricante (nome, morada, email) nem referência — só obrigatório se houver venda à distância (Regulamento (UE) 2023/988, art. 19.º).`);
+  for (const a of avisos) {
+    console.log(`  AVISO: ${a}`);
+    if (process.env.GITHUB_ACTIONS === "true") console.log(`::warning title=Fichas da Loja (legal-comum)::${a.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A")}`);
+  }
+}
+
 /* A folha vai embutida em cada página, portanto os comentários iam com ela —
    e esta folha é muito comentada de propósito. Os comentários servem quem lê o
    ficheiro; não servem ninguém no HTML. Ficam na fonte e saem no embutido.
    (O grão é um data URI e não contém `/*`, portanto isto não lhe toca.) */
-const CSS = readFileSync(join(RAIZ, "assets/css/site.css"), "utf8")
+const CSS = (readFileSync(join(RAIZ, "assets/css/site.css"), "utf8")
   .replace(/\/\*[\s\S]*?\*\//g, "")
   .replace(/\n{3,}/g, "\n\n")
-  .trim();
+  .trim()) + "\n" + LIVRO_CSS;
 
 function cabecalho(atual) {
   // Só a Loja recebe a marca de «página actual». As âncoras não: estando
@@ -323,26 +391,28 @@ function rodape() {
   <div class="rodape__fundo">
    <p class="rodape__copyright">© ${new Date().getFullYear()} ${esc(D.marca.nome)}</p>
    <ul class="rodape__legais" role="list">
+    <li>${LIVRO}</li>
     <li><a href="${u("/politica-de-privacidade/")}">Política de Privacidade</a></li>
     <li><a href="${u("/politica-de-cookies/")}">Cookies</a></li>
     <li><a href="${u("/informacao-legal/")}">Informação legal</a></li>
-    <li><a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer">Livro de Reclamações</a></li>
-    <li><button type="button" class="rodape__botao" data-preferencias>Preferências</button></li>
+    <li><button type="button" class="rodape__botao" data-preferencias aria-describedby="preferencias-estado">Preferências</button></li>
     <li><a class="rodape__gestao" href="https://backoffice.perfectfinishstudio.pt" target="_blank" rel="noopener">Gestão</a></li>
    </ul>
+   <!-- O que o «Preferências» fez (site.js): retira a autorização do mapa. Sem
+        aviso de cookies para reabrir, a resposta fica escrita aqui. -->
+   <p class="rodape__estado" id="preferencias-estado" role="status" hidden></p>
   </div>
  </div>
 </footer>`;
 }
 
 
-const AVISO_COOKIES = `<aside class="cookies" role="dialog" aria-live="polite" aria-label="Aviso de privacidade">
- <p><strong>Este site não usa cookies.</strong> Não há publicidade, não há seguimento, não há estatísticas. Só precisamos da sua autorização para carregar o <strong>mapa do Google</strong> no fim desta página, porque isso é um pedido a um servidor da Google. <a href="${u("/politica-de-cookies/")}">Saber mais</a></p>
- <div class="cookies__accoes">
-  <button class="botao botao--cheio" type="button" data-aceitar>Aceitar</button>
-  <button class="botao botao--linha" type="button" data-recusar>Só o essencial</button>
- </div>
-</aside>`;
+/* SEM AVISO DE COOKIES (22 out 2026, grupo 1 da auditoria legal). O site não
+   grava nem lê nada no aparelho antes de uma escolha (Lei 41/2004, art. 5.º):
+   o único terceiro é o mapa, e o mapa tem a sua própria autorização — o botão
+   «Carregar o mapa», nos Contactos. Retira-se em «Deixar de carregar o mapa»,
+   junto dele, ou no «Preferências» do rodapé, em todas as páginas. O aviso
+   tapava o rodapé (o Livro de Reclamações) na primeira visita. */
 
 /* --------------------------------------------------------------- JSON-LD */
 function dadosEstruturados(pagina) {
@@ -479,7 +549,6 @@ ${migalhas.length ? `<nav class="migalhas caixa" aria-label="Migalhas" style="pa
 ${corpo}
 </main>
 ${rodape()}
-${AVISO_COOKIES}
 <a class="zap-flutuante" href="${zap("Olá! Gostava de pedir um orçamento.")}"
    target="_blank" rel="noopener" aria-label="Falar por WhatsApp">${svg("zap", true)}</a>
 <dialog class="lupa" id="lupa" popover aria-label="Fotografias do trabalho">
@@ -1068,6 +1137,12 @@ function blocoContactos() {
      <dt>Instagram</dt>
      <dd><a href="${esc(IG)}" target="_blank" rel="noopener">@perfectfinish.pt</a></dd>
     </div></div>
+    <!-- O Livro de Reclamações também nos Contactos (o manual da DGC pede-o na
+         página de entrada e, como boa prática, onde se procura o apoio). -->
+    <div class="dado dado--livro"><div>
+     <dt>Reclamações</dt>
+     <dd>${LIVRO}</dd>
+    </div></div>
    </dl>
 
    <div>
@@ -1091,6 +1166,9 @@ function blocoContactos() {
      <a class="mapa__abrir" href="${esc(D.morada.mapa)}" target="_blank" rel="noopener">
       ${svg("local")}Abrir no Maps<span class="seta" aria-hidden="true">↗</span></a>
     </div>
+    <!-- Retirar a autorização tem de ser tão fácil como dá-la (RGPD, art. 7.º,
+         n.º 3): ao lado do mapa, e só com ele carregado. -->
+    <p class="mapa__retirar"><button class="rodape__botao" type="button" data-retirar-mapa>Deixar de carregar o mapa</button></p>
    </div>
   </div>`;
 }
@@ -1149,7 +1227,7 @@ ${IDENT}
 <h2>Livro de Reclamações</h2>
 <p>Está à sua disposição o Livro de Reclamações Eletrónico, nos termos do Decreto-Lei n.º 156/2005,
 de 15 de setembro, na sua redação atual.</p>
-<p><a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener noreferrer">www.livroreclamacoes.pt</a></p>
+<p>${LIVRO}</p>
 
 <h2>Resolução alternativa de litígios</h2>
 <p>Em caso de litígio de consumo, o consumidor pode recorrer a uma entidade de resolução
@@ -1162,12 +1240,15 @@ Telefone: 253 619 607<br>
 <p>Mais informação em <a href="https://www.consumidor.gov.pt/" target="_blank" rel="noopener noreferrer">Portal do Consumidor</a>.</p>
 
 <h2>Garantias</h2>
-<p>Aos bens vendidos a consumidores aplica-se a garantia legal de conformidade prevista no
-Decreto-Lei n.º 84/2021, de 18 de outubro: <strong>três anos</strong> para bens móveis, contados da
-entrega.</p>
-<p>Aos serviços prestados aplica-se o regime da empreitada previsto no Código Civil. A duração e
-o âmbito de qualquer garantia comercial adicional são indicados por escrito no orçamento ou na
-fatura do trabalho em causa.</p>
+<!-- As frases da garantia vêm da biblioteca legal-comum (GARANTIA_BENS,
+     GARANTIA_SERVICOS, GARANTIA_COMERCIAL_NOTA): as mesmas em todos os sites. -->
+<p><strong>Bens.</strong> ${esc(GARANTIA_BENS)}</p>
+<p><strong>Serviços.</strong> Aos serviços aplicam-se a Lei n.º 24/96 (Lei de Defesa do
+Consumidor) e o regime da empreitada do Código Civil. ${esc(GARANTIA_SERVICOS)} Contam como
+materiais aplicados, por exemplo, a película, o PPF, o vinil e os revestimentos.</p>
+<p><strong>Garantias comerciais.</strong> ${esc(GARANTIA_COMERCIAL_NOTA)} A do fabricante ou a
+nossa é entregue por escrito, no orçamento ou na fatura do trabalho, com a duração e o que
+cobre.</p>
 
 <h2>A nossa loja</h2>
 <p>A página <a href="${u("/loja/")}">Loja</a> é uma <strong>montra</strong>. Não é possível comprar nem pagar
@@ -1197,7 +1278,10 @@ const politicaPrivacidade = () => paginaTexto(
   "Política de Privacidade | Perfect Finish Studio",
   "Como o Perfect Finish Studio trata os seus dados pessoais. Este site não recolhe dados nem usa cookies.",
   "Política de Privacidade",
-  `<p>Última atualização: ${new Date().toLocaleDateString("pt-PT", { year: "numeric", month: "long" })}.</p>
+  /* A data é a da última mudança do TEXTO, escrita à mão — e não a do dia de
+     cada publicação, que mudava a cada gravação no painel sem nada mudar. Quem
+     mudar o texto desta política muda também esta data. */
+  `<p>Última atualização: 22 de outubro de 2026.</p>
 
 <h2>Quem é o responsável</h2>
 ${IDENT}
@@ -1219,7 +1303,9 @@ implica um pedido a servidores da Google, que passa a conhecer o seu endereço I
 informação sobre o seu navegador. Enquanto não autorizar, vê apenas um cartão estático e uma
 ligação para abrir o Google Maps por sua iniciativa.</p>
 <p>Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a) do RGPD, e artigo 5.º da Lei
-n.º 41/2004). Pode retirá-lo a qualquer momento limpando os dados deste site no seu navegador.</p>
+n.º 41/2004). Pode retirá-lo a qualquer momento, tão facilmente como o deu: no botão
+«Preferências», no rodapé de todas as páginas, ou em «Deixar de carregar o mapa», junto do mapa.
+O mapa sai na hora e a sua escolha é apagada do navegador.</p>
 
 <h2>Avaliações e testemunhos</h2>
 <ul>
@@ -1238,16 +1324,33 @@ o que descrever sobre o carro) para lhe responder e para prestar o serviço. Fun
 pré-contratuais e execução do contrato (artigo 6.º, n.º 1, alíneas b) do RGPD). O WhatsApp é um
 serviço da Meta Platforms Ireland Ltd. e o seu uso rege-se pelos termos da Meta.</p>
 
+<h2>Com quem partilhamos os dados</h2>
+<p>Os serviços que recebem dados a propósito deste site, com o país onde estão e, quando os dados
+saem da União Europeia, a base dessa transferência:</p>
+<div class="tabela-rolante" role="region" tabindex="0" aria-label="Destinatários dos dados — deslize para o lado para ver tudo">
+${marcar("privacidade", destinatariosHtml(DESTINATARIOS))}
+</div>
+${marcar("privacidade-frases", frasesPrivacidade({ ...DESTINATARIOS, repositorioPublico: true }).map((f) => `<p>${esc(f)}</p>`).join("\n"))}
+<p>Para a faturação, os dados vão também para a contabilidade e para a Autoridade Tributária, por
+obrigação legal. Não vendemos nem cedemos dados pessoais a ninguém para fins comerciais.</p>
+
 <h2>Durante quanto tempo</h2>
-<p>Os dados de contacto e do serviço são conservados enquanto durar a relação e, depois, pelos
-prazos legais aplicáveis — em especial os prazos fiscais e os de garantia.</p>
+<ul>
+ <li>${esc(prazos.pedidosDeContacto.texto)}</li>
+ <li>Serviços prestados e faturas: 10 anos, por obrigação fiscal (CIVA, art. 52.º); os dados do
+ serviço, também enquanto durar a garantia do trabalho.</li>
+ <li>Testemunhos de clientes: enquanto estiverem publicados, até nos pedir que os retiremos.</li>
+ <li>A autorização do mapa: só no seu navegador, até a retirar.</li>
+ <li>Registos técnicos do alojamento: guardados pelo GitHub, nos prazos da política de
+ privacidade do GitHub; não temos acesso a eles.</li>
+</ul>
 
 <h2>Os seus direitos</h2>
-<p>Pode pedir-nos o acesso, a retificação, o apagamento, a limitação ou a portabilidade dos seus
-dados, e opor-se ao tratamento. Basta contactar-nos pelos meios indicados acima. Se entender que
-não respeitámos os seus direitos, pode apresentar reclamação à
+${D.contactos.email ? marcar("direitos", direitosHtml({ email: D.contactos.email })) : `<p>Pode pedir-nos o acesso, a retificação, o apagamento, a limitação ou a portabilidade dos seus
+dados, e opor-se ao tratamento, ${CONTACTOS_DE_RETIRADA}. Respondemos no prazo de um mês (RGPD,
+art. 12.º, n.º 3). Se entender que não respeitámos os seus direitos, pode apresentar reclamação à
 <a href="https://www.cnpd.pt/" target="_blank" rel="noopener noreferrer">CNPD — Comissão Nacional
-de Proteção de Dados</a>.</p>`
+de Proteção de Dados</a>.</p>`}`
 );
 
 const politicaCookies = () => paginaTexto(
@@ -1256,27 +1359,27 @@ const politicaCookies = () => paginaTexto(
   "Este site não utiliza cookies. Explicamos o que guardamos e porquê.",
   "Cookies",
   `<h2>Este site não usa cookies</h2>
-<p>Não há cookies de publicidade, não há cookies de estatísticas e não há cookies de redes
-sociais. Não usamos Google Analytics nem nenhuma ferramenta equivalente.</p>
+<p>${esc(textoSemCookies({ comMapa: true, textoBotao: "Carregar o mapa", textoRetirar: "Deixar de carregar o mapa" }))}</p>
+<p>Não há cookies de publicidade, de estatísticas nem de redes sociais. Não usamos Google
+Analytics nem nenhuma ferramenta equivalente.</p>
 
-<h2>Então porque aparece um aviso?</h2>
-<p>Porque há uma coisa que precisa mesmo da sua autorização: o <strong>mapa do Google</strong> no
-fim da página inicial. Carregar esse mapa é fazer um pedido a servidores da Google, que passam a
-conhecer o seu endereço IP. Não fazemos isso sem que nos diga que sim.</p>
-<p>Se carregar em «Só o essencial», o mapa não é carregado e fica apenas uma ligação que abre o
-Google Maps quando <em>você</em> quiser.</p>
+<h2>O mapa do Google</h2>
+<p>O <strong>mapa do Google</strong>, nos <a href="${u("/#contactos")}">Contactos</a>, é a única
+coisa que precisa da sua autorização: carregá-lo é fazer um pedido a servidores da Google, que
+passam a conhecer o seu endereço IP. Até carregar em «Carregar o mapa» fica apenas um cartão e uma
+ligação que abre o Google Maps quando <em>você</em> quiser.</p>
 
 <h2>O que fica guardado no seu equipamento</h2>
 <dl>
  <dt>pf-mapa</dt>
- <dd>Guarda apenas «sim» ou «não» — a sua resposta ao aviso — para não lhe voltarmos a perguntar.
- É guardado no <em>armazenamento local</em> do navegador, não é um cookie e nunca é enviado para
- nenhum servidor. Fica no seu equipamento até limpar os dados do site.</dd>
+ <dd>Guarda «sim» depois de carregar em «Carregar o mapa», para o mapa voltar a aparecer nas
+ visitas seguintes. Antes disso não se guarda nada. É guardado no <em>armazenamento local</em> do
+ navegador, não é um cookie e nunca é enviado para nenhum servidor.</dd>
 </dl>
 
-<h2>Como apagar</h2>
-<p>Nas definições do navegador, em «Dados dos sites» ou «Privacidade», apague os dados deste
-site. O aviso voltará a aparecer na visita seguinte.</p>`
+<h2>Como retirar</h2>
+<p>${esc(textoDefinicoesCookies({ textoRetirar: "Deixar de carregar o mapa" }))}</p>
+<p>Também o pode fazer no botão «Preferências», no rodapé de todas as páginas.</p>`
 );
 
 function naoEncontrada() {
@@ -1339,6 +1442,7 @@ const PAGINAS = [
 
 let total = 0;
 for (const [caminho, html] of PAGINAS) total += escrever(caminho, html);
+avisarProdutos(PRODUTOS);
 
 /* Assets. O `.nojekyll` é obrigatório: sem ele o GitHub Pages passa tudo pelo
    Jekyll e ignora silenciosamente qualquer pasta começada por underscore. */

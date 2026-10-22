@@ -326,34 +326,31 @@
       $("[data-carregar-mapa]")?.addEventListener("click", () => { guardar("sim"); carregarMapa(); });
     }
 
-    /* O aviso deixa de ser removido do DOM e passa a ser escondido: é o que
-       permite reabri-lo pelo «Preferências». O `hidden` só funciona aqui porque
-       a folha declara `[hidden] { display: none !important }` — sem o
-       `!important`, o `display: grid` do autor ganhava-lhe. */
-    const aviso = $(".cookies");
-    if (aviso) {
-      const decidir = (valor) => {
-        guardar(valor);
-        aviso.hidden = true;
-        if (valor === "sim") carregarMapa(); else descarregarMapa();
-      };
-      $(".cookies [data-aceitar]", document)?.addEventListener("click", () => decidir("sim"));
-      $(".cookies [data-recusar]", document)?.addEventListener("click", () => decidir("nao"));
-      if (guardado()) aviso.hidden = true;
-    }
+    /* SEM AVISO DE COOKIES (22 out 2026). Nada se grava antes de uma escolha:
+       ao arrancar só se LÊ a chave, para honrar uma escolha anterior; o «sim»
+       só se escreve no clique em «Carregar o mapa». Uma recusa não se grava
+       (não há nada a lembrar: sem «sim», o mapa não carrega). */
     if (guardado() === "sim") carregarMapa();
     ligarBotaoMapa();
 
-    /* RETIRAR A AUTORIZAÇÃO. O artigo 7.º/3 do RGPD exige que retirar seja tão
-       fácil como dar, e até aqui não havia forma nenhuma: a decisão ficava em
-       localStorage para sempre. Esta ligação existe em todas as páginas. */
-    $$("[data-preferencias]").forEach((b) => b.addEventListener("click", () => {
+    /* RETIRAR A AUTORIZAÇÃO, tão fácil como dá-la (RGPD, art. 7.º, n.º 3): o
+       «Deixar de carregar o mapa», junto do mapa (só com ele carregado), e o
+       «Preferências» do rodapé, em todas as páginas. Os dois apagam a chave e
+       tiram o iframe na hora; o do rodapé diz o que fez, ao lado. */
+    const retirar = () => {
       try { localStorage.removeItem(CHAVE); } catch { /* modo privado */ }
       descarregarMapa();
-      if (aviso) {
-        aviso.hidden = false;
-        aviso.scrollIntoView({ block: "nearest" });
-        $(".cookies [data-aceitar]", document)?.focus();
+    };
+    $("[data-retirar-mapa]")?.addEventListener("click", () => {
+      retirar();
+      $("[data-carregar-mapa]")?.focus();
+    });
+    const estado = $("#preferencias-estado");
+    $$("[data-preferencias]").forEach((b) => b.addEventListener("click", () => {
+      retirar();
+      if (estado) {
+        estado.hidden = false;
+        estado.textContent = "Este site não usa cookies. O mapa do Google não está autorizado: só volta a carregar se carregar em «Carregar o mapa», nos Contactos.";
       }
     }));
 

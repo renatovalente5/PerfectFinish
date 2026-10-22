@@ -1479,30 +1479,30 @@ body[data-menu="aberto"] { overflow: hidden; }
 .livro img { block-size: 2.6rem; inline-size: auto; }
 
 /* -------------------------------------------------- 15 aviso de cookies */
-/* O site não põe cookies. Este aviso existe para uma coisa concreta: é o que
-   autoriza (ou não) carregar o mapa da Google, que é um pedido a um servidor
-   nos Estados Unidos. Por isso é honesto e tem duas saídas reais. */
-.cookies {
-  position: fixed; z-index: 120;
-  inset-inline: var(--goteira); bottom: var(--goteira);
-  margin-inline: auto; max-inline-size: 34rem;
-  padding: var(--e-5);
-  background: color-mix(in oklab, var(--elevado) 96%, transparent);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--filete); border-radius: 4px;
-  box-shadow: 0 1.5rem 3rem rgb(0 0 0 / .5);
-  display: grid; gap: var(--e-4);
-  font-size: var(--t--1);
-}
-.cookies p { color: var(--osso-meio); }
-.cookies strong { color: var(--osso); font-weight: 600; }
-.cookies__accoes { display: flex; flex-wrap: wrap; gap: var(--e-3); }
-.cookies .botao { padding: .7em 1.2em; font-size: var(--t--2); }
-.cookies a { color: var(--ouro-alto); }
-@media (prefers-reduced-motion: no-preference) {
-  .cookies { animation: subir .4s var(--curva) both; }
-  @keyframes subir { from { opacity: 0; translate: 0 1.5rem; } }
-}
+/* Já não há aviso de cookies (22 out 2026): nada se grava antes de uma
+   escolha, e o mapa tem a sua própria autorização («Carregar o mapa»). Ficam
+   aqui as peças legais comuns (biblioteca legal-comum). O CSS do Livro é o
+   livroCss() da biblioteca, que o gerar.mjs junta a esta folha: a variante
+   discreta (.lr-discreto) herda a letra e a cor das ligações vizinhas
+   (.rodape__legais a, .dado a, .texto a) — nunca mais pequena nem esbatida. */
+
+/* Nos contactos não tem ícone de linha à esquerda (o botão traz o seu):
+   alinha-se com o texto dos outros pela largura do ícone e do intervalo. */
+.dado--livro { grid-template-columns: minmax(0, 1fr); padding-inline-start: calc(1.15rem + var(--e-4)); }
+
+/* O que o «Preferências» fez, por baixo da fila. */
+.rodape__estado { flex-basis: 100%; font-size: var(--t--2); color: var(--osso-meio); }
+
+/* «Deixar de carregar o mapa»: só com o mapa carregado. */
+.mapa__retirar { display: none; margin-top: var(--e-3); }
+.mapa__caixa[data-mapa="carregado"] + .mapa__retirar { display: block; }
+
+/* A tabela dos destinatários da política de privacidade. */
+.tabela-rolante { overflow-x: auto; margin-block: var(--e-4); }
+.destinatarios { border-collapse: collapse; inline-size: 100%; min-inline-size: 36rem; font-size: var(--t--1); }
+.destinatarios th, .destinatarios td { text-align: start; vertical-align: top; padding: .55rem .7rem; border-bottom: 1px solid var(--filete-fraco); }
+.destinatarios th { color: var(--osso); font-weight: 600; }
+.direitos ul { margin-block: var(--e-3); }
 
 /* ------------------------------------------------- 16 páginas de texto */
 .texto { max-width: 68ch; }
@@ -1625,7 +1625,7 @@ body[data-menu="aberto"] { overflow: hidden; }
 
 /* Impressão: o essencial, a preto no branco. */
 @media print {
-  .cabecalho, .menu, .cookies, .grao, .progresso, .lupa { display: none !important; }
+  .cabecalho, .menu, .grao, .progresso, .lupa { display: none !important; }
   body { background: #fff; color: #000; }
 }
 
@@ -1662,19 +1662,6 @@ html[data-rolagem="sim"] .zap-flutuante {
 }
 html[data-rolagem="sim"][data-rolou="sim"] .zap-flutuante {
   opacity: 1; visibility: visible; pointer-events: auto;
-}
-/* Enquanto o aviso de cookies está NO ECRÃ, o botão sobe para não ficar por
-   baixo dele no telemóvel.
-   O `:not([hidden])` não é zelo: o aviso deixou de ser removido do DOM e passou
-   a ser escondido, para o «Preferências» do rodapé o poder reabrir. Sem esta
-   condição, `:has(.cookies)` continuava a casar com o aviso já escondido e o
-   botão ficava 12,5rem acima do canto PARA SEMPRE — que é o «aparece no meio»
-   no telemóvel. Foi um defeito que eu próprio introduzi ao fazer o Preferências. */
-body:has(.cookies:not([hidden])) .zap-flutuante {
-  inset-block-end: calc(clamp(.9rem, 3vw, 1.75rem) + 12.5rem);
-}
-@media (min-width: 40rem) {
-  body:has(.cookies:not([hidden])) .zap-flutuante { inset-block-end: clamp(.9rem, 3vw, 1.75rem); }
 }
 /* Com o menu de ecrã inteiro aberto, sai da frente. */
 body[data-menu="aberto"] .zap-flutuante { display: none; }
