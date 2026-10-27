@@ -1484,11 +1484,7 @@ body[data-menu="aberto"] { overflow: hidden; }
    aqui as peças legais comuns (biblioteca legal-comum). O CSS do Livro é o
    livroCss() da biblioteca, que o gerar.mjs junta a esta folha: a variante
    discreta (.lr-discreto) herda a letra e a cor das ligações vizinhas
-   (.rodape__legais a, .dado a, .texto a) — nunca mais pequena nem esbatida. */
-
-/* Nos contactos não tem ícone de linha à esquerda (o botão traz o seu):
-   alinha-se com o texto dos outros pela largura do ícone e do intervalo. */
-.dado--livro { grid-template-columns: minmax(0, 1fr); padding-inline-start: calc(1.15rem + var(--e-4)); }
+   (.rodape__legais a) — nunca mais pequena nem esbatida. */
 
 /* O que o «Preferências» fez, por baixo da fila. */
 .rodape__estado { flex-basis: 100%; font-size: var(--t--2); color: var(--osso-meio); }

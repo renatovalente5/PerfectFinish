@@ -251,13 +251,15 @@ const NAV = [
    biblioteca e a verificação depois de publicar (curl) as encontram. */
 const marcar = (peca, html) => `<!-- legal-comum:${peca} v${VERSAO_LEGAL} -->${html}<!-- /legal-comum:${peca} -->`;
 
-/* O Livro de Reclamações (DL 156/2005, art. 5.º-B), no rodapé de todas as
-   páginas, ao lado das outras ligações legais, e nos Contactos. A variante
-   DISCRETA da biblioteca (por omissão desde a v1.1.0, a pedido do Renato):
-   ícone de livro e texto, com a letra, o tamanho e a cor das ligações
-   vizinhas, sem caixa nem fundo — o ícone é o destaque. O livroCss() traz as
-   regras dela (.lr-discreto); as do botão com caixa (.lr-botao) vêm também e
-   não se usam: o par de cores é o do .botao--cheio (8,17:1). */
+/* O Livro de Reclamações (DL 156/2005, art. 5.º-B), só no rodapé de todas as
+   páginas, ao lado das outras ligações legais (o Renato, 27 out 2026: nem nos
+   Contactos nem na Informação legal; a lei pede-o na página de entrada, e o
+   rodapé da página inicial cumpre isso). A variante DISCRETA da biblioteca
+   (por omissão desde a v1.1.0, a pedido do Renato): ícone de livro e texto,
+   com a letra, o tamanho e a cor das ligações vizinhas, sem caixa nem
+   fundo — o ícone é o destaque. O livroCss() traz as regras dela
+   (.lr-discreto); as do botão com caixa (.lr-botao) vêm também e não se
+   usam: o par de cores é o do .botao--cheio (8,17:1). */
 const LIVRO = marcar("livro", livroReclamacoes());
 const LIVRO_CSS = livroCss("lr-botao", { cor: "#1A1717", fundo: "#CBAD4F" });
 
@@ -1137,12 +1139,6 @@ function blocoContactos() {
      <dt>Instagram</dt>
      <dd><a href="${esc(IG)}" target="_blank" rel="noopener">@perfectfinish.pt</a></dd>
     </div></div>
-    <!-- O Livro de Reclamações também nos Contactos (o manual da DGC pede-o na
-         página de entrada e, como boa prática, onde se procura o apoio). -->
-    <div class="dado dado--livro"><div>
-     <dt>Reclamações</dt>
-     <dd>${LIVRO}</dd>
-    </div></div>
    </dl>
 
    <div>
@@ -1227,7 +1223,6 @@ ${IDENT}
 <h2>Livro de Reclamações</h2>
 <p>Está à sua disposição o Livro de Reclamações Eletrónico, nos termos do Decreto-Lei n.º 156/2005,
 de 15 de setembro, na sua redação atual.</p>
-<p>${LIVRO}</p>
 
 <h2>Resolução alternativa de litígios</h2>
 <p>Em caso de litígio de consumo, o consumidor pode recorrer a uma entidade de resolução
