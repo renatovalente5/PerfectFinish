@@ -1230,7 +1230,15 @@ body[data-menu="aberto"] { overflow: hidden; }
   transition: border-color .28s var(--curva), translate .28s var(--curva);
 }
 .produto:hover { border-color: var(--filete); translate: 0 -3px; }
-.produto__imagem { aspect-ratio: 1; background: var(--tinta); }
+.produto__imagem { position: relative; aspect-ratio: 1; background: var(--tinta); }
+/* Os desenhos das embalagens (scripts/produtos.py) não são o produto que se
+   vende: dizem-no por cima de cada um, até haver a fotografia verdadeira. */
+.produto__ilustrativa {
+  position: absolute; inset-inline-start: .55rem; inset-block-end: .55rem;
+  padding: .2rem .5rem; border-radius: 999px;
+  font-size: .68rem; letter-spacing: .02em; line-height: 1.2;
+  color: var(--osso); background: rgba(26, 23, 23, .78);
+}
 .produto__imagem img { inline-size: 100%; block-size: 100%; object-fit: cover; }
 .produto__corpo { padding: clamp(.85rem, 3vw, 1.5rem); display: grid; gap: var(--e-2); flex: 1; align-content: start; }
 .produto__familia {

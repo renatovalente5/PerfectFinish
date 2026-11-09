@@ -1065,7 +1065,7 @@ function loja() {
   const cartao = (p) => `<article class="produto revelar">
  <div class="produto__imagem">${figura("loja", p.foto || p.slug, `${p.nome} — ${p.familia}`, {
     medidas: "(min-width: 64rem) 16rem, (min-width: 40rem) 45vw, 92vw",
-  })}</div>
+  })}${p.foto ? "" : `<span class="produto__ilustrativa">Imagem ilustrativa</span>`}</div>
  <div class="produto__corpo">
   <span class="produto__familia">${esc(p.familia)}</span>
   <h3>${esc(p.nome)}</h3>

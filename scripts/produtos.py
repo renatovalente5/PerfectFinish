@@ -9,7 +9,10 @@ como o resto do site, e no dia em que houver fotografias reais trocam-se
 ficheiro a ficheiro sem mexer em mais nada.
 
 São embalagens genéricas, sem marca de terceiros e sem imitar nenhum produto
-existente.
+existente. E sem marca nenhuma: até 9 nov 2026 o rótulo levava o escudo «PF»,
+e um produto de outra marca com o escudo da casa parece feito por ela (engana
+sobre a origem, e quem põe a sua marca num produto responde por ele como
+produtor). O site diz «Imagem ilustrativa» por baixo de cada uma.
 
 A lição da primeira versão: num fundo preto, a embalagem TEM de ser
 visivelmente mais clara do que a parede. Ficou tudo preto sobre preto e não
@@ -32,6 +35,27 @@ PRODUTOS = RAIZ / "data" / "loja"
 
 LADO = 1000
 MEDIDAS = [414, 828]
+
+# A forma de cada embalagem. Vivia no data/loja/*.json («forma») até o
+# backoffice revisto de 24 ago 2026 tirar os campos que não mudavam nada no
+# site; sem ela, voltar a desenhar fazia de tudo uma garrafa (a toalha e a
+# cera incluídas). Fica aqui, com a de 23 ago; um «forma» na ficha ganha.
+FORMA_DO_DESENHO = {
+    "cera-de-carnauba": "boiao",
+    "descontaminante-ferrico": "spray",
+    "limpa-interiores": "spray",
+    "limpa-jantes": "spray",
+    "luva-de-lavagem": "pano",
+    "quick-detailer": "spray",
+    "selante-de-pintura": "garrafa",
+    "selante-de-pneus": "garrafa",
+    "shampoo-ph-neutro": "garrafa",
+    "toalha-de-secagem": "pano",
+}
+
+
+def forma_de(produto: dict) -> str:
+    return produto.get("forma") or FORMA_DO_DESENHO.get(produto.get("slug", ""), "garrafa")
 
 TINTA = (0x1A, 0x17, 0x17)
 OURO = (0xAC, 0x8A, 0x39)
@@ -134,7 +158,7 @@ def desenha(produto: dict) -> Image.Image:
         # camada de cima e, com uma pilha baixa, o nome ficava ilegível.
         "pano":    (0.50, 0.46, 16, 0, 0.0),
     }
-    fw, fh, raio, tampa, gargalo = FORMAS.get(produto.get("forma", "garrafa"), FORMAS["garrafa"])
+    fw, fh, raio, tampa, gargalo = FORMAS.get(forma_de(produto), FORMAS["garrafa"])
 
     imagem = fundo()
     largura, altura = LADO * fw, LADO * fh
@@ -146,7 +170,7 @@ def desenha(produto: dict) -> Image.Image:
 
     # Corpo: um degradé claramente mais claro do que a parede, senão a
     # embalagem desaparece no fundo.
-    recorte = silhueta(produto.get("forma", "garrafa"), caixa, raio, tampa, gargalo)
+    recorte = silhueta(forma_de(produto), caixa, raio, tampa, gargalo)
     topo = int(caixa[1] - tampa - 4)
     corpo = degrade_vertical((0, topo, LADO, LADO), (0x5A, 0x51, 0x4C), (0x1C, 0x19, 0x18))
     tela = Image.new("RGB", (LADO, LADO), (0x1C, 0x19, 0x18))
@@ -155,7 +179,7 @@ def desenha(produto: dict) -> Image.Image:
 
     # Aresta iluminada à esquerda e reflexo frio à direita, ambos dentro da
     # silhueta (por isso a máscara é multiplicada pelo recorte).
-    if produto.get("forma") != "pano":
+    if forma_de(produto) != "pano":
         brilho = Image.new("RGB", (LADO, LADO), (0, 0, 0))
         mb = Image.new("L", (LADO, LADO), 0)
         pb, pm = ImageDraw.Draw(brilho), ImageDraw.Draw(mb)
@@ -172,7 +196,7 @@ def desenha(produto: dict) -> Image.Image:
         imagem = Image.composite(brilho, imagem, mb)
 
     imagem = rotulo(imagem, caixa, produto["nome"], produto.get("familia", ""),
-                    produto.get("forma", "garrafa"))
+                    forma_de(produto))
     imagem = reflexo(imagem, int(base_y))
     return vinheta(imagem)
 
@@ -197,18 +221,7 @@ def rotulo(imagem, caixa, titulo, familia, forma) -> Image.Image:
     caixa_alt = ry1 - ry0
     cx = (rx0 + rx1) / 2
 
-    # Escudo PF
-    lado_e = min((rx1 - rx0) * 0.30, caixa_alt * 0.34)
-    ey = ry0 + caixa_alt * 0.10
-    p.polygon([(cx - lado_e / 2, ey + lado_e * 0.14), (cx, ey), (cx + lado_e / 2, ey + lado_e * 0.14),
-               (cx + lado_e / 2, ey + lado_e * 0.60), (cx, ey + lado_e), (cx - lado_e / 2, ey + lado_e * 0.60)],
-              outline=OURO_ALTO, width=3)
-    f_pf = fonte(int(lado_e * 0.44), True)
-    b = p.textbbox((0, 0), "PF", font=f_pf)
-    p.text((cx - (b[2] - b[0]) / 2, ey + lado_e * 0.31 - (b[3] - b[1]) / 2), "PF",
-           font=f_pf, fill=OURO_ALTO)
-
-    # Nome, quebrado para caber
+    # Nome, quebrado para caber (sem o escudo «PF»: ver o cabeçalho)
     f_nome = fonte(int(caixa_alt * 0.115), True)
     limite = (rx1 - rx0) - 26
     linhas, linha = [], ""
@@ -222,7 +235,11 @@ def rotulo(imagem, caixa, titulo, familia, forma) -> Image.Image:
     if linha:
         linhas.append(linha)
 
-    y = ey + lado_e + caixa_alt * 0.10
+    # Centrado no espaço entre o topo da etiqueta e o traço dourado.
+    passo = caixa_alt * 0.135
+    topo, fundo_util = ry0 + caixa_alt * 0.08, ry1 - caixa_alt * 0.24
+    altura_txt = p.textbbox((0, 0), "A", font=f_nome)[3]
+    y = (topo + fundo_util) / 2 - (passo * (len(linhas[:3]) - 1) + altura_txt) / 2
     for texto in linhas[:3]:
         p.text((cx - p.textlength(texto, font=f_nome) / 2, y), texto, font=f_nome, fill=OSSO)
         y += caixa_alt * 0.135
@@ -279,7 +296,7 @@ def main() -> None:
                 reduzida.save(DESTINO / f"{produto['slug']}-{lado}.avif", "AVIF", quality=60)
             except Exception:
                 pass
-        print(f"→ {produto['slug']:26} {produto.get('forma','garrafa')}")
+        print(f"→ {produto['slug']:26} {forma_de(produto)}")
 
     peso = sum(f.stat().st_size for f in DESTINO.iterdir()) / 1024
     print(f"\n{len(fichas)} produtos · {len(list(DESTINO.iterdir()))} ficheiros · {peso:.0f} kB")
